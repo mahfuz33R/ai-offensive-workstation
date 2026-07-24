@@ -1,0 +1,14 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Vendored training documents contain intentional token examples"
+paths = [
+  '''^PayloadsAllTheThings/API Key Leaks/IIS-Machine-Keys\.md$''',
+  '''^PayloadsAllTheThings/API Key Leaks/README\.md$''',
+  '''^PayloadsAllTheThings/File Inclusion/Wrappers\.md$''',
+  '''^PayloadsAllTheThings/Insecure Source Code Management/Files/github-dorks\.txt$''',
+  '''^PayloadsAllTheThings/JSON Web Token/README\.md$''',
+  '''^PayloadsAllTheThings/Server Side Request Forgery/SSRF-Cloud-Instances\.md$''',
+  '''^PayloadsAllTheThings/Web Sockets/README\.md$''',
+]

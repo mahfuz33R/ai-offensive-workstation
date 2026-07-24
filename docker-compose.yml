@@ -1,0 +1,69 @@
+services:
+  workstation:
+    build:
+      context: .
+      args:
+        HERMES_IMAGE: ${HERMES_IMAGE:-nousresearch/hermes-agent}
+        HERMES_TAG: ${HERMES_TAG:-latest}
+        HERMES_DIGEST: ${HERMES_DIGEST:-}
+        GO_VERSION: ${GO_VERSION:-1.26.5}
+        RUST_TOOLCHAIN: ${RUST_TOOLCHAIN:-stable}
+    image: ai-offensive-workstation:latest
+    container_name: ai-offensive-workstation
+    restart: unless-stopped
+    privileged: true
+    shm_size: 1gb
+    command: ["gateway", "run"]
+    env_file:
+      - path: secrets.env
+        required: false
+    environment:
+      HERMES_UID: ${HERMES_UID:-10000}
+      HERMES_GID: ${HERMES_GID:-10000}
+    ports:
+      - "127.0.0.1:8642:8642"
+    volumes:
+      - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
+      - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
+      - ./workspace:/workspace
+
+  dashboard:
+    image: ai-offensive-workstation:latest
+    container_name: ai-offensive-workstation-dashboard
+    restart: unless-stopped
+    privileged: true
+    shm_size: 1gb
+    network_mode: host
+    command: ["dashboard", "--host", "127.0.0.1", "--port", "${HERMES_DASHBOARD_PORT:-9119}", "--no-open", "--insecure"]
+    env_file:
+      - path: secrets.env
+        required: false
+    environment:
+      HERMES_UID: ${HERMES_UID:-10000}
+      HERMES_GID: ${HERMES_GID:-10000}
+    volumes:
+      - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
+      - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
+      - ./workspace:/workspace
+    depends_on:
+      - workstation
+
+  setup:
+    image: ai-offensive-workstation:latest
+    profiles:
+      - setup
+    privileged: true
+    shm_size: 1gb
+    command: ["setup"]
+    env_file:
+      - path: secrets.env
+        required: false
+    environment:
+      HERMES_UID: ${HERMES_UID:-10000}
+      HERMES_GID: ${HERMES_GID:-10000}
+      HERMES_DASHBOARD: "0"
+      HERMES_DASHBOARD_HOST: "127.0.0.1"
+    volumes:
+      - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
+      - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
+      - ./workspace:/workspace

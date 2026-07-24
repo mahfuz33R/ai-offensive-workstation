@@ -1,0 +1,8 @@
+# Mentioned in hunt_tools.sh but excluded because their install commands are commented out.
+Sudomy
+Uro duplicate commented installer
+GitHacker
+DumpsterDiver
+http-request-smuggling/anshumanpattnaik
+
+# Comments without an active installation command are not inventory entries.

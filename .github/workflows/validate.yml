@@ -1,0 +1,46 @@
+name: Validate source
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  static-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Prepare safe local configuration
+        run: |
+          cp secrets.env.example secrets.env
+          chmod 600 secrets.env
+          bash scripts/configure-host.sh
+
+      - name: Run project preflight
+        run: bash scripts/preflight.sh
+
+      - name: Validate Zsh configuration
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes zsh
+          zsh -n config/portable.zshrc
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for credentials
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_VERSION: latest

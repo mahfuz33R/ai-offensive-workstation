@@ -1,0 +1,23 @@
+# Never let the Docker build context see real secrets, even by accident
+secrets.env
+secrets.env.before-reuse-*
+.env
+*.tar.gpg
+workspace.before-reuse-*
+.git
+.gitignore
+__pycache__
+*.pyc
+workspace
+.runtime-audit.*
+.reuse-tmp.*
+how_it_works.md
+run_exported_image.md
+*.md
+!Rules/
+!Rules/**
+!PayloadsAllTheThings/
+!PayloadsAllTheThings/**
+!payload-box/
+!payload-box/**
+**/.git

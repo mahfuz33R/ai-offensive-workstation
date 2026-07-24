@@ -1,0 +1,84 @@
+# Protocol-Based Open Redirect Payloads
+# These payloads use various protocol specifications to trigger redirects
+
+# Basic Protocol-Relative URLs
+//evil.com
+//evil.com/
+///evil.com
+///evil.com/
+////evil.com
+////evil.com/
+/////evil.com
+
+# HTTPS Protocol
+https://evil.com
+https://evil.com/
+https://www.evil.com
+https://www.evil.com/
+https://subdomain.evil.com
+https://subdomain.evil.com/
+
+# HTTP Protocol
+http://evil.com
+http://evil.com/
+http://www.evil.com
+http://www.evil.com/
+http://subdomain.evil.com
+http://subdomain.evil.com/
+
+# Protocol Without Slashes
+https:evil.com
+http:evil.com
+https:/evil.com
+http:/evil.com
+
+# Triple Slash Protocols
+https:///evil.com
+http:///evil.com
+https:////evil.com
+http:////evil.com
+
+# With Port Specifications
+//evil.com:80
+//evil.com:443
+//evil.com:8080
+//evil.com:8443
+https://evil.com:80
+http://evil.com:443
+https://evil.com:8080
+http://evil.com:8080
+https://evil.com:8443
+http://evil.com:8443
+//evil.com:80/
+//evil.com:443/
+https://evil.com:80/
+http://evil.com:443/
+
+# Protocol with Multiple Slashes
+////https://evil.com
+////http://evil.com
+///https://evil.com
+///http://evil.com
+//https://evil.com
+//http://evil.com
+/https://evil.com
+/http://evil.com
+
+# Mixed Protocol Separators
+/https:evil.com
+/http:evil.com
+//https:evil.com
+//http:evil.com
+///https:evil.com
+///http:evil.com
+////https:evil.com
+////http:evil.com
+
+# Google Domain (for testing)
+//google.com
+//www.google.com
+https://google.com
+http://google.com
+//google.com/
+///google.com/
+////google.com/
