@@ -11,4 +11,9 @@ paths = [
   '''^PayloadsAllTheThings/JSON Web Token/README\.md$''',
   '''^PayloadsAllTheThings/Server Side Request Forgery/SSRF-Cloud-Instances\.md$''',
   '''^PayloadsAllTheThings/Web Sockets/README\.md$''',
+  # Official CyberStrike documentation examples contain literal test/test
+  # form values on a line whose earlier prose mentions curl. This triggers the
+  # curl-auth-user heuristic but contains no credential.
+  '''^Rules/offensive-workstation-pentesting/references/cyberstrike/source-library/docs/agents/web-application\.html\.md$''',
+  '''^Rules/offensive-workstation-pentesting/references/cyberstrike/source-library/llms-ctx\.txt$''',
 ]

@@ -6,6 +6,18 @@ cd "$PROJECT_DIR"
 
 BUILD_OPTIONS=(--pull --no-cache)
 SKIP_BUILD=0
+BUILD_GITHUB_TOKEN_TEMP=
+
+cleanup() {
+  if [[ -n "${temporary_workspace:-}" && -d "$temporary_workspace" ]]; then
+    rm -rf -- "$temporary_workspace"
+  fi
+  if [[ -n "$BUILD_GITHUB_TOKEN_TEMP" && -f "$BUILD_GITHUB_TOKEN_TEMP" ]]; then
+    rm -f -- "$BUILD_GITHUB_TOKEN_TEMP"
+  fi
+}
+trap cleanup EXIT
+
 if [[ "${1:-}" == --verify-only ]]; then
   SKIP_BUILD=1
   shift
@@ -21,6 +33,17 @@ if (( SKIP_BUILD )); then
   printf '\nUsing the existing image for post-build verification...\n'
 else
   printf '\nBuilding the complete portable image...\n'
+  export CYBERSTRIKE_CACHE_BUST="${CYBERSTRIKE_CACHE_BUST:-$(date -u +%Y%m%dT%H%M%SZ)}"
+  if [[ -z "${BUILD_GITHUB_TOKEN_FILE:-}" ]]; then
+    BUILD_GITHUB_TOKEN_TEMP="$(mktemp)"
+    chmod 0600 "$BUILD_GITHUB_TOKEN_TEMP"
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+      printf '%s' "$GITHUB_TOKEN" > "$BUILD_GITHUB_TOKEN_TEMP"
+    elif command -v gh >/dev/null 2>&1 && gh auth token > "$BUILD_GITHUB_TOKEN_TEMP" 2>/dev/null; then
+      :
+    fi
+    export BUILD_GITHUB_TOKEN_FILE="$BUILD_GITHUB_TOKEN_TEMP"
+  fi
   BUILDKIT_PROGRESS="${BUILDKIT_PROGRESS:-plain}" docker compose build "${BUILD_OPTIONS[@]}"
 fi
 
@@ -36,7 +59,6 @@ fi
 printf '[PASS] Hermes /init remains the image entrypoint.\n'
 
 temporary_workspace="$(mktemp -d)"
-trap 'rm -rf "$temporary_workspace"' EXIT
 chmod 0755 "$temporary_workspace"
 
 printf '\nChecking the image as the non-root Hermes user with an empty /workspace mount...\n'
@@ -67,12 +89,19 @@ docker run --rm \
 printf '\nChecking representative immutable paths and runtime identity...\n'
 docker run --rm --privileged \
   --user hermes \
+  --env HOME=/tmp/cyberstrike-home \
   --entrypoint /bin/bash \
   "$IMAGE" -euc '
     test "$(id -un)" = hermes
     command -v hermes >/dev/null
     command -v zsh >/dev/null
     command -v tmux >/dev/null
+    command -v cyberstrike >/dev/null
+    cyberstrike_version="$(cyberstrike --version)"
+    package_version="$(jq -r .version /opt/security-tools/cyberstrike/node_modules/@cyberstrike-io/cyberstrike/package.json)"
+    test "$cyberstrike_version" = "$package_version"
+    [[ "$cyberstrike_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]
+    CYBERSTRIKE_DISABLE_MODELS_FETCH=1 timeout 30 cyberstrike --help >/dev/null
     tmux -V | grep -q "^tmux "
     test "$SHELL" = /usr/bin/zsh
     test "$(getent passwd root | cut -d: -f7)" = /usr/bin/zsh
@@ -81,6 +110,9 @@ docker run --rm --privileged \
     test -s /etc/zsh/portable.zshrc
     test -d /opt/security-tools
     test -d /opt/security-assets
+    test -s /opt/security-tools/cyberstrike/hackbrowser-worker.js
+    test -e /opt/security-tools/cyberstrike/node_modules/playwright/package.json
+    test -L /tmp/cyberstrike-home/.local/share/cyberstrike/bin/hackbrowser-worker.js
     test -s /opt/hermes/skills/cybersecurity/offensive-workstation/SKILL.md
     test -s /opt/security-manifest/tool-manifest.tsv
     test "$(readlink -f "$(command -v naabu)")" = /opt/toolchains/go/bin/naabu

@@ -175,6 +175,30 @@ docker compose exec --user hermes workstation agent-browser --help
 ```
 Confirm that Hermes browser automation is available.
 
+```bash
+docker compose exec --user hermes workstation cyberstrike --version
+```
+Confirm which official npm `latest` CyberStrike release was resolved at build time.
+
+```bash
+docker compose exec --user hermes workstation cyberstrike auth list
+```
+Inspect CyberStrike authentication without printing credential values.
+
+```bash
+docker compose exec --user hermes workstation cyberstrike models
+```
+List models discovered from the runtime provider environment.
+
+```bash
+docker compose exec --user hermes workstation \
+  cyberstrike run --agent cyberstrike --model provider/model \
+  --format json --dir /workspace/projects/owned-app \
+  "Read-only review of this authorized project; no network or file changes"
+```
+Run one bounded CyberStrike task after creating the deny-first project policy
+described in the bundled CyberStrike RAG.
+
 ## Stop, Restart, And Clean Up
 
 ```bash
@@ -230,13 +254,13 @@ bash scripts/export-image.sh ai-offensive-workstation:latest ai-offensive-workst
 Export the image and offline runtime bundle.
 
 ```bash
-./reuse.sh export
+./reuse/reuse.sh export
 ```
 Create a private GPG-encrypted bundle containing the image, authenticated agent
-state, browser sessions, secrets, and workspace. Read `reuse.md` first.
+state, browser sessions, secrets, and workspace. Read `reuse/reuse.md` first.
 
 ```bash
-./reuse.sh import PRIVATE-BUNDLE.tar.gpg
+./reuse/reuse.sh import PRIVATE-BUNDLE.tar.gpg
 ```
 Restore an encrypted authenticated-workstation bundle on another host.
 

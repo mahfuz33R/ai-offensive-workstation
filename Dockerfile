@@ -11,11 +11,17 @@ ARG HERMES_DIGEST
 ARG TARGETARCH
 ARG GO_VERSION=1.26.5
 ARG RUST_TOOLCHAIN=stable
+ARG PLAYWRIGHT_VERSION=1.58.2
+ARG CYBERSTRIKE_CACHE_BUST=manual
 
 LABEL org.opencontainers.image.title="ai-offensive-workstation" \
       org.opencontainers.image.description="Hermes Agent with a technology-organized offensive security toolchain" \
       org.opencontainers.image.base.name="${HERMES_IMAGE}:${HERMES_TAG}"
 
+# The upstream /init entrypoint must start as root to apply the configured
+# runtime UID/GID, capabilities, and privileged workstation setup before
+# launching Hermes services.
+# hadolint ignore=DL3002
 USER root
 
 ENV SECURITY_TOOLS_DIR=/opt/security-tools \
@@ -45,7 +51,9 @@ RUN bash /tmp/install/install-zsh.sh
 COPY scripts/install-network-tools.sh /tmp/install/
 RUN bash /tmp/install/install-network-tools.sh
 COPY scripts/install-go.sh /tmp/install/
-RUN GO_VERSION="${GO_VERSION}" TARGETARCH="${TARGETARCH}" bash /tmp/install/install-go.sh
+RUN --mount=type=cache,target=/opt/toolchains/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    GO_VERSION="${GO_VERSION}" TARGETARCH="${TARGETARCH}" bash /tmp/install/install-go.sh
 COPY scripts/install-python.sh /tmp/install/
 RUN bash /tmp/install/install-python.sh
 COPY scripts/install-node.sh /tmp/install/
@@ -61,7 +69,8 @@ RUN git config --system http.version HTTP/1.1 \
 COPY scripts/install-ruby.sh /tmp/install/
 RUN bash /tmp/install/install-ruby.sh
 COPY scripts/install-binary-tools.sh /tmp/install/
-RUN TARGETARCH="${TARGETARCH}" bash /tmp/install/install-binary-tools.sh
+RUN --mount=type=secret,id=github_token,required=false \
+    TARGETARCH="${TARGETARCH}" bash /tmp/install/install-binary-tools.sh
 COPY scripts/install-source-tools.sh /tmp/install/
 RUN bash /tmp/install/install-source-tools.sh
 COPY scripts/install-compatibility.sh /tmp/install/
@@ -71,7 +80,10 @@ COPY payload-box/ /tmp/install/payload-sources/payload-box/
 COPY scripts/install-assets.sh /tmp/install/
 RUN bash /tmp/install/install-assets.sh
 COPY scripts/install-browser-automation.sh /tmp/install/
-RUN bash /tmp/install/install-browser-automation.sh
+RUN PLAYWRIGHT_VERSION="${PLAYWRIGHT_VERSION}" bash /tmp/install/install-browser-automation.sh
+COPY scripts/install-cyberstrike.sh /tmp/install/
+RUN CYBERSTRIKE_CACHE_BUST="${CYBERSTRIKE_CACHE_BUST}" \
+    TARGETARCH="${TARGETARCH}" bash /tmp/install/install-cyberstrike.sh
 
 COPY scripts/tool-inventory.tsv /opt/security-manifest/tool-inventory.tsv
 COPY config/excluded-tools.txt /opt/security-manifest/excluded-tools.txt

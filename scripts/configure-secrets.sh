@@ -41,4 +41,17 @@ else
   echo "[configure-secrets] GITHUB_TOKEN not set - GitHub-dependent tools will use unauthenticated (rate-limited) requests."
 fi
 
+cyberstrike_provider=
+for provider_key in ANTHROPIC_API_KEY OPENAI_API_KEY GOOGLE_API_KEY OPENROUTER_API_KEY GROQ_API_KEY; do
+  if [ -n "${!provider_key:-}" ]; then
+    cyberstrike_provider="${cyberstrike_provider:+$cyberstrike_provider, }$provider_key"
+  fi
+done
+if [ -n "$cyberstrike_provider" ]; then
+  echo "[configure-secrets] CyberStrike model credential environment detected: $cyberstrike_provider."
+  echo "[configure-secrets] Verify provider/model discovery with: cyberstrike models"
+else
+  echo "[configure-secrets] No CyberStrike model provider key is set; add one to secrets.env before unattended runs."
+fi
+
 echo "[configure-secrets] Done."

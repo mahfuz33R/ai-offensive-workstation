@@ -4,8 +4,22 @@ INSTALLER_NAME="browser"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-common.sh"
 
 export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/hermes/.playwright}"
+PLAYWRIGHT_VERSION="${PLAYWRIGHT_VERSION:-1.58.2}"
+AGENT_BROWSER_VERSION="${AGENT_BROWSER_VERSION:-latest}"
 
 find_chromium() {
+  local playwright_chromium
+  if [[ -f /opt/hermes/node_modules/playwright/package.json ]]; then
+    playwright_chromium="$(
+      node -e "process.stdout.write(require('/opt/hermes/node_modules/playwright').chromium.executablePath())" \
+        2>/dev/null || true
+    )"
+    if [[ -x "$playwright_chromium" ]]; then
+      printf '%s\n' "$playwright_chromium"
+      return 0
+    fi
+    return 1
+  fi
   find "$PLAYWRIGHT_BROWSERS_PATH" -maxdepth 6 -type f \
     \( -name 'chrome' -o -name 'chromium' -o -name 'chrome-headless-shell' \
        -o -name 'headless_shell' -o -name 'chromium-browser' \) \
@@ -15,8 +29,8 @@ find_chromium() {
 install_hermes_browser_packages() {
   mkdir -p /opt/hermes "$PLAYWRIGHT_BROWSERS_PATH"
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --omit=dev --prefix /opt/hermes \
-    "agent-browser@${AGENT_BROWSER_VERSION:-latest}" \
-    "playwright@${PLAYWRIGHT_VERSION:-latest}"
+    "agent-browser@${AGENT_BROWSER_VERSION}" \
+    "playwright@${PLAYWRIGHT_VERSION}"
 }
 
 install_playwright_chromium() {
@@ -27,14 +41,20 @@ install_playwright_chromium() {
 ensure_hermes_browser() {
   local playwright=/opt/hermes/node_modules/.bin/playwright
   local agent_browser=/opt/hermes/node_modules/.bin/agent-browser
-  local chromium
+  local chromium installed_playwright_version
 
-  if [[ ! -x "$playwright" || ! -x "$agent_browser" ]]; then
-    log "Hermes base image does not provide a complete browser CLI bundle; installing npm packages"
+  installed_playwright_version="$(
+    node -p "require('/opt/hermes/node_modules/playwright/package.json').version" \
+      2>/dev/null || true
+  )"
+
+  if [[ ! -x "$playwright" || ! -x "$agent_browser" \
+    || "$installed_playwright_version" != "$PLAYWRIGHT_VERSION" ]]; then
+    log "Installing the browser CLI bundle with Playwright ${PLAYWRIGHT_VERSION}"
     install_hermes_browser_packages
   fi
 
-  chromium="$(find_chromium)"
+  chromium="$(find_chromium || true)"
   if [[ ! -x "$chromium" ]]; then
     log "Playwright Chromium is missing under ${PLAYWRIGHT_BROWSERS_PATH}; installing browser files"
     install_playwright_chromium

@@ -8,6 +8,10 @@ services:
         HERMES_DIGEST: ${HERMES_DIGEST:-}
         GO_VERSION: ${GO_VERSION:-1.26.5}
         RUST_TOOLCHAIN: ${RUST_TOOLCHAIN:-stable}
+        PLAYWRIGHT_VERSION: ${PLAYWRIGHT_VERSION:-1.58.2}
+        CYBERSTRIKE_CACHE_BUST: ${CYBERSTRIKE_CACHE_BUST:-manual}
+      secrets:
+        - github_token
     image: ai-offensive-workstation:latest
     container_name: ai-offensive-workstation
     restart: unless-stopped
@@ -20,6 +24,7 @@ services:
     environment:
       HERMES_UID: ${HERMES_UID:-10000}
       HERMES_GID: ${HERMES_GID:-10000}
+      CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
     ports:
       - "127.0.0.1:8642:8642"
     volumes:
@@ -41,6 +46,7 @@ services:
     environment:
       HERMES_UID: ${HERMES_UID:-10000}
       HERMES_GID: ${HERMES_GID:-10000}
+      CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
     volumes:
       - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
       - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
@@ -63,7 +69,12 @@ services:
       HERMES_GID: ${HERMES_GID:-10000}
       HERMES_DASHBOARD: "0"
       HERMES_DASHBOARD_HOST: "127.0.0.1"
+      CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
     volumes:
       - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
       - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
       - ./workspace:/workspace
+
+secrets:
+  github_token:
+    file: ${BUILD_GITHUB_TOKEN_FILE:-/dev/null}
