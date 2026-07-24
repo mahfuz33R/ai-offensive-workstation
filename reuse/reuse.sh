@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IMAGE="${REUSE_IMAGE:-ai-offensive-workstation:latest}"
 TEMP_DIR=
 RUNNING_SERVICES=()
@@ -12,9 +12,9 @@ usage() {
 Create or restore an encrypted AI Offensive Workstation migration bundle.
 
 Usage:
-  ./reuse.sh export [BUNDLE.tar.gpg]
-  ./reuse.sh import BUNDLE.tar.gpg [--force]
-  ./reuse.sh verify BUNDLE.tar.gpg
+  ./reuse/reuse.sh export [BUNDLE.tar.gpg]
+  ./reuse/reuse.sh import BUNDLE.tar.gpg [--force]
+  ./reuse/reuse.sh verify BUNDLE.tar.gpg
 
 export
   Saves the Docker image and private persistent state into one GPG-encrypted
@@ -179,6 +179,7 @@ write_machine_env() {
     printf '# HERMES_DIGEST=@sha256:45b67c84c5d7eef97746b576ad56ca7b21aa334396096415a6a98c5fd3a2d4a0\n'
     printf 'GO_VERSION=1.26.5\n'
     printf 'RUST_TOOLCHAIN=stable\n'
+    printf 'PLAYWRIGHT_VERSION=1.58.2\n'
     printf 'HERMES_DASHBOARD_PORT=9119\n'
   } > "$env_file"
   chmod 0600 "$env_file"
@@ -232,7 +233,7 @@ export_bundle() {
   printf 'Archiving portable runtime files...\n'
   tar -C "$PROJECT_DIR" -czf "$TEMP_DIR/runtime-files.tar.gz" \
     Dockerfile docker-compose.yml .env.example secrets.env.example \
-    README.md command.md run_exported_image.md reuse.md reuse.sh
+    README.md command.md run_exported_image.md reuse/reuse.md reuse/reuse.sh
 
   {
     printf 'format=ai-offensive-workstation-reuse-v1\n'
@@ -268,7 +269,7 @@ export_bundle() {
   chmod 0600 "$output"
 
   printf '\nEncrypted reuse bundle created:\n%s\n' "$output"
-  printf 'Copy this bundle together with reuse.sh and reuse.md.\n'
+  printf 'Copy this bundle together with the reuse/ directory.\n'
   printf 'Keep the passphrase separate from the bundle.\n'
 }
 
@@ -335,8 +336,10 @@ import_bundle() {
   tar -xzf "$package/runtime-files.tar.gz" -C "$TEMP_DIR/runtime"
   for runtime_file in \
     Dockerfile docker-compose.yml .env.example secrets.env.example \
-    README.md command.md run_exported_image.md reuse.md reuse.sh; do
+    README.md command.md run_exported_image.md \
+    reuse/reuse.md reuse/reuse.sh; do
     if [[ ! -e "$PROJECT_DIR/$runtime_file" ]]; then
+      mkdir -p "$(dirname "$PROJECT_DIR/$runtime_file")"
       cp -a "$TEMP_DIR/runtime/$runtime_file" "$PROJECT_DIR/$runtime_file"
     fi
   done

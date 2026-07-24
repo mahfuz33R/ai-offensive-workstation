@@ -13,16 +13,16 @@ workspace.before-reuse-*/
 *.tar.gpg
 ai-offensive-workstation-offline-files/
 
-# Runtime audit and build output
+# OS/editor noise
+.DS_Store
+*.swp
+*~
+__pycache__/
+*.pyc
+
+# Runtime audit and generated scan output
 .runtime-audit.*
 .reuse-tmp.*
 PDf_markdown/
 Jsscanner_results/
 gau-expose-result/
-__pycache__/
-*.pyc
-
-# OS and editor noise
-.DS_Store
-*.swp
-*~

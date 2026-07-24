@@ -24,6 +24,12 @@ jobs:
       - name: Run project preflight
         run: bash scripts/preflight.sh
 
+      - name: Validate encrypted reuse tooling
+        run: |
+          bash reuse/reuse.sh --help >/dev/null
+          test ! -e reuse.sh
+          test ! -e reuse.md
+
       - name: Validate Zsh configuration
         run: |
           sudo apt-get update

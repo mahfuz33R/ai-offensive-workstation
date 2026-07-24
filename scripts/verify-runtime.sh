@@ -108,7 +108,7 @@ wait_for_dashboard() {
   local configured_port port attempt
   configured_port="$(sed -n 's/^HERMES_DASHBOARD_PORT=//p' "$PROJECT_DIR/.env" | tail -n1)"
   port="${HERMES_DASHBOARD_PORT:-${configured_port:-9119}}"
-  for attempt in {1..60}; do
+  for _ in {1..60}; do
     if curl -fsS --max-time 3 "http://127.0.0.1:${port}/" >/dev/null; then
       pass "dashboard responds on 127.0.0.1:${port}"
       return 0
@@ -162,7 +162,7 @@ run_core_runtime_checks() {
     (( $+functions[configure_prompt] ))
     alias ll >/dev/null
     test ! -w /opt/hermes
-    command -v hermes check-tools check-knowledge agent-browser >/dev/null
+    command -v hermes check-tools check-knowledge agent-browser cyberstrike >/dev/null
   '
   pass 'Hermes-user Zsh loads and immutable Hermes files remain protected'
 
@@ -188,6 +188,15 @@ run_core_runtime_checks() {
 
   "${DOCKER[@]}" exec --user hermes ai-offensive-workstation \
     agent-browser --help >/dev/null
+  "${DOCKER[@]}" exec --user hermes ai-offensive-workstation bash -euc '
+    cyberstrike_version="$(cyberstrike --version)"
+    package_version="$(jq -r .version /opt/security-tools/cyberstrike/node_modules/@cyberstrike-io/cyberstrike/package.json)"
+    test "$cyberstrike_version" = "$package_version"
+    [[ "$cyberstrike_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]
+    CYBERSTRIKE_DISABLE_MODELS_FETCH=1 timeout 30 cyberstrike --help >/dev/null
+    test -L "${XDG_DATA_HOME:-$HOME/.local/share}/cyberstrike/bin/hackbrowser-worker.js"
+    test -L "${XDG_DATA_HOME:-$HOME/.local/share}/cyberstrike/node_modules/playwright"
+  '
   "${DOCKER[@]}" exec --user hermes ai-offensive-workstation bash -euc '
     chromium="$(find /opt/hermes/.playwright -maxdepth 6 -type f \
       \( -name chrome -o -name chromium -o -name chrome-headless-shell \
@@ -219,7 +228,7 @@ run_reuse_roundtrip() {
   dependency_log="$TEMP_DIR/dependency-check.log"
   mkdir -p "$dependency_bin"
   ln -s "$(command -v dirname)" "$dependency_bin/dirname"
-  if PATH="$dependency_bin" /bin/bash "$PROJECT_DIR/reuse.sh" export \
+  if PATH="$dependency_bin" /bin/bash "$PROJECT_DIR/reuse/reuse.sh" export \
       "$TEMP_DIR/dependency-test.tar.gpg" >"$dependency_log" 2>&1; then
     fail 'reuse export accepted a host without its required Docker command'
   fi
@@ -233,8 +242,9 @@ run_reuse_roundtrip() {
     "$protection_dir/wrong-root" \
     "$protection_dir/workspace/container-root" \
     "$protection_dir/workspace/container-opt/data"
-  cp "$PROJECT_DIR/reuse.sh" "$protection_dir/reuse.sh"
-  chmod 0755 "$protection_dir/reuse.sh"
+  mkdir -p "$protection_dir/reuse"
+  cp "$PROJECT_DIR/reuse/reuse.sh" "$protection_dir/reuse/reuse.sh"
+  chmod 0755 "$protection_dir/reuse/reuse.sh"
   {
     printf 'services:\n'
     printf '  workstation:\n'
@@ -252,7 +262,7 @@ run_reuse_roundtrip() {
     trap '"${DOCKER[@]}" compose down --remove-orphans >/dev/null 2>&1 || true' \
       EXIT INT TERM
     if REUSE_GPG_PASSPHRASE_FILE="$passphrase_file" \
-        ./reuse.sh export "$TEMP_DIR/mount-protection.tar.gpg" \
+        ./reuse/reuse.sh export "$TEMP_DIR/mount-protection.tar.gpg" \
         >"$protection_log" 2>&1; then
       fail 'reuse export accepted an incorrect /root bind source'
     fi
@@ -262,17 +272,18 @@ run_reuse_roundtrip() {
   pass 'reuse mount protection rejects an incorrect bind source'
 
   REUSE_GPG_PASSPHRASE_FILE="$passphrase_file" \
-    "$PROJECT_DIR/reuse.sh" export "$bundle"
+    "$PROJECT_DIR/reuse/reuse.sh" export "$bundle"
   REUSE_GPG_PASSPHRASE_FILE="$passphrase_file" \
-    "$PROJECT_DIR/reuse.sh" verify "$bundle"
+    "$PROJECT_DIR/reuse/reuse.sh" verify "$bundle"
 
   mkdir -p "$import_dir"
-  cp "$PROJECT_DIR/reuse.sh" "$import_dir/reuse.sh"
-  chmod 0755 "$import_dir/reuse.sh"
+  mkdir -p "$import_dir/reuse"
+  cp "$PROJECT_DIR/reuse/reuse.sh" "$import_dir/reuse/reuse.sh"
+  chmod 0755 "$import_dir/reuse/reuse.sh"
   (
     cd "$import_dir"
     REUSE_GPG_PASSPHRASE_FILE="$passphrase_file" \
-      ./reuse.sh import "$bundle"
+      ./reuse/reuse.sh import "$bundle"
     "${DOCKER[@]}" compose config -q
   )
 

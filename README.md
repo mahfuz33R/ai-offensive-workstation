@@ -6,21 +6,22 @@
 [![Shell: Zsh](https://img.shields.io/badge/shell-Zsh-black?logo=zsh)](https://www.zsh.org/)
 [![Use: Authorized Security Testing](https://img.shields.io/badge/use-authorized%20testing-darkred)](#responsible-use)
 
-A persistent, portable Docker workstation that combines Hermes Agent, browser
-automation, a customized Zsh environment, and a verified offensive-security
-toolchain. Build it once, then reuse the same image without reinstalling tools
-on every start.
+A persistent, portable Docker workstation that combines Hermes Agent,
+CyberStrike, browser automation, a customized Zsh environment, and a verified
+offensive-security toolchain. Build it once, then reuse the same image without
+reinstalling tools on every start.
 
 ## Highlights
 
 - Hermes Agent with a purpose-built pentesting knowledge library
+- CyberStrike with locally retrievable command and automation documentation
 - Customized Zsh, Oh My Zsh, autosuggestions, syntax highlighting, and Tmux
 - Go, Python, Rust, Ruby, and Node.js toolchains
-- 191 verified commands, assets, paths, and Linux capabilities
-- 136 primary tool guides, 25 aliases, and 14 operational workflows
+- 194 verified commands, assets, paths, and Linux capabilities
+- 137 primary tool guides, 25 aliases, and 15 operational workflows
 - Persistent `/root`, `/opt/data`, and `/workspace` host mounts
 - Encrypted migration of authenticated workstation state
-- Current Hermes `latest` base by default, with optional digest pinning
+- Current Hermes and CyberStrike releases resolved during managed builds
 
 ## Documentation
 
@@ -28,9 +29,9 @@ on every start.
 | --- | --- |
 | [Quick command reference](command.md) | Common build, run, shell, dashboard, and verification commands |
 | [How the workstation works](how_it_works.md) | Architecture, persistence, image contents, and runtime behavior |
-| [Reuse an authenticated workstation](reuse.md) | Encrypted migration to another Docker host |
+| [Reuse an authenticated workstation](reuse/reuse.md) | Encrypted migration to another Docker host |
 | [Run an exported image](run_exported_image.md) | Offline and image-only deployment |
-| [Third-party notices](THIRD_PARTY_NOTICES.md) | Bundled payload sources and licensing |
+| [Third-party notices](THIRD_PARTY_NOTICES.md) | Bundled sources and licensing |
 
 ## Responsible use
 
@@ -46,6 +47,7 @@ This project builds one large Docker image containing:
 - Zsh, Oh My Zsh, autosuggestions, and syntax highlighting
 - Go, Python, Rust, Ruby, and Node.js
 - Offensive-security commands from Hackers
+- The current official CyberStrike npm release with its HackBrowser worker
 - Wordlists, payloads, templates, and browser automation
 - A checker that confirms everything is present
 
@@ -133,6 +135,7 @@ Purpose:
 ## Step 3: Prepare optional security-tool API keys
 
 Some tools can use Shodan, Censys, VirusTotal, GitHub, or Interactsh credentials.
+CyberStrike also needs one supported model-provider key for unattended agent runs.
 The tools install without these keys, but their online API features may not work.
 
 Create your private secrets file:
@@ -211,7 +214,14 @@ build, it checks the image again as the non-root `hermes` user while an empty
 folder is mounted at `/workspace`. This proves that installed tools are inside
 the image and are not accidentally hidden in the workspace mount.
 
-The lower-level build command is: [Note: Automaticly run if you run previous command and all preflight test pass successfully]
+When GitHub CLI is authenticated, the build wrapper passes its token to the
+GitHub-release download step as an ephemeral BuildKit secret. The credential is
+not copied into the build context or final image. You can instead provide
+`GITHUB_TOKEN` in the command environment, or build anonymously subject to
+GitHub's lower API limit.
+
+The lower-level build command is shown below. The combined command above runs
+it automatically after preflight succeeds.
 
 ```bash
 sudo docker compose build --pull --no-cache
@@ -230,8 +240,9 @@ During the build Docker will:
 2. Install system and network packages.
 3. Install Go, Python, Rust, Ruby, and Node tools.
 4. Download source tools, wordlists, templates, and browser files.
-5. Check every required command and asset.
-6. Fail the build if anything required is missing.
+5. Resolve the official CyberStrike npm `latest` release and install its version-matched browser runtime.
+6. Check every required command and asset.
+7. Fail the build if anything required is missing.
 
 This can take a long time. Leave the terminal open. A slow download is normal.
 
@@ -617,7 +628,7 @@ Do not confuse these two files:
 
 - `workspace/container-opt/data/.env` configures Hermes and its AI providers.
 - This project's `secrets.env` passes optional Shodan, Censys, VirusTotal,
-  GitHub, and Interactsh values to security tools.
+  GitHub, Interactsh, and CyberStrike model-provider values to security tools.
 
 Never publish either file.
 
@@ -705,6 +716,53 @@ tools share the same environment.
 Official references: [Hermes Docker guide](https://hermes-agent.nousresearch.com/docs/user-guide/docker/)
 and [Hermes Browser Automation](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser).
 
+### CyberStrike delegation
+
+The image resolves the official `@cyberstrike-io/cyberstrike@latest` npm release
+at build time and installs it as `cyberstrike`. npm verifies registry integrity,
+the platform package must match the main package version, automatic in-container
+updates are disabled, and HackBrowser uses the resolved release's exact
+Playwright and Chromium versions. The managed build script changes a dedicated
+cache key so even `--cached` builds re-check the npm `latest` tag.
+
+Add one supported model-provider key to private `secrets.env`, rebuild, and
+verify:
+
+```bash
+sudo docker compose exec --user hermes workstation cyberstrike --version
+sudo docker compose exec --user hermes workstation cyberstrike auth list
+sudo docker compose exec --user hermes workstation cyberstrike models
+```
+
+Hermes routes every CyberStrike question or execution request through:
+
+```text
+references/cyberstrike/INDEX.md
+```
+
+The RAG is fully local and can answer command, configuration, provider,
+authentication, permission, agent, HackBrowser, MCP, and troubleshooting
+questions without starting CyberStrike or requiring a CyberStrike model key.
+Agent execution still requires a configured model provider.
+
+For execution, the RAG corrects older website examples and requires non-interactive
+`cyberstrike run --format json`, an engagement-specific deny-first permission
+policy, explicit scope, and raw JSONL evidence. Do not use session sharing or
+broad auto-approval by default.
+
+The quickest safe source-only pattern is:
+
+```bash
+cyberstrike run --agent cyberstrike --model provider/model \
+  --format json --dir /workspace/projects/owned-app \
+  "Read-only review of this authorized project; no network or file changes" \
+  | tee /workspace/reports/owned-app/raw/cyberstrike/session.jsonl
+```
+
+Create the project's `cyberstrike.jsonc` permission policy from the bundled
+RAG before running this command. Active browser or network testing requires a
+separate exact target allowlist and explicit authorization.
+
 ### Pentesting knowledge skill
 
 The image includes a Hermes skill named:
@@ -771,7 +829,7 @@ skill_view("offensive-workstation-pentesting", "references/tools/nuclei.md")
 
 `skill_view` is a Hermes tool call, not a command to type in Bash. The library
 uses on-demand references so the agent does not consume context by loading all
-135 guides at once.
+137 guides at once.
 
 If you edit the persistent copy under `workspace/container-opt/data/skills`, start a new chat
 or enter this in an existing Hermes chat:
@@ -949,10 +1007,10 @@ To migrate the image and authenticated private state together, use the
 separately encrypted reuse workflow:
 
 ```bash
-./reuse.sh export
+./reuse/reuse.sh export
 ```
 
-See [`reuse.md`](reuse.md) before using it. The resulting bundle is equivalent
+See [`reuse/reuse.md`](reuse/reuse.md) before using it. The resulting bundle is equivalent
 to transferring account sessions and must never be shared publicly.
 
 ## Where everything lives
@@ -1348,3 +1406,11 @@ build rather than only installing it at runtime.
 If the new required tool is absent, `verify-installation.sh` stops the image
 build. Once the build passes, the tool is part of the portable image and will be
 included by `scripts/export-image.sh`.
+
+## Licensing
+
+Original workstation code and documentation are provided under the project
+[MIT license](LICENSE). Bundled and build-installed third-party components keep
+their own licenses. In particular, CyberStrike is distributed under
+AGPL-3.0-only. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for sources,
+paths, and attribution.

@@ -6,6 +6,7 @@ command	python	python3
 command	node	node
 command	npm	npm
 command	agent-browser	agent-browser
+command	cyberstrike	cyberstrike
 command	rustc	rustc
 command	cargo	cargo
 command	git	git
@@ -186,6 +187,8 @@ asset	amass-config	/opt/security-assets/templates/amass
 asset	gau-config	/opt/security-assets/templates/gau/.gau.toml
 asset	cent-nuclei-templates	/opt/security-assets/templates/cent-nuclei-templates
 asset	hermes-chromium	/opt/hermes/.playwright
+asset	cyberstrike-hackbrowser-worker	/opt/security-tools/cyberstrike/hackbrowser-worker.js
+asset	cyberstrike-playwright-runtime	/opt/security-tools/cyberstrike/node_modules/playwright/package.json
 asset	oh-my-zsh	/opt/oh-my-zsh/oh-my-zsh.sh
 asset	portable-zsh-config	/etc/zsh/portable.zshrc
 asset	hermes-pentesting-skill	/opt/hermes/skills/cybersecurity/offensive-workstation/SKILL.md

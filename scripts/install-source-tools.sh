@@ -57,7 +57,7 @@ install_sploitscan() {
   "$sploitscan_venv/bin/pip" check
   link_command "$sploitscan_venv/bin/sploitscan" sploitscan
   printf 'sploitscan\tpython-app-venv\t%s\t%s\t%s\n' \
-    "$destination" "$($sploitscan_venv/bin/python --version 2>&1)" "$sploitscan_venv" \
+    "$destination" "$("$sploitscan_venv/bin/python" --version 2>&1)" "$sploitscan_venv" \
     >> "$RESOLVED_FILE"
 }
 

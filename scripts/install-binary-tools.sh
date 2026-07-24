@@ -5,6 +5,39 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/install-common.sh"
 
 ARCH="$(detect_arch)"
 
+github_api_get() {
+  local url="$1"
+  local token_file=/run/secrets/github_token
+  if [[ -s "$token_file" ]]; then
+    curl -fsSL \
+      -H "Accept: application/vnd.github+json" \
+      -H "Authorization: Bearer $(<"$token_file")" \
+      -H "X-GitHub-Api-Version: 2022-11-28" \
+      "$url"
+  else
+    curl -fsSL \
+      -H "Accept: application/vnd.github+json" \
+      -H "X-GitHub-Api-Version: 2022-11-28" \
+      "$url"
+  fi
+}
+
+# Override the shared anonymous resolver for this secret-mounted build step.
+# The retry log contains only the function name and URL, never the token.
+github_latest_asset() {
+  local name="$1" repo="$2" regex="$3" destination="$4"
+  local api="https://api.github.com/repos/${repo}/releases/latest" json url tag
+  json="$(retry github_api_get "$api")"
+  tag="$(jq -r '.tag_name' <<<"$json")"
+  url="$(jq -r --arg regex "$regex" \
+    '.assets[] | select(.name | test($regex; "i")) | .browser_download_url' \
+    <<<"$json" | head -n1)"
+  [[ -n "$url" && "$url" != null ]]
+  retry curl -fsSL -o "$destination" "$url"
+  printf '%s\tgithub-release\t%s\t%s\t%s\n' \
+    "$name" "$url" "$tag" "$destination" >> "$RESOLVED_FILE"
+}
+
 extract_and_link() {
   local name="$1" repo="$2" regex="$3" binary_name="$4" command_name="$5"
   local work archive binary

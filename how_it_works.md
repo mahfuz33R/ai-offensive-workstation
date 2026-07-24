@@ -3,8 +3,10 @@
 This project builds a large Docker image named `ai-offensive-workstation:latest`.
 The image starts from the Hermes Agent Docker image and adds offensive security
 tools, language runtimes, wordlists, payloads, browser automation, and a Hermes
-pentesting skill. Interactive root and Hermes shells use a shared customized
-Zsh and Oh My Zsh environment.
+pentesting skill. It also resolves the official CyberStrike npm `latest` release
+during managed builds and routes Hermes to a self-contained CyberStrike RAG.
+Interactive root and Hermes
+shells use a shared customized Zsh and Oh My Zsh environment.
 
 The upstream Hermes base follows `nousresearch/hermes-agent:latest` by default.
 For a reproducible build, copy or uncomment the optional
@@ -20,6 +22,11 @@ unset allows `--pull` to retrieve the current upstream image.
 - `scripts/tool-inventory.tsv` is the authoritative list of required commands,
   paths, assets, and Linux capabilities.
 - `Rules/offensive-workstation-pentesting/` is the bundled Hermes skill source.
+- `Rules/offensive-workstation-pentesting/references/cyberstrike/` is the
+  verified CyberStrike command, configuration, and automation knowledge router.
+- `Rules/offensive-workstation-pentesting/references/cyberstrike/source-library/`
+  contains the complete 71-file documentation export for local fallback
+  retrieval; concise topic pages remain the preferred context.
 - `workspace/` is your host working folder mounted into the container at
   `/workspace`.
 - `workspace/container-opt/data` is mounted at `/opt/data` and stores Hermes
@@ -95,6 +102,7 @@ Stored inside the image:
 
 - `/opt/hermes`
 - `/opt/security-tools`
+- `/opt/security-tools/cyberstrike`
 - `/opt/security-assets`
 - `/opt/toolchains`
 - `/opt/security-manifest`

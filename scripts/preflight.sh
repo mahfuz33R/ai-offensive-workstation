@@ -69,7 +69,9 @@ while IFS= read -r -d '' script; do
     printf '[FAIL] Bash syntax: %s\n' "$script" >&2
     syntax_failed=1
   fi
-done < <(find scripts -type f -name '*.sh' -print0)
+done < <(
+  find scripts reuse -type f -name '*.sh' -print0
+)
 if (( syntax_failed == 0 )); then
   pass 'Every shell script has valid Bash syntax'
 else
@@ -153,6 +155,7 @@ required_installers=(
   install-compatibility.sh
   install-assets.sh
   install-browser-automation.sh
+  install-cyberstrike.sh
   install-runtime-permissions.sh
 )
 missing_installer=0
@@ -166,6 +169,14 @@ if (( missing_installer == 0 )); then
   pass 'Dockerfile invokes every required ecosystem installer'
 else
   fail 'Dockerfile installer chain is incomplete'
+fi
+
+if grep -Fq 'version_selector=latest' scripts/install-cyberstrike.sh \
+  && grep -Fq '"${CYBERSTRIKE_PACKAGE}@${version_selector}"' scripts/install-cyberstrike.sh \
+  && grep -Fq 'CYBERSTRIKE_CACHE_BUST' scripts/build-and-verify.sh; then
+  pass 'CyberStrike resolves official npm latest on every managed build'
+else
+  fail 'CyberStrike latest-release resolution or cache invalidation is missing'
 fi
 
 if grep -Fq 'verify-installation.sh' Dockerfile \
@@ -201,7 +212,7 @@ while IFS= read -r -d '' file; do public_files+=("$file"); done \
 while IFS= read -r -d '' file; do public_files+=("$file"); done \
   < <(find Rules -type f -print0)
 if grep -nHE \
-  '^(SHODAN_API_KEY|CENSYS_API_ID|CENSYS_API_SECRET|VIRUSTOTAL_API_KEY|INTERACTSH_AUTH_TOKEN|GITHUB_TOKEN)=.+$' \
+  '^(SHODAN_API_KEY|CENSYS_API_ID|CENSYS_API_SECRET|VIRUSTOTAL_API_KEY|INTERACTSH_AUTH_TOKEN|GITHUB_TOKEN|ANTHROPIC_API_KEY|OPENAI_API_KEY|GOOGLE_API_KEY|OPENROUTER_API_KEY|GROQ_API_KEY)=.+$' \
   "${public_files[@]}" >/tmp/offensive-public-secret-scan.txt; then
   cat /tmp/offensive-public-secret-scan.txt >&2
   fail 'A credential variable has a non-empty value in a public/build file'

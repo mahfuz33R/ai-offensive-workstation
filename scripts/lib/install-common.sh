@@ -169,8 +169,11 @@ python_first() {
 }
 
 go_tool() {
-  local name="$1" module="$2" binary="${3:-$name}"
-  GOBIN="$GOPATH/bin" go install "${module}@latest"
+  local name module binary
+  name="$1"
+  module="$2"
+  binary="${3:-$name}"
+  retry env GOBIN="$GOPATH/bin" go install "${module}@latest"
   link_command "$GOPATH/bin/$binary" "$name"
   local module_line
   module_line="$(go version -m "$GOPATH/bin/$binary" 2>/dev/null | awk '$1 == "mod" {print $2 "@" $3; exit}')"

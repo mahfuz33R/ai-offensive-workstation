@@ -1,6 +1,6 @@
 # Reuse an Authenticated AI Offensive Workstation
 
-`reuse.sh` creates an encrypted migration bundle containing both the Docker
+`reuse/reuse.sh` creates an encrypted migration bundle containing both the Docker
 image and the private host-mounted state needed to reproduce the workstation on
 another computer.
 
@@ -30,7 +30,7 @@ Both computers need:
 - Enough free disk space for the image, temporary plaintext archives, and the
   final encrypted bundle
 
-Run `reuse.sh` as your normal host user. It invokes `sudo docker` only when the
+Run `reuse/reuse.sh` as your normal host user. It invokes `sudo docker` only when the
 current user cannot access Docker directly.
 
 ## Export from the original computer
@@ -38,14 +38,14 @@ current user cannot access Docker directly.
 Run from the project directory:
 
 ```bash
-chmod +x reuse.sh
-./reuse.sh export
+chmod +x reuse/reuse.sh
+./reuse/reuse.sh export
 ```
 
 Or choose the output name:
 
 ```bash
-./reuse.sh export my-private-workstation.tar.gpg
+./reuse/reuse.sh export my-private-workstation.tar.gpg
 ```
 
 The script:
@@ -72,12 +72,13 @@ sudo docker compose up -d --no-build --force-recreate
 GPG asks for the encryption passphrase interactively. Use a strong, unique
 passphrase and store it separately from the bundle.
 
-Copy these three files to the destination:
+Copy the encrypted bundle and the complete `reuse/` directory to the destination:
 
 ```text
 my-private-workstation.tar.gpg
-reuse.sh
-reuse.md
+reuse/
+├── reuse.sh
+└── reuse.md
 ```
 
 Do not send the passphrase through the same channel used for the bundle.
@@ -85,7 +86,7 @@ Do not send the passphrase through the same channel used for the bundle.
 ## Verify without importing
 
 ```bash
-./reuse.sh verify my-private-workstation.tar.gpg
+./reuse/reuse.sh verify my-private-workstation.tar.gpg
 ```
 
 This decrypts into a permission-restricted temporary directory under the
@@ -95,12 +96,12 @@ removed automatically.
 
 ## Import on the destination computer
 
-Create or enter the destination project directory, place the three transferred
-files there, then run:
+Create or enter the destination project directory, place the encrypted bundle
+and `reuse/` directory there, then run:
 
 ```bash
-chmod +x reuse.sh
-./reuse.sh import my-private-workstation.tar.gpg
+chmod +x reuse/reuse.sh
+./reuse/reuse.sh import my-private-workstation.tar.gpg
 ```
 
 The script restores the private state, loads the image, and writes a new `.env`
@@ -112,7 +113,7 @@ stops without changing them. To preserve the existing state under timestamped
 backup names and then restore the bundle:
 
 ```bash
-./reuse.sh import my-private-workstation.tar.gpg --force
+./reuse/reuse.sh import my-private-workstation.tar.gpg --force
 ```
 
 Start the restored workstation:
