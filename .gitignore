@@ -1,23 +1,28 @@
-### AL ###
-#Template for AL projects for Dynamics 365 Business Central
-#launch.json folder
-.vscode/
-#Cache folder
-.alcache/
-#Symbols folder
-.alpackages/
-#Snapshots folder
-.snapshots/
-#Testing Output folder
-.output/
-#Extension App-file
-*.app
-#Rapid Application Development File
-rad.json
-#Translation Base-file
-*.g.xlf
-#License-files
-*.bclicense
-*.flf
-#Test results file
-TestResults.xml
+# Private configuration and credentials
+.env
+secrets.env
+secrets.env.before-reuse-*
+
+# Persistent workstation and authenticated agent state
+workspace/
+workspace.before-reuse-*/
+
+# Images, migration bundles, and generated offline exports
+*.tar
+*.tar.gz
+*.tar.gpg
+ai-offensive-workstation-offline-files/
+
+# Runtime audit and build output
+.runtime-audit.*
+.reuse-tmp.*
+PDf_markdown/
+Jsscanner_results/
+gau-expose-result/
+__pycache__/
+*.pyc
+
+# OS and editor noise
+.DS_Store
+*.swp
+*~

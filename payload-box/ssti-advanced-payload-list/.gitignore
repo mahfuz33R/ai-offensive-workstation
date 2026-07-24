@@ -1,0 +1,101 @@
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Editor and IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.vs/
+
+# Temporary Files
+*.tmp
+*.temp
+*.log
+*.bak
+*.backup
+*.old
+*.orig
+
+# Test and Debug Files
+test/
+tests/
+debug/
+*.test
+*.spec
+coverage/
+.nyc_output/
+
+# Build and Distribution
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+vendor/
+
+# Environment and Configuration
+.env
+.env.local
+.env.*.local
+config.local.*
+secrets.yml
+secrets.yaml
+*.key
+*.pem
+*.cer
+*.crt
+
+# Documentation Build
+docs/_build/
+site/
+_site/
+
+# Archive Files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Local Notes and Scratch
+notes.txt
+scratch/
+local/
+TODO.md
+NOTES.md
+
+# Git
+*.orig
+*.patch
+*.diff
+
+# Burp Suite
+burp-*.log
+burp-state.txt
+
+# Custom Test Results
+results/
+output/
+reports/
+
+# Lock Files
+package-lock.json
+yarn.lock
+Gemfile.lock
+composer.lock

