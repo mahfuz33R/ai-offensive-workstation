@@ -114,12 +114,18 @@ autoload -Uz colors && colors
 : "${PROMPT_MODE:=twoline}"
 
 configure_prompt() {
+  local virtualenv_prompt=''
+
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    virtualenv_prompt=" %F{yellow}(${VIRTUAL_ENV:t})%f"
+  fi
+
   case "$PROMPT_MODE" in
     oneline)
-      PROMPT='%F{cyan}%n@%m%f:%F{blue}%~%f${VIRTUAL_ENV:+ %F{yellow}(${VIRTUAL_ENV:t})%f} %(?.%F{green}.%F{red})%#%f '
+      PROMPT="%F{cyan}%n@%m%f:%F{blue}%~%f${virtualenv_prompt} %(?.%F{green}.%F{red})%#%f "
       ;;
     twoline|*)
-      PROMPT='%F{cyan}%n@%m%f %F{blue}%~%f${VIRTUAL_ENV:+ %F{yellow}(${VIRTUAL_ENV:t})%f}\n%(?.%F{green}.%F{red})%#%f '
+      PROMPT="%F{cyan}%n@%m%f %F{blue}%~%f${virtualenv_prompt}"$'\n'"%(?.%F{green}.%F{red})%#%f "
       ;;
   esac
 
@@ -128,6 +134,9 @@ configure_prompt() {
 
 configure_prompt
 export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd configure_prompt
 
 toggle_prompt() {
   if [[ "$PROMPT_MODE" == oneline ]]; then
@@ -233,7 +242,7 @@ source_first_readable \
   /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
   >/dev/null 2>&1 || true
 
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#B2BEB5'
 
 # Syntax highlighting must be sourced last.
 source_first_readable \
