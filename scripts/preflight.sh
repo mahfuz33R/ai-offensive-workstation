@@ -4,6 +4,16 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
 
+REQUIRE_DOCKER=0
+if [[ "${1:-}" == --require-docker ]]; then
+  REQUIRE_DOCKER=1
+  shift
+fi
+if (( $# > 0 )); then
+  printf 'usage: %s [--require-docker]\n' "$0" >&2
+  exit 64
+fi
+
 FAILURES=0
 CHECKS=0
 
@@ -27,61 +37,32 @@ check_file_ignored() {
   fi
 }
 
-printf 'Running host-side safety and linkage checks...\n'
-
-if command -v docker >/dev/null 2>&1; then
-  pass 'Docker command is installed'
-else
-  fail 'Docker command is not installed'
-fi
-
-if docker compose version >/dev/null 2>&1; then
-  pass 'Docker Compose plugin is installed'
-else
-  fail 'Docker Compose plugin is not available'
-fi
+printf 'Running source, safety, and architecture checks...\n'
 
 if [[ -f .env ]]; then
-  pass 'Machine-specific .env exists'
+  mode="$(stat -c '%a' .env)"
+  if [[ "$mode" == 600 ]]; then
+    pass 'Single private .env exists with permissions 600'
+  else
+    fail ".env permissions are $mode; run: chmod 600 .env"
+  fi
 else
   fail 'Run: bash scripts/configure-host.sh'
 fi
 
-if [[ -f secrets.env ]]; then
-  mode="$(stat -c '%a' secrets.env)"
-  if [[ "$mode" == 600 ]]; then
-    pass 'secrets.env permissions are 600'
-  else
-    fail "secrets.env permissions are $mode; run: chmod 600 secrets.env"
-  fi
+if [[ ! -e secrets.env && ! -e secrets.env.example && ! -e versions.env ]]; then
+  pass 'Legacy split configuration files are absent'
 else
-  fail 'secrets.env is missing; copy secrets.env.example to secrets.env'
+  fail 'Remove legacy secrets.env, secrets.env.example, and versions.env after migrating to .env'
 fi
 
-check_file_ignored .dockerignore secrets.env
 check_file_ignored .dockerignore .env
-check_file_ignored .gitignore secrets.env
 check_file_ignored .gitignore .env
 
-syntax_failed=0
-while IFS= read -r -d '' script; do
-  if ! bash -n "$script"; then
-    printf '[FAIL] Bash syntax: %s\n' "$script" >&2
-    syntax_failed=1
-  fi
-done < <(
-  find scripts reuse -type f -name '*.sh' -print0
-)
-if (( syntax_failed == 0 )); then
-  pass 'Every shell script has valid Bash syntax'
+if bash scripts/unit-test.sh; then
+  pass 'All offline unit and syntax tests pass'
 else
-  fail 'One or more shell scripts has invalid Bash syntax'
-fi
-
-if docker compose config -q; then
-  pass 'docker-compose.yml resolves successfully'
-else
-  fail 'docker-compose.yml is invalid or has unresolved values'
+  fail 'Offline unit or syntax tests failed'
 fi
 
 inventory_result="$(awk -F '\t' '
@@ -105,7 +86,7 @@ inventory_result="$(awk -F '\t' '
     count++
   }
   END { printf "COUNT=%d ERRORS=%d\n", count, errors }
-' scripts/tool-inventory.tsv)"
+' scripts/manifests/tool-inventory.tsv)"
 if grep -q 'ERRORS=0$' <<<"$inventory_result"; then
   inventory_count="$(sed -n 's/^COUNT=\([0-9][0-9]*\) ERRORS=0$/\1/p' <<<"$inventory_result")"
   pass "Tool inventory is valid ($inventory_count required checks)"
@@ -114,12 +95,14 @@ else
   fail 'Tool inventory is malformed'
 fi
 
-if [[ -s PayloadsAllTheThings/README.md ]] \
-  && [[ -d payload-box ]] \
-  && find payload-box -mindepth 2 -maxdepth 2 -name README.md -print -quit | grep -q .; then
-  pass 'Local payload repositories are present for the Docker build'
+if [[ -s knowledge/payloads/PayloadsAllTheThings/README.md ]] \
+  && [[ -d knowledge/payloads/payload-box ]] \
+  && find knowledge/payloads/payload-box \
+    -mindepth 2 -maxdepth 2 -name README.md -print -quit \
+    | grep -q .; then
+  pass 'Vendored payload repositories are present for the Docker build'
 else
-  fail 'PayloadsAllTheThings and payload-box must exist at the project root'
+  fail 'Vendored payload repositories are missing from knowledge/payloads'
 fi
 
 legacy_missing=0
@@ -129,24 +112,26 @@ while IFS= read -r command_name; do
   legacy_count=$((legacy_count + 1))
   if ! awk -F '\t' -v wanted="$command_name" \
     '$1 == "command" && $3 == wanted { found=1 } END { exit !found }' \
-    scripts/tool-inventory.tsv; then
-    printf '[FAIL] Original check_tools.sh command is not inventoried: %s\n' \
+    scripts/manifests/tool-inventory.tsv; then
+    printf '[FAIL] Original command is not inventoried: %s\n' \
       "$command_name" >&2
     legacy_missing=1
   fi
-done < config/original-check-tools.txt
+done < scripts/manifests/original-check-tools.txt
 if (( legacy_missing == 0 )); then
-  pass "All $legacy_count original check_tools.sh names are inventoried"
+  pass "All $legacy_count original tool names remain inventoried"
 else
-  fail 'One or more original check_tools.sh names is not checked by the image'
+  fail 'One or more original tool names is not checked by the image'
 fi
 
 required_installers=(
+  install-kali-base.sh
   install-system-tools.sh
   install-zsh.sh
   install-network-tools.sh
   install-go.sh
   install-python.sh
+  install-cyberstrike-kb.sh
   install-node.sh
   install-rust.sh
   install-ruby.sh
@@ -156,32 +141,51 @@ required_installers=(
   install-assets.sh
   install-browser-automation.sh
   install-cyberstrike.sh
+  install-hermes.sh
   install-runtime-permissions.sh
 )
 missing_installer=0
 for installer in "${required_installers[@]}"; do
-  if [[ ! -f "scripts/$installer" ]] || ! grep -Fq "/tmp/install/$installer" Dockerfile; then
+  if [[ ! -f "scripts/$installer" ]] \
+    || ! grep -Fq "/tmp/install/$installer" Dockerfile; then
     printf '[FAIL] Dockerfile is not linked to scripts/%s\n' "$installer" >&2
     missing_installer=1
   fi
 done
 if (( missing_installer == 0 )); then
-  pass 'Dockerfile invokes every required ecosystem installer'
+  pass 'Dockerfile invokes every required installation stage'
 else
   fail 'Dockerfile installer chain is incomplete'
 fi
 
-if grep -Fq 'version_selector=latest' scripts/install-cyberstrike.sh \
-  && grep -Fq '"${CYBERSTRIKE_PACKAGE}@${version_selector}"' scripts/install-cyberstrike.sh \
-  && grep -Fq 'CYBERSTRIKE_CACHE_BUST' scripts/build-and-verify.sh; then
-  pass 'CyberStrike resolves official npm latest on every managed build'
+if grep -Fq 'FROM ${KALI_IMAGE}:${KALI_TAG}${KALI_DIGEST}' Dockerfile \
+  && grep -Fq 'kali-linux-headless' scripts/install-kali-base.sh \
+  && ! grep -Fq 'nousresearch/hermes-agent' Dockerfile; then
+  pass 'Image uses official Kali directly with the standard headless metapackage'
 else
-  fail 'CyberStrike latest-release resolution or cache invalidation is missing'
+  fail 'Kali direct-base or standard metapackage linkage is missing'
+fi
+
+if grep -Fq 'releases/latest' scripts/install-hermes.sh \
+  && grep -Fq '/usr/local/lib/hermes-agent' scripts/install-hermes.sh \
+  && grep -Fq 'install-hermes.sh' Dockerfile; then
+  pass 'Hermes resolves the latest stable release and installs with the standard FHS layout'
+else
+  fail 'Hermes direct stable-release installation is incomplete'
+fi
+
+if grep -Fq 'CYBERSTRIKE_VERSION' scripts/install-cyberstrike.sh \
+  && grep -Fq '"${CYBERSTRIKE_PACKAGE}@${version_selector}"' \
+    scripts/install-cyberstrike.sh \
+  && grep -Fq 'CYBERSTRIKE_CACHE_BUST' scripts/build-and-verify.sh; then
+  pass 'CyberStrike resolves the configured stable npm release on managed builds'
+else
+  fail 'CyberStrike release resolution or cache invalidation is missing'
 fi
 
 if grep -Fq 'verify-installation.sh' Dockerfile \
   && grep -Fq 'tool-inventory.tsv' Dockerfile; then
-  pass 'Strict installation verification is a Docker build gate'
+  pass 'Strict installation verification remains a Docker build gate'
 else
   fail 'Dockerfile does not run the strict tool verifier'
 fi
@@ -192,43 +196,110 @@ else
   fail 'Hermes pentesting knowledge base is incomplete or malformed'
 fi
 
-if grep -Eq '^[[:space:]]*privileged:[[:space:]]*true([[:space:]]|$)' docker-compose.yml; then
-  pass 'Compose privileged mode is explicitly enabled'
+if [[ -s knowledge/skills/offensive-workstation-pentesting/SKILL.md ]] \
+  && [[ -s knowledge/skills/offensive-workstation-pentesting/references/cyberstrike/AGENTS.md ]] \
+  && [[ -s knowledge/skills/offensive-workstation-pentesting/references/cyberstrike/MEMORY-SEED.md ]] \
+  && [[ -s knowledge/skills/offensive-workstation-pentesting/references/WORKSTATION-MEMORY-SEED.md ]] \
+  && [[ -s knowledge/skills/offensive-workstation-pentesting/references/LOCAL-RAG.md ]] \
+  && [[ -d knowledge/skills/offensive-workstation-pentesting/references/cyberstrike/source-library ]] \
+  && grep -Fq 'cyberstrike-kb search "$USER_INTENT"' \
+    knowledge/skills/offensive-workstation-pentesting/SKILL.md \
+  && grep -Fq 'workstation-kb search "$USER_INTENT"' \
+    knowledge/skills/offensive-workstation-pentesting/SKILL.md \
+  && grep -Fq 'HERMES_BUNDLED_CYBERSTRIKE_KB' scripts/workstation-entrypoint.sh \
+  && grep -Fq 'HERMES_BUNDLED_WORKSTATION_KB' scripts/workstation-entrypoint.sh \
+  && grep -Fq 'CYBERSTRIKE_MEMORY_MARKER' scripts/workstation-entrypoint.sh \
+  && grep -Fq 'WORKSTATION_MEMORY_MARKER' scripts/workstation-entrypoint.sh \
+  && grep -Fq 'flock 9' scripts/workstation-entrypoint.sh; then
+  pass 'Skill, vector RAG, memory pointer, and serialized runtime synchronization are connected'
 else
-  fail 'Compose privileged mode is not enabled'
+  fail 'Hermes skill/vector RAG/memory runtime connection is incomplete'
+fi
+
+if grep -Fq 'NODE_VERSION="${NODE_VERSION:-latest}"' scripts/install-node.sh \
+  && grep -Fq 'NPM_VERSION="${NPM_VERSION:-latest}"' scripts/install-node.sh \
+  && grep -Fq 'playwright install chromium firefox' \
+    scripts/install-browser-automation.sh \
+  && grep -Fq $'asset\thermes-firefox\t/opt/browser-tools/firefox' \
+    scripts/manifests/tool-inventory.tsv; then
+  pass 'Latest Node/npm and Chromium/Firefox headless contracts are build-gated'
+else
+  fail 'Node/npm or dual-browser installation contract is incomplete'
+fi
+
+if grep -Eq '^[[:space:]]*privileged:[[:space:]]*true([[:space:]]|$)' \
+  docker-compose.yml; then
+  fail 'Compose must not use privileged mode'
+else
+  pass 'Compose does not use privileged mode'
+fi
+
+if grep -Eq '^[[:space:]]*network_mode:[[:space:]]*host([[:space:]]|$)' \
+  docker-compose.yml; then
+  fail 'Compose must not share the host network namespace'
+else
+  pass 'Compose does not use host networking'
+fi
+
+if grep -Fq 'driver: bridge' docker-compose.yml \
+  && grep -Fq '127.0.0.1:8642:8642' docker-compose.yml \
+  && grep -Fq '127.0.0.1:${HERMES_DASHBOARD_PORT:-9119}:9119' \
+    docker-compose.yml; then
+  pass 'Workstation traffic uses bridge/NAT with host-local published ports'
+else
+  fail 'Bridge/NAT network or localhost port bindings are incomplete'
 fi
 
 if grep -Fq '/opt/data' docker-compose.yml \
   && grep -Fq '/root' docker-compose.yml \
-  && grep -Fq '/workspace' docker-compose.yml; then
-  pass 'Hermes data, root home, and workspace persistence are linked in Compose'
+  && grep -Fq './workspace:/workspace' docker-compose.yml; then
+  pass 'Hermes data, root home, and workspace bind mounts are preserved'
 else
   fail 'Compose persistence mounts are incomplete'
 fi
 
-public_files=(Dockerfile docker-compose.yml versions.env secrets.env.example)
+if grep -Fq 'network_mode: none' docker-compose.yml \
+  && grep -Fq 'read_only: true' docker-compose.yml \
+  && grep -Fq 'no-new-privileges:true' docker-compose.yml \
+  && grep -Fq 'malware-analysis:/analysis' docker-compose.yml; then
+  pass 'Malware profile has no network, a read-only root, and Docker-managed storage'
+else
+  fail 'Malware-analysis isolation profile is incomplete'
+fi
+
+public_files=(Dockerfile docker-compose.yml .env.example .zshrc)
 while IFS= read -r -d '' file; do public_files+=("$file"); done \
-  < <(find scripts config -type f -print0)
+  < <(find scripts tests -type f -print0)
 while IFS= read -r -d '' file; do public_files+=("$file"); done \
-  < <(find Rules -type f -print0)
+  < <(find knowledge/skills -type f -print0)
+secret_scan="$(mktemp)"
 if grep -nHE \
-  '^(SHODAN_API_KEY|CENSYS_API_ID|CENSYS_API_SECRET|VIRUSTOTAL_API_KEY|INTERACTSH_AUTH_TOKEN|GITHUB_TOKEN|ANTHROPIC_API_KEY|OPENAI_API_KEY|GOOGLE_API_KEY|OPENROUTER_API_KEY|GROQ_API_KEY)=.+$' \
-  "${public_files[@]}" >/tmp/offensive-public-secret-scan.txt; then
-  cat /tmp/offensive-public-secret-scan.txt >&2
+  '^(SHODAN_API_KEY|CENSYS_API_ID|CENSYS_API_SECRET|VIRUSTOTAL_API_KEY|INTERACTSH_AUTH_TOKEN|ANTHROPIC_API_KEY|OPENAI_API_KEY|GOOGLE_API_KEY|OPENROUTER_API_KEY|GROQ_API_KEY)=.+$' \
+  "${public_files[@]}" >"$secret_scan"; then
+  cat "$secret_scan" >&2
   fail 'A credential variable has a non-empty value in a public/build file'
 else
   pass 'No configured credential values occur in public/build files'
 fi
-rm -f /tmp/offensive-public-secret-scan.txt
+rm -f "$secret_scan"
 
-if docker info >/dev/null 2>&1; then
-  pass 'Current user can access the Docker engine'
-else
-  fail 'Cannot access Docker engine; run this script through sudo'
+if (( REQUIRE_DOCKER )); then
+  if ! command -v docker >/dev/null 2>&1; then
+    fail 'Docker command is required for a managed build'
+  elif ! docker compose version >/dev/null 2>&1; then
+    fail 'Docker Compose plugin is required for a managed build'
+  elif ! docker compose config --quiet; then
+    fail 'docker-compose.yml does not resolve'
+  elif ! docker info >/dev/null 2>&1; then
+    fail 'Current user cannot access the Docker engine'
+  else
+    pass 'Docker, Compose, configuration, and engine access are ready'
+  fi
 fi
 
 if (( FAILURES > 0 )); then
-  printf 'Preflight failed: %d of %d checks failed.\n' "$FAILURES" "$CHECKS" >&2
+  printf 'Preflight failed: %d of %d checks failed.\n' \
+    "$FAILURES" "$CHECKS" >&2
   exit 1
 fi
 

@@ -17,8 +17,8 @@ jobs:
 
       - name: Prepare safe local configuration
         run: |
-          cp secrets.env.example secrets.env
-          chmod 600 secrets.env
+          cp .env.example .env
+          chmod 600 .env
           bash scripts/configure-host.sh
 
       - name: Run project preflight
@@ -26,7 +26,7 @@ jobs:
 
       - name: Validate encrypted reuse tooling
         run: |
-          bash reuse/reuse.sh --help >/dev/null
+          bash scripts/reuse.sh --help >/dev/null
           test ! -e reuse.sh
           test ! -e reuse.md
 
@@ -34,7 +34,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes zsh
-          zsh -n config/portable.zshrc
+          zsh -n .zshrc
 
   secret-scan:
     runs-on: ubuntu-latest
@@ -45,8 +45,9 @@ jobs:
           fetch-depth: 0
 
       - name: Scan for credentials
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_CONFIG: .gitleaks.toml
-          GITLEAKS_VERSION: latest
+        run: |
+          docker run --rm \
+            --volume "$PWD:/repo" \
+            zricethezav/gitleaks:latest \
+            git /repo --no-banner --redact \
+            --config /repo/.gitleaks.toml

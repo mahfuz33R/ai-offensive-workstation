@@ -64,6 +64,7 @@ install_sploitscan() {
 verify_python_environment() {
   "$SECURITY_VENV/bin/pip" check
   "$TOOLCHAINS_DIR/python-apps/sploitscan/bin/pip" check
+  "$TOOLCHAINS_DIR/python-apps/cyberstrike-kb/bin/pip" check
   smoke_help_commands interlace sploitscan aem_hacker.py gitfinder
 }
 
@@ -90,9 +91,8 @@ install_nikto() {
   perl -MJSON -MXML::Writer -MIO::Socket::SSL -MXML::LibXML -e 1
   perl -c "$destination/program/nikto.pl"
   # Nikto prefers $PWD/plugins over the plugin directory beside nikto.pl.
-  # Hermes also has /opt/hermes/plugins, so a plain symlink makes Nikto load
-  # the unrelated Hermes directory and fail. Always enter Nikto's program
-  # directory before executing it.
+  # A caller's working directory may have an unrelated plugins directory, so
+  # always enter Nikto's program directory before executing it.
   printf '#!/bin/sh\ncd %q\nexec %q "$@"\n' \
     "$destination/program" "$destination/program/nikto.pl" \
     > "$COMMANDS_DIR/nikto"

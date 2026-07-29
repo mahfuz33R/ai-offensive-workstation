@@ -6,14 +6,22 @@ cd "$PROJECT_DIR"
 
 BUILD_OPTIONS=(--pull --no-cache)
 SKIP_BUILD=0
-BUILD_GITHUB_TOKEN_TEMP=
+USE_CACHE=0
+temporary_root=
 
 cleanup() {
-  if [[ -n "${temporary_workspace:-}" && -d "$temporary_workspace" ]]; then
-    rm -rf -- "$temporary_workspace"
-  fi
-  if [[ -n "$BUILD_GITHUB_TOKEN_TEMP" && -f "$BUILD_GITHUB_TOKEN_TEMP" ]]; then
-    rm -f -- "$BUILD_GITHUB_TOKEN_TEMP"
+  if [[ -n "$temporary_root" && -d "$temporary_root" ]]; then
+    # The entrypoint deliberately maps these bind mounts to the container's
+    # Hermes UID, which may not match the host caller. Empty their contents as
+    # container root before removing the caller-owned mktemp directory.
+    if [[ -n "${IMAGE:-}" ]] \
+      && docker image inspect "$IMAGE" >/dev/null 2>&1; then
+      docker run --rm --entrypoint /bin/sh \
+        --volume "$temporary_root:/cleanup" "$IMAGE" \
+        -c 'find /cleanup -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +' \
+        >/dev/null 2>&1 || true
+    fi
+    rm -rf -- "$temporary_root"
   fi
 }
 trap cleanup EXIT
@@ -23,28 +31,28 @@ if [[ "${1:-}" == --verify-only ]]; then
   shift
 elif [[ "${1:-}" == --cached ]]; then
   BUILD_OPTIONS=(--pull)
+  USE_CACHE=1
   shift
 fi
 BUILD_OPTIONS+=("$@")
 
-bash scripts/preflight.sh
+bash scripts/preflight.sh --require-docker
 
 if (( SKIP_BUILD )); then
   printf '\nUsing the existing image for post-build verification...\n'
 else
-  printf '\nBuilding the complete portable image...\n'
-  export CYBERSTRIKE_CACHE_BUST="${CYBERSTRIKE_CACHE_BUST:-$(date -u +%Y%m%dT%H%M%SZ)}"
-  if [[ -z "${BUILD_GITHUB_TOKEN_FILE:-}" ]]; then
-    BUILD_GITHUB_TOKEN_TEMP="$(mktemp)"
-    chmod 0600 "$BUILD_GITHUB_TOKEN_TEMP"
-    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-      printf '%s' "$GITHUB_TOKEN" > "$BUILD_GITHUB_TOKEN_TEMP"
-    elif command -v gh >/dev/null 2>&1 && gh auth token > "$BUILD_GITHUB_TOKEN_TEMP" 2>/dev/null; then
-      :
-    fi
-    export BUILD_GITHUB_TOKEN_FILE="$BUILD_GITHUB_TOKEN_TEMP"
+  printf '\nBuilding the complete Kali workstation image...\n'
+  build_stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+  if (( USE_CACHE )); then
+    cache_bust_default=managed-cache
+  else
+    cache_bust_default="$build_stamp"
   fi
-  BUILDKIT_PROGRESS="${BUILDKIT_PROGRESS:-plain}" docker compose build "${BUILD_OPTIONS[@]}"
+  export NODE_CACHE_BUST="${NODE_CACHE_BUST:-$cache_bust_default}"
+  export HERMES_CACHE_BUST="${HERMES_CACHE_BUST:-$cache_bust_default}"
+  export CYBERSTRIKE_CACHE_BUST="${CYBERSTRIKE_CACHE_BUST:-$cache_bust_default}"
+  BUILDKIT_PROGRESS="${BUILDKIT_PROGRESS:-plain}" \
+    docker compose build "${BUILD_OPTIONS[@]}"
 fi
 
 IMAGE="$(docker compose config --images | head -n1)"
@@ -52,106 +60,152 @@ IMAGE="$(docker compose config --images | head -n1)"
 docker image inspect "$IMAGE" >/dev/null
 
 entrypoint="$(docker image inspect --format '{{json .Config.Entrypoint}}' "$IMAGE")"
-if [[ "$entrypoint" != *'/init'* ]]; then
-  printf 'Image verification failed: expected Hermes /init entrypoint, found %s\n' "$entrypoint" >&2
+if [[ "$entrypoint" != *'/usr/local/sbin/workstation-entrypoint'* ]]; then
+  printf 'Image verification failed: unexpected entrypoint: %s\n' \
+    "$entrypoint" >&2
   exit 1
 fi
-printf '[PASS] Hermes /init remains the image entrypoint.\n'
+printf '[PASS] Kali workstation entrypoint is installed.\n'
 
-temporary_workspace="$(mktemp -d)"
-chmod 0755 "$temporary_workspace"
+temporary_root="$(mktemp -d)"
+chmod 0755 "$temporary_root"
+mkdir -p "$temporary_root"/{data,root,workspace}
+chmod 0777 "$temporary_root"/{data,root,workspace}
 
-printf '\nChecking the image as the non-root Hermes user with an empty /workspace mount...\n'
-docker run --rm --privileged \
-  --user hermes \
-  --volume "$temporary_workspace:/workspace" \
-  --entrypoint /usr/local/bin/check-tools \
-  "$IMAGE" \
-  /opt/security-manifest/tool-inventory.tsv \
+runtime_options=(
+  --rm
+  --cap-add NET_ADMIN
+  --cap-add NET_RAW
+  --cap-add NET_BIND_SERVICE
+  --env HERMES_UID=10000
+  --env HERMES_GID=10000
+  --volume "$temporary_root/data:/opt/data"
+  --volume "$temporary_root/root:/root"
+  --volume "$temporary_root/workspace:/workspace"
+)
+
+printf '\nChecking the complete inventory through the normal Hermes identity...\n'
+docker run "${runtime_options[@]}" "$IMAGE" \
+  check-tools /opt/security-manifest/tool-inventory.tsv \
   /tmp/hermes-user-tool-manifest.tsv
 
-printf '\nChecking the Hermes pentesting knowledge base as the non-root user...\n'
-docker run --rm \
-  --user hermes \
-  --entrypoint /usr/local/bin/check-knowledge \
-  "$IMAGE" --require-help
+printf '\nChecking the bundled and runtime Hermes knowledge bases...\n'
+docker run "${runtime_options[@]}" "$IMAGE" \
+  check-knowledge --require-help
+docker run "${runtime_options[@]}" "$IMAGE" bash -euc '
+  test -s \
+    /opt/data/skills/cybersecurity/offensive-workstation/SKILL.md
+  workstation-kb verify >/dev/null
+  cyberstrike-kb verify >/dev/null
+  workstation-kb search \
+    "authorized API access-control testing workflow" --limit 4 --json \
+    | jq -e "length == 4 and all(.[]; .source and .authority and .content)" \
+      >/dev/null
+  cyberstrike-kb search \
+    "CyberStrike session export and local API" --limit 4 --json \
+    | jq -e "length == 4 and all(.[]; .source and .authority and .content)" \
+      >/dev/null
+  test -s /opt/data/knowledge/offensive-workstation/workstation-kb.sqlite3
+  test -s /opt/data/knowledge/cyberstrike/cyberstrike-kb.sqlite3
+  grep -Fq "[offensive-workstation-local-kb]" /opt/data/memories/MEMORY.md
+  grep -Fq "[cyberstrike-local-kb]" /opt/data/memories/MEMORY.md
+'
+printf '[PASS] Full-workstation and CyberStrike hybrid retrieval pass.\\n'
 
-printf '\nChecking the final shared Python environment...\n'
+printf '\nChecking the final shared Python environments...\n'
+docker run --rm --entrypoint /opt/toolchains/python/bin/pip "$IMAGE" check
 docker run --rm \
-  --entrypoint /opt/toolchains/python/bin/pip \
-  "$IMAGE" check
-
-printf '\nChecking the isolated SploitScan Python environment...\n'
+  --entrypoint /opt/toolchains/python-apps/sploitscan/bin/pip "$IMAGE" check
 docker run --rm \
-  --entrypoint /opt/toolchains/python-apps/sploitscan/bin/pip \
-  "$IMAGE" check
+  --entrypoint /opt/toolchains/python-apps/cyberstrike-kb/bin/pip "$IMAGE" check
 
-printf '\nChecking representative immutable paths and runtime identity...\n'
-docker run --rm --privileged \
-  --user hermes \
-  --env HOME=/tmp/cyberstrike-home \
-  --entrypoint /bin/bash \
-  "$IMAGE" -euc '
-    test "$(id -un)" = hermes
-    command -v hermes >/dev/null
-    command -v zsh >/dev/null
-    command -v tmux >/dev/null
-    command -v cyberstrike >/dev/null
-    cyberstrike_version="$(cyberstrike --version)"
-    package_version="$(jq -r .version /opt/security-tools/cyberstrike/node_modules/@cyberstrike-io/cyberstrike/package.json)"
-    test "$cyberstrike_version" = "$package_version"
-    [[ "$cyberstrike_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]
-    CYBERSTRIKE_DISABLE_MODELS_FETCH=1 timeout 30 cyberstrike --help >/dev/null
-    tmux -V | grep -q "^tmux "
-    test "$SHELL" = /usr/bin/zsh
-    test "$(getent passwd root | cut -d: -f7)" = /usr/bin/zsh
-    test "$(getent passwd hermes | cut -d: -f7)" = /usr/bin/zsh
-    test -s /opt/oh-my-zsh/oh-my-zsh.sh
-    test -s /etc/zsh/portable.zshrc
-    test -d /opt/security-tools
-    test -d /opt/security-assets
-    test -s /opt/security-tools/cyberstrike/hackbrowser-worker.js
-    test -e /opt/security-tools/cyberstrike/node_modules/playwright/package.json
-    test -L /tmp/cyberstrike-home/.local/share/cyberstrike/bin/hackbrowser-worker.js
-    test -s /opt/hermes/skills/cybersecurity/offensive-workstation/SKILL.md
-    test -s /opt/security-manifest/tool-manifest.tsv
-    test "$(readlink -f "$(command -v naabu)")" = /opt/toolchains/go/bin/naabu
-    getcap "$(readlink -f "$(command -v nmap)")" | grep -q cap_net_raw
-    getcap "$(readlink -f "$(command -v naabu)")" | grep -q cap_net_raw
-  '
+printf '\nChecking Kali, Hermes administration, CyberStrike, and global paths...\n'
+docker run "${runtime_options[@]}" "$IMAGE" bash -euc '
+  test "$(id -un)" = hermes
+  test "$HOME" = /home/hermes
+  test "$HERMES_HOME" = /opt/data
+  test "$SHELL" = /usr/bin/zsh
+  sudo -n test "$(sudo -n id -u)" = 0
+  grep -Eq "^ID=kali$" /etc/os-release
+  dpkg-query -W -f="\${Status}\n" kali-linux-headless \
+    | grep -Fx "install ok installed"
+  command -v hermes zsh tmux cyberstrike agent-browser >/dev/null
+  hermes version >/dev/null
+  hermes_browser="$(cd /usr/local/lib/hermes-agent && \
+    venv/bin/python -c "from tools.browser_tool import _find_agent_browser; print(_find_agent_browser())")"
+  test "$(readlink -f "$hermes_browser")" \
+    = "$(readlink -f "$(command -v agent-browser)")"
+  cyberstrike_version="$(cyberstrike --version)"
+  package_version="$(jq -r .version /opt/security-tools/cyberstrike/node_modules/@cyberstrike-io/cyberstrike/package.json)"
+  test "$cyberstrike_version" = "$package_version"
+  [[ "$cyberstrike_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]
+  CYBERSTRIKE_DISABLE_MODELS_FETCH=1 timeout 30 cyberstrike --help >/dev/null
+  test -d /usr/local/lib/hermes-agent
+  test -s /usr/local/share/hermes/skills/cybersecurity/offensive-workstation/SKILL.md
+  test -s /opt/security-manifest/tool-manifest.tsv
+  test "$(readlink -f "$(command -v naabu)")" = /opt/toolchains/go/bin/naabu
+  getcap "$(readlink -f "$(command -v nmap)")" | grep -q cap_net_raw
+  getcap "$(readlink -f "$(command -v naabu)")" | grep -q cap_net_raw
+'
 
-printf '\nChecking the default interactive Zsh environment...\n'
-docker run --rm \
-  --user root \
-  --env HOME=/tmp/root-zsh-home \
-  --entrypoint /usr/bin/zsh \
-  "$IMAGE" -ic '
-    test "$ZSH" = /opt/oh-my-zsh
-    (( $+functions[configure_prompt] ))
-    (( $+functions[mkcd] ))
-    alias ll >/dev/null
-  '
+printf '\nChecking standard Zsh locations for root and Hermes...\n'
+docker run "${runtime_options[@]}" "$IMAGE" root zsh -ic '
+  test "$ZSH" = /opt/oh-my-zsh
+  (( $+functions[configure_prompt] ))
+  (( $+functions[mkcd] ))
+  alias ll >/dev/null
+  cmp -s /etc/zsh/portable.zshrc /root/.zshrc
+  cmp -s /etc/zsh/portable.zshrc /home/hermes/.zshrc
+  test "$(getent passwd root | cut -d: -f7)" = /usr/bin/zsh
+  test "$(getent passwd hermes | cut -d: -f7)" = /usr/bin/zsh
+'
 
-printf '\nChecking Hermes bundled-skill synchronization with empty data...\n'
-docker run --rm \
-  --user hermes \
-  --env HOME=/tmp/hermes-data \
-  --env HERMES_HOME=/tmp/hermes-data \
-  --entrypoint /bin/bash \
-  "$IMAGE" -euc '
-    mkdir -p "$HERMES_HOME"
-    /opt/hermes/.venv/bin/python /opt/hermes/tools/skills_sync.py
-    test -s "$HERMES_HOME/skills/cybersecurity/offensive-workstation/SKILL.md"
-    /usr/local/bin/check-knowledge \
-      --inventory /opt/security-manifest/tool-inventory.tsv \
-      --skill-dir "$HERMES_HOME/skills/cybersecurity/offensive-workstation" \
-      --require-help
-    COLUMNS=240 hermes skills list | grep -F offensive-workstation-pentesting >/dev/null
-  '
+printf '\nChecking browser automation with Chromium and Firefox...\n'
+docker run "${runtime_options[@]}" "$IMAGE" bash -euc '
+  agent-browser --help >/dev/null
+  test -x /opt/browser-tools/chromium
+  test -x /opt/browser-tools/firefox
+  command -v chromium firefox-esr playwright >/dev/null
+  browser_session="runtime-build-$$"
+  agent-browser --session "$browser_session" \
+    open "data:text/html,<title>AgentBrowserRuntimeOK</title>" >/dev/null
+  agent-browser --session "$browser_session" get title \
+    | grep -q AgentBrowserRuntimeOK
+  agent-browser --session "$browser_session" close >/dev/null
+  chromium="$(find /opt/browser-tools/playwright/.playwright -maxdepth 6 \
+    -type f \( -name chrome -o -name chromium \
+    -o -name chrome-headless-shell -o -name headless_shell \
+    -o -name chromium-browser \) -perm /111 -print -quit)"
+  test -x "$chromium"
+  timeout 30 "$chromium" --headless --no-sandbox --disable-gpu \
+    --disable-dev-shm-usage \
+    --dump-dom "data:text/html,<title>KaliWorkstationOK</title>" \
+    2>/dev/null | grep -q KaliWorkstationOK
+  export PLAYWRIGHT_BROWSERS_PATH=/opt/browser-tools/playwright/.playwright
+  node - <<'"'"'NODE'"'"'
+const { chromium, firefox } = require("/opt/browser-tools/playwright/node_modules/playwright");
+(async () => {
+  for (const [name, browserType] of [["chromium", chromium], ["firefox", firefox]]) {
+    const options = { headless: true };
+    if (name === "chromium")
+      options.args = ["--no-sandbox", "--disable-dev-shm-usage"];
+    const browser = await browserType.launch(options);
+    const page = await browser.newPage();
+    await page.setContent(`<title>${name}-build-ok</title>`);
+    if (await page.title() !== `${name}-build-ok`)
+      throw new Error(`${name} build smoke test failed`);
+    await browser.close();
+  }
+})().catch(error => {
+  console.error(error);
+  process.exit(1);
+});
+NODE
+'
 
 printf '\nImage build and verification passed.\n'
 printf 'Verified image: %s\n' "$IMAGE"
 printf 'Required inventory checks: %s\n' \
-  "$(awk -F '\t' '!/^#/ && NF == 3 { count++ } END { print count+0 }' scripts/tool-inventory.tsv)"
+  "$(awk -F '\t' '!/^#/ && NF == 3 { count++ } END { print count+0 }' scripts/manifests/tool-inventory.tsv)"
 printf 'Next command: sudo docker compose up -d --no-build\n'
 printf 'Runtime audit: bash scripts/verify-runtime.sh --recreate\n'

@@ -4,6 +4,8 @@ useDefault = true
 [[allowlists]]
 description = "Vendored training documents contain intentional token examples"
 paths = [
+  # Historical paths are retained because Gitleaks scans commits created
+  # before the repository cleanup as well as the current knowledge/ layout.
   '''^PayloadsAllTheThings/API Key Leaks/IIS-Machine-Keys\.md$''',
   '''^PayloadsAllTheThings/API Key Leaks/README\.md$''',
   '''^PayloadsAllTheThings/File Inclusion/Wrappers\.md$''',
@@ -11,9 +13,18 @@ paths = [
   '''^PayloadsAllTheThings/JSON Web Token/README\.md$''',
   '''^PayloadsAllTheThings/Server Side Request Forgery/SSRF-Cloud-Instances\.md$''',
   '''^PayloadsAllTheThings/Web Sockets/README\.md$''',
+  '''^knowledge/payloads/PayloadsAllTheThings/API Key Leaks/IIS-Machine-Keys\.md$''',
+  '''^knowledge/payloads/PayloadsAllTheThings/API Key Leaks/README\.md$''',
+  '''^knowledge/payloads/PayloadsAllTheThings/File Inclusion/Wrappers\.md$''',
+  '''^knowledge/payloads/PayloadsAllTheThings/Insecure Source Code Management/Files/github-dorks\.txt$''',
+  '''^knowledge/payloads/PayloadsAllTheThings/JSON Web Token/README\.md$''',
+  '''^knowledge/payloads/PayloadsAllTheThings/Server Side Request Forgery/SSRF-Cloud-Instances\.md$''',
+  '''^knowledge/payloads/PayloadsAllTheThings/Web Sockets/README\.md$''',
   # Official CyberStrike documentation examples contain literal test/test
   # form values on a line whose earlier prose mentions curl. This triggers the
   # curl-auth-user heuristic but contains no credential.
   '''^Rules/offensive-workstation-pentesting/references/cyberstrike/source-library/docs/agents/web-application\.html\.md$''',
   '''^Rules/offensive-workstation-pentesting/references/cyberstrike/source-library/llms-ctx\.txt$''',
+  '''^knowledge/skills/offensive-workstation-pentesting/references/cyberstrike/source-library/docs/agents/web-application\.html\.md$''',
+  '''^knowledge/skills/offensive-workstation-pentesting/references/cyberstrike/source-library/llms-ctx\.txt$''',
 ]

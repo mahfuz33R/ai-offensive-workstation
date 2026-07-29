@@ -4,10 +4,11 @@ INSTALLER_NAME="system"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-common.sh"
 
 install_apt_system() {
-  apt-get update
-  apt-get install -y --no-install-recommends \
-    bash build-essential ca-certificates cmake curl file git gnupg gzip jq \
-    less openssh-client zsh zsh-autosuggestions zsh-syntax-highlighting \
+  retry apt-get update
+  retry apt-get install -y --no-install-recommends \
+    bash build-essential ca-certificates chromium cmake curl file firefox-esr git gnupg gzip jq \
+    ffmpeg less openssh-client sudo xz-utils \
+    zsh zsh-autosuggestions zsh-syntax-highlighting \
     libcap2-bin libcurl4-openssl-dev libffi-dev libio-socket-ssl-perl \
     libjson-perl libnet-ssleay-perl libpcap-dev libssl-dev libxml-libxml-perl \
     libxml-writer-perl libxml2-dev libxslt1-dev lsb-release make nano \
@@ -17,5 +18,5 @@ install_apt_system() {
   rm -rf /var/lib/apt/lists/*
 }
 
-install_step "system packages" "apt" install_apt_system
+install_step "system and language-runtime packages" "Kali apt" install_apt_system
 finish_installer

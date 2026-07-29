@@ -3,15 +3,17 @@ set -uo pipefail
 INSTALLER_NAME="browser"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-common.sh"
 
-export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/hermes/.playwright}"
-PLAYWRIGHT_VERSION="${PLAYWRIGHT_VERSION:-1.58.2}"
+export BROWSER_TOOLS_DIR="${BROWSER_TOOLS_DIR:-/opt/browser-tools}"
+export BROWSER_PACKAGE_DIR="${BROWSER_PACKAGE_DIR:-${BROWSER_TOOLS_DIR}/playwright}"
+export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-${BROWSER_PACKAGE_DIR}/.playwright}"
+PLAYWRIGHT_VERSION="${PLAYWRIGHT_VERSION:-1.62.0}"
 AGENT_BROWSER_VERSION="${AGENT_BROWSER_VERSION:-latest}"
 
 find_chromium() {
   local playwright_chromium
-  if [[ -f /opt/hermes/node_modules/playwright/package.json ]]; then
+  if [[ -f "$BROWSER_PACKAGE_DIR/node_modules/playwright/package.json" ]]; then
     playwright_chromium="$(
-      node -e "process.stdout.write(require('/opt/hermes/node_modules/playwright').chromium.executablePath())" \
+      node -e "process.stdout.write(require('${BROWSER_PACKAGE_DIR}/node_modules/playwright').chromium.executablePath())" \
         2>/dev/null || true
     )"
     if [[ -x "$playwright_chromium" ]]; then
@@ -26,25 +28,46 @@ find_chromium() {
     -perm /111 -print -quit 2>/dev/null
 }
 
+find_firefox() {
+  local playwright_firefox
+  if [[ -f "$BROWSER_PACKAGE_DIR/node_modules/playwright/package.json" ]]; then
+    playwright_firefox="$(
+      node -e "process.stdout.write(require('${BROWSER_PACKAGE_DIR}/node_modules/playwright').firefox.executablePath())" \
+        2>/dev/null || true
+    )"
+    if [[ -x "$playwright_firefox" ]]; then
+      printf '%s\n' "$playwright_firefox"
+      return 0
+    fi
+  fi
+  find "$PLAYWRIGHT_BROWSERS_PATH" -maxdepth 6 -type f \
+    \( -name 'firefox' -o -name 'firefox-bin' \) \
+    -perm /111 -print -quit 2>/dev/null
+}
+
 install_hermes_browser_packages() {
-  mkdir -p /opt/hermes "$PLAYWRIGHT_BROWSERS_PATH"
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --omit=dev --prefix /opt/hermes \
+  mkdir -p "$BROWSER_PACKAGE_DIR" "$PLAYWRIGHT_BROWSERS_PATH"
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --omit=dev --prefix "$BROWSER_PACKAGE_DIR" \
     "agent-browser@${AGENT_BROWSER_VERSION}" \
     "playwright@${PLAYWRIGHT_VERSION}"
 }
 
-install_playwright_chromium() {
+install_playwright_browsers() {
+  # Kali already receives Chromium, Firefox ESR, and their native runtime
+  # libraries from install-system-tools.sh. Playwright's --with-deps path
+  # assumes Ubuntu and can request obsolete Ubuntu package names on Kali.
   PLAYWRIGHT_BROWSERS_PATH="$PLAYWRIGHT_BROWSERS_PATH" \
-    npm exec --prefix /opt/hermes -- playwright install --with-deps chromium
+    npm exec --prefix "$BROWSER_PACKAGE_DIR" -- \
+      playwright install chromium firefox
 }
 
 ensure_hermes_browser() {
-  local playwright=/opt/hermes/node_modules/.bin/playwright
-  local agent_browser=/opt/hermes/node_modules/.bin/agent-browser
-  local chromium installed_playwright_version
+  local playwright="$BROWSER_PACKAGE_DIR/node_modules/.bin/playwright"
+  local agent_browser="$BROWSER_PACKAGE_DIR/node_modules/.bin/agent-browser"
+  local chromium firefox installed_playwright_version
 
   installed_playwright_version="$(
-    node -p "require('/opt/hermes/node_modules/playwright/package.json').version" \
+    node -p "require('${BROWSER_PACKAGE_DIR}/node_modules/playwright/package.json').version" \
       2>/dev/null || true
   )"
 
@@ -55,16 +78,17 @@ ensure_hermes_browser() {
   fi
 
   chromium="$(find_chromium || true)"
-  if [[ ! -x "$chromium" ]]; then
-    log "Playwright Chromium is missing under ${PLAYWRIGHT_BROWSERS_PATH}; installing browser files"
-    install_playwright_chromium
+  firefox="$(find_firefox || true)"
+  if [[ ! -x "$chromium" || ! -x "$firefox" ]]; then
+    log "Playwright Chromium or Firefox is missing; installing both headless browser engines"
+    install_playwright_browsers
   fi
 }
 
 verify_hermes_browser() {
-  local playwright=/opt/hermes/node_modules/.bin/playwright
-  local agent_browser=/opt/hermes/node_modules/.bin/agent-browser
-  local chromium agent_browser_version playwright_version
+  local playwright="$BROWSER_PACKAGE_DIR/node_modules/.bin/playwright"
+  local agent_browser="$BROWSER_PACKAGE_DIR/node_modules/.bin/agent-browser"
+  local chromium firefox agent_browser_version playwright_version session title
 
   ensure_hermes_browser
 
@@ -89,6 +113,13 @@ verify_hermes_browser() {
     log "Could not find an executable Chromium under $PLAYWRIGHT_BROWSERS_PATH"
     return 1
   fi
+  firefox="$(find_firefox)"
+  if [[ ! -x "$firefox" ]]; then
+    log "Could not find an executable Firefox under $PLAYWRIGHT_BROWSERS_PATH"
+    return 1
+  fi
+
+  command -v chromium firefox-esr >/dev/null
 
   if ! timeout 30 "$chromium" --headless --no-sandbox --disable-gpu \
     --disable-dev-shm-usage --dump-dom 'data:text/html,<title>HermesBrowserOK</title>' \
@@ -97,8 +128,48 @@ verify_hermes_browser() {
     return 1
   fi
 
+  ln -sfn "$chromium" "$BROWSER_TOOLS_DIR/chromium"
+  ln -sfn "$firefox" "$BROWSER_TOOLS_DIR/firefox"
+  export AGENT_BROWSER_EXECUTABLE_PATH="$BROWSER_TOOLS_DIR/chromium"
+  export AGENT_BROWSER_ARGS="${AGENT_BROWSER_ARGS:---no-sandbox,--disable-dev-shm-usage}"
+
   link_command "$agent_browser" agent-browser
-  agent_browser_version="$(node -p "require('/opt/hermes/node_modules/agent-browser/package.json').version" 2>/dev/null || printf unknown)"
+  session="image-build-$$"
+  if ! timeout 45 "$agent_browser" --session "$session" \
+      open 'data:text/html,<title>AgentBrowserOK</title>' >/dev/null; then
+    "$agent_browser" --session "$session" close >/dev/null 2>&1 || true
+    log "agent-browser could not launch its configured Chromium"
+    return 1
+  fi
+  title="$(timeout 30 "$agent_browser" --session "$session" get title)"
+  "$agent_browser" --session "$session" close >/dev/null
+  [[ "$title" == *AgentBrowserOK* ]]
+
+  PLAYWRIGHT_BROWSERS_PATH="$PLAYWRIGHT_BROWSERS_PATH" \
+    timeout 60 node - "$BROWSER_PACKAGE_DIR" <<'NODE'
+const packageDir = process.argv[2];
+const { chromium, firefox } = require(`${packageDir}/node_modules/playwright`);
+(async () => {
+  for (const [name, browserType] of [["chromium", chromium], ["firefox", firefox]]) {
+    const options = { headless: true };
+    if (name === "chromium")
+      options.args = ["--no-sandbox", "--disable-dev-shm-usage"];
+    const browser = await browserType.launch(options);
+    const page = await browser.newPage();
+    await page.setContent(`<title>${name}-headless-ok</title>`);
+    if (await page.title() !== `${name}-headless-ok`)
+      throw new Error(`${name} title smoke test failed`);
+    await browser.close();
+  }
+})().catch(error => {
+  console.error(error);
+  process.exit(1);
+});
+NODE
+
+  link_command "$playwright" playwright
+
+  agent_browser_version="$(node -p "require('${BROWSER_PACKAGE_DIR}/node_modules/agent-browser/package.json').version" 2>/dev/null || printf unknown)"
   playwright_version="$("$playwright" --version)"
   printf 'agent-browser\tnpm\tHermes\t%s\t%s\n' \
     "$agent_browser_version" "$agent_browser" >> "$RESOLVED_FILE"
@@ -106,7 +177,12 @@ verify_hermes_browser() {
     "$playwright_version" "$playwright" >> "$RESOLVED_FILE"
   printf 'chromium\tplaywright\tHermes\tverified\t%s\n' \
     "$chromium" >> "$RESOLVED_FILE"
+  printf 'firefox\tplaywright\tHermes\tverified\t%s\n' \
+    "$firefox" >> "$RESOLVED_FILE"
+  printf 'agent-browser-chromium\tconfiguration\tproject\tverified\t%s\n' \
+    "$BROWSER_TOOLS_DIR/chromium" >> "$RESOLVED_FILE"
 }
 
-install_step "Hermes agent-browser, Playwright, and Chromium" "npm/playwright smoke test" verify_hermes_browser
+install_step "Hermes agent-browser, Playwright, Chromium, and Firefox" \
+  "npm/playwright dual-engine smoke test" verify_hermes_browser
 finish_installer

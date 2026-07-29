@@ -1,11 +1,10 @@
-# Private configuration and credentials
+# The only private operator configuration file
 .env
-secrets.env
-secrets.env.before-reuse-*
 
 # Persistent workstation and authenticated agent state
 workspace/
 workspace.before-reuse-*/
+.env.before-reuse-*
 
 # Images, migration bundles, and generated offline exports
 *.tar
@@ -13,16 +12,25 @@ workspace.before-reuse-*/
 *.tar.gpg
 ai-offensive-workstation-offline-files/
 
+# Test source under tests/ stays tracked; only generated test artifacts are ignored
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+junit.xml
+test-results/
+.test-results/
+
 # OS/editor noise
 .DS_Store
 *.swp
 *~
-__pycache__/
-*.pyc
 
-# Runtime audit and generated scan output
+# Runtime audit and temporary migration state
 .runtime-audit.*
 .reuse-tmp.*
-PDf_markdown/
-Jsscanner_results/
-gau-expose-result/

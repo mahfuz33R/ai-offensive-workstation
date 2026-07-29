@@ -5,7 +5,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/install-common.sh"
 
 install_zsh_environment() {
   local source_config
-  source_config="$(dirname "${BASH_SOURCE[0]}")/portable.zshrc"
+  source_config="$(dirname "${BASH_SOURCE[0]}")/.zshrc"
 
   command -v zsh >/dev/null
   test -s "$source_config"
@@ -23,10 +23,13 @@ install_zsh_environment() {
       >> /etc/zsh/zshrc
   fi
 
+  install -m 0644 "$source_config" /etc/skel/.zshrc
+  install -m 0644 "$source_config" /root/.zshrc
+  install -d -o hermes -g hermes -m 0750 /home/hermes
+  install -m 0644 -o hermes -g hermes "$source_config" /home/hermes/.zshrc
+
   usermod --shell /usr/bin/zsh root
-  if getent passwd hermes >/dev/null; then
-    usermod --shell /usr/bin/zsh hermes
-  fi
+  usermod --shell /usr/bin/zsh hermes
 
   chmod -R a+rX,go-w /opt/oh-my-zsh
 
@@ -35,13 +38,18 @@ install_zsh_environment() {
     >> "$RESOLVED_FILE"
   printf 'portable-zshrc\tconfiguration\tproject\t1\t%s\n' \
     /etc/zsh/portable.zshrc >> "$RESOLVED_FILE"
+  printf 'root-zshrc\tconfiguration\tproject\t1\t%s\n' \
+    /root/.zshrc >> "$RESOLVED_FILE"
+  printf 'hermes-zshrc\tconfiguration\tproject\t1\t%s\n' \
+    /home/hermes/.zshrc >> "$RESOLVED_FILE"
 }
 
 verify_zsh_environment() {
   [[ "$(getent passwd root | cut -d: -f7)" == /usr/bin/zsh ]]
-  if getent passwd hermes >/dev/null; then
-    [[ "$(getent passwd hermes | cut -d: -f7)" == /usr/bin/zsh ]]
-  fi
+  [[ "$(getent passwd hermes | cut -d: -f7)" == /usr/bin/zsh ]]
+  cmp -s /etc/zsh/portable.zshrc /etc/skel/.zshrc
+  cmp -s /etc/zsh/portable.zshrc /root/.zshrc
+  cmp -s /etc/zsh/portable.zshrc /home/hermes/.zshrc
 
   local temporary_home
   temporary_home="$(mktemp -d)"

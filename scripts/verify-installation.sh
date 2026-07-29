@@ -8,7 +8,7 @@ if ! mkdir -p "$(dirname "$MANIFEST")" 2>/dev/null || [[ ! -w "$(dirname "$MANIF
 fi
 MISSING=0
 
-export PATH="/usr/local/go/bin:/opt/toolchains/go/bin:/opt/toolchains/python/bin:/opt/toolchains/cargo/bin:${PATH}"
+export PATH="/opt/toolchains/node/bin:/usr/local/go/bin:/opt/toolchains/go/bin:/opt/toolchains/python/bin:/opt/toolchains/cargo/bin:${PATH}"
 printf 'kind\tname\tstatus\tresolved_path\n' > "$MANIFEST"
 
 asset_present() {

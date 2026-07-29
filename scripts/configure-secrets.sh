@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Run this INSIDE the running container (not during docker build) after
-# starting it with --env-file secrets.env. It wires up the tools that
-# need one-time API key configuration.
+# starting it through Compose, which injects the ignored root .env. It wires up
+# the tools that need one-time API key configuration.
 #
-#   docker run -it --rm --env-file secrets.env ai-offensive-workstation bash
+#   docker run -it --rm --env-file .env ai-offensive-workstation zsh
 #   docker compose exec --user hermes workstation configure-security-secrets
 #
 set -uo pipefail
@@ -35,12 +35,6 @@ else
   echo "[configure-secrets] INTERACTSH_AUTH_TOKEN not set - skipping."
 fi
 
-if [ -n "${GITHUB_TOKEN:-}" ]; then
-  echo "[configure-secrets] GITHUB_TOKEN is set and available to GitHub-aware tools."
-else
-  echo "[configure-secrets] GITHUB_TOKEN not set - GitHub-dependent tools will use unauthenticated (rate-limited) requests."
-fi
-
 cyberstrike_provider=
 for provider_key in ANTHROPIC_API_KEY OPENAI_API_KEY GOOGLE_API_KEY OPENROUTER_API_KEY GROQ_API_KEY; do
   if [ -n "${!provider_key:-}" ]; then
@@ -51,7 +45,7 @@ if [ -n "$cyberstrike_provider" ]; then
   echo "[configure-secrets] CyberStrike model credential environment detected: $cyberstrike_provider."
   echo "[configure-secrets] Verify provider/model discovery with: cyberstrike models"
 else
-  echo "[configure-secrets] No CyberStrike model provider key is set; add one to secrets.env before unattended runs."
+  echo "[configure-secrets] No CyberStrike model provider key is set; add one to the ignored root .env before unattended runs."
 fi
 
 echo "[configure-secrets] Done."

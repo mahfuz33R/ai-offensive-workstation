@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SKILL_DIR="${1:-/opt/hermes/skills/cybersecurity/offensive-workstation}"
+SKILL_DIR="${1:-/usr/local/share/hermes/skills/cybersecurity/offensive-workstation}"
 CATALOG="${SKILL_DIR}/help-commands.tsv"
 OUTPUT_DIR="${SKILL_DIR}/references/cli-help"
 failures=0
@@ -18,10 +18,21 @@ slug() {
 while IFS=$'\t' read -r tool command_name help_arguments; do
   [[ -n "${tool:-}" && "${tool:0:1}" != '#' ]] || continue
   executable="$(command -v "$command_name" 2>/dev/null || true)"
+  capture_executable="$executable"
   if [[ -z "$executable" || ! -x "$executable" ]]; then
     printf '[help] missing executable for %s (%s)\n' "$tool" "$command_name" >&2
     failures=$((failures + 1))
     continue
+  fi
+
+  # Kali's Nmap package carries CAP_NET_ADMIN on its real ELF. BuildKit does
+  # not grant that capability during an image build and Linux returns EPERM
+  # before Nmap can print help. `install` creates a byte-identical executable
+  # without copying file capabilities; the real binary is preserved and its
+  # runtime capability contract is verified later in the Dockerfile.
+  if [[ "$command_name" == nmap && -x /usr/lib/nmap/nmap ]]; then
+    capture_executable="$HELP_HOME/nmap-help"
+    install -m 0755 /usr/lib/nmap/nmap "$capture_executable"
   fi
 
   if [[ "$help_arguments" == __NO_ARGS__ ]]; then
@@ -34,15 +45,17 @@ while IFS=$'\t' read -r tool command_name help_arguments; do
   raw="$(mktemp)"
   clean="$(mktemp)"
   if env -u SHODAN_API_KEY -u CENSYS_API_ID -u CENSYS_API_SECRET \
-      -u VIRUSTOTAL_API_KEY -u GITHUB_TOKEN -u INTERACTSH_TOKEN \
+      -u VIRUSTOTAL_API_KEY -u INTERACTSH_TOKEN \
       HOME="$HELP_HOME" XDG_CONFIG_HOME="$HELP_HOME/.config" \
-      timeout 30 "$executable" "${arguments[@]}" </dev/null >"$raw" 2>&1; then
+      timeout 30 "$capture_executable" "${arguments[@]}" \
+        </dev/null >"$raw" 2>&1; then
     rc=0
   else
     rc=$?
   fi
   if (( rc == 124 || rc == 126 || rc == 127 )); then
     printf '[help] failed to capture %s (exit %s)\n' "$tool" "$rc" >&2
+    tail -n 20 "$raw" >&2
     failures=$((failures + 1))
     rm -f "$raw" "$clean"
     continue

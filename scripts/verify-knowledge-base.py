@@ -64,13 +64,17 @@ def local_links(path: Path):
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     image_inventory = Path("/opt/security-manifest/tool-inventory.tsv")
-    image_skill = Path("/opt/hermes/skills/cybersecurity/offensive-workstation")
+    image_skill = Path("/usr/local/share/hermes/skills/cybersecurity/offensive-workstation")
     active_skill = Path("/opt/data/skills/cybersecurity/offensive-workstation")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--inventory",
         type=Path,
-        default=image_inventory if image_inventory.is_file() else root / "scripts/tool-inventory.tsv",
+        default=(
+            image_inventory
+            if image_inventory.is_file()
+            else root / "scripts/manifests/tool-inventory.tsv"
+        ),
     )
     parser.add_argument(
         "--skill-dir",
@@ -80,7 +84,7 @@ def main() -> int:
             if active_skill.is_dir()
             else image_skill
             if image_skill.is_dir()
-            else root / "Rules/offensive-workstation-pentesting"
+            else root / "knowledge/skills/offensive-workstation-pentesting"
         ),
     )
     parser.add_argument("--require-help", action="store_true")
@@ -171,8 +175,10 @@ def main() -> int:
     for required in (
         "references/TOOL-INDEX.md",
         "references/ASSETS.md",
+        "references/LOCAL-RAG.md",
         "references/SAFETY.md",
         "references/TROUBLESHOOTING.md",
+        "references/WORKSTATION-MEMORY-SEED.md",
     ):
         if not (skill_dir / required).is_file():
             errors.append(f"missing {skill_dir / required}")
@@ -187,8 +193,13 @@ def main() -> int:
             "HACKBROWSER.md",
             "MCP-BOLT.md",
             "HERMES-AUTOMATION.md",
+            "MEMORY-SEED.md",
+            "OPERATIONS.md",
             "SOURCE-NOTES.md",
             "UPSTREAM-INDEX.md",
+            "USER-SOURCE-REVIEW.md",
+            "VECTOR-RAG.md",
+            "VERIFIED-RUNTIME.md",
         )
         for filename in cyberstrike_files:
             required_path = skill_dir / "references/cyberstrike" / filename
@@ -208,6 +219,21 @@ def main() -> int:
                 errors.append("SKILL.md description does not explicitly trigger on CyberStrike requests")
             if "without invoking `cyberstrike run`" not in skill_content:
                 errors.append("SKILL.md does not route informational CyberStrike questions to local RAG")
+            if 'cyberstrike-kb search "$USER_INTENT"' not in skill_content:
+                errors.append("SKILL.md does not query the CyberStrike hybrid index")
+            if 'workstation-kb search "$USER_INTENT"' not in skill_content:
+                errors.append("SKILL.md does not query the complete workstation hybrid index")
+        supplied_source = (
+            source_library / "user/cyberstrike-agent-knowledge-base.md"
+        )
+        if not supplied_source.is_file():
+            errors.append("normalized user-supplied CyberStrike manual is missing")
+        elif "user-supplied-unverified" not in supplied_source.read_text(
+            encoding="utf-8"
+        ):
+            errors.append(
+                "user-supplied CyberStrike manual lacks its unverified authority label"
+            )
     workflows = list((skill_dir / "references/workflows").glob("*.md"))
     if len(workflows) < 10:
         errors.append("at least ten focused workflow references are required")

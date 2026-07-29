@@ -14,7 +14,7 @@ export SECURITY_VENV="${SECURITY_VENV:-${TOOLCHAINS_DIR}/python}"
 export GOPATH="${GOPATH:-${TOOLCHAINS_DIR}/go}"
 export CARGO_HOME="${CARGO_HOME:-${TOOLCHAINS_DIR}/cargo}"
 export RUSTUP_HOME="${RUSTUP_HOME:-${TOOLCHAINS_DIR}/rustup}"
-export PATH="/usr/local/go/bin:${GOPATH}/bin:${SECURITY_VENV}/bin:${CARGO_HOME}/bin:${PATH}"
+export PATH="/opt/toolchains/node/bin:/usr/local/go/bin:${GOPATH}/bin:${SECURITY_VENV}/bin:${CARGO_HOME}/bin:${PATH}"
 
 INSTALLER_NAME="${INSTALLER_NAME:-unknown}"
 INSTALL_FAILURES=0

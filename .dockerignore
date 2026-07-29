@@ -1,23 +1,18 @@
-# Never let the Docker build context see real secrets, even by accident
-secrets.env
-secrets.env.before-reuse-*
+# Never let the Docker build context see private or runtime state
 .env
+.env.before-reuse-*
 *.tar.gpg
 workspace.before-reuse-*
 .git
 .gitignore
 __pycache__
 *.pyc
+tests
 workspace
 .runtime-audit.*
 .reuse-tmp.*
-how_it_works.md
-run_exported_image.md
+docs
 *.md
-!Rules/
-!Rules/**
-!PayloadsAllTheThings/
-!PayloadsAllTheThings/**
-!payload-box/
-!payload-box/**
+!knowledge/
+!knowledge/**
 **/.git

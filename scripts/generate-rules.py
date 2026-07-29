@@ -10,8 +10,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-INVENTORY = ROOT / "scripts/tool-inventory.tsv"
-SKILL_ROOT = ROOT / "Rules/offensive-workstation-pentesting"
+INVENTORY = ROOT / "scripts/manifests/tool-inventory.tsv"
+SKILL_ROOT = ROOT / "knowledge/skills/offensive-workstation-pentesting"
 RETRIEVED = date.today().isoformat()
 
 
@@ -35,8 +35,13 @@ go|Compile, test, inspect, and manage Go programs and Go-based security tools.
 python|Run Python 3 programs and isolated automation scripts.
 node|Run JavaScript programs with the Node.js runtime used by Hermes and browser automation.
 npm|Install and inspect Node.js packages and command-line applications.
+playwright|Automate the bundled Chromium and Firefox engines for controlled browser testing.
+chromium|Launch Kali Chromium directly for manual or scripted headless web checks.
+firefox-esr|Launch Kali Firefox ESR directly for standards and cross-browser validation.
 agent-browser|Drive the bundled headless Chromium browser for navigation, interaction, extraction, and screenshots.
 cyberstrike|Delegate a bounded, authorized security task to the CyberStrike agent and preserve its structured session output.
+cyberstrike-kb|Search and verify the persistent local CyberStrike hybrid vector knowledge base without calling a model provider.
+workstation-kb|Search and verify the complete persistent ethical-hacking and pentesting hybrid vector knowledge base without calling a model provider.
 rustc|Compile and inspect Rust source code.
 cargo|Build, install, test, and inspect Rust packages.
 git|Manage source history and inspect repositories during authorized code review.
@@ -187,7 +192,12 @@ SOURCE_OVERRIDES = {
     "node": "https://nodejs.org/docs/latest/api/",
     "npm": "https://docs.npmjs.com/cli/",
     "agent-browser": "https://github.com/vercel-labs/agent-browser",
+    "playwright": "https://playwright.dev/docs/intro",
+    "chromium": "https://www.chromium.org/Home/",
+    "firefox-esr": "https://www.mozilla.org/firefox/enterprise/",
     "cyberstrike": "https://github.com/CyberStrikeus/CyberStrike",
+    "cyberstrike-kb": "https://github.com/asg017/sqlite-vec",
+    "workstation-kb": "https://github.com/asg017/sqlite-vec",
     "rustc": "https://doc.rust-lang.org/rustc/",
     "cargo": "https://doc.rust-lang.org/cargo/",
     "git": "https://git-scm.com/docs",
@@ -264,7 +274,7 @@ SOURCE_OVERRIDES = {
 
 
 CATEGORY_MEMBERS = {
-    "platform-and-utilities": "hermes zsh go python node npm agent-browser rustc cargo git curl wget jq tmux rg cmake".split(),
+    "platform-and-utilities": "hermes zsh go python node npm playwright chromium firefox-esr agent-browser rustc cargo git curl wget jq tmux rg cmake".split(),
     "network-mapping": "nmap masscan massdns tcpdump nc naabu unimap nrich".split(),
     "dns-and-subdomains": "subfinder assetfinder github-subdomains amass mapcidr chaos gotator cero dnsx puredns shuffledns subjack SubOver subzy findomain altdns certcrunchy ctfr knockpy censys-subdomain-finder dnsvalidator NtHiM".split(),
     "http-discovery": "httpx nikto wfuzz dirsearch feroxbuster gowitness httprobe ffuf gobuster webanalyze whatwaf wappalyzer-cli whatweb aquatone kr droopescan wpscan aem-hacker".split(),
@@ -272,7 +282,7 @@ CATEGORY_MEMBERS = {
     "vulnerability-and-templates": "notify nuclei cent jaeles afrog interactsh-client xray sploitscan poc-bomber".split(),
     "xss-and-injection": "sqlmap dalfox kxss Gxss Jeeves time-sql mrco24-error-sql mrco24-lfi open-redirect xsstrike xss-vibes nosqlmap ghauri tplmap sstimap Injectus OpenRedireX ssrfmap gopherus oralyzer findom-xss".split(),
     "source-git-and-secrets": "GitDorker gitGraber lilly gitdumper extractor gitfinder go-earlybird".split(),
-    "automation-and-reporting": "interlace censys shodan cyberstrike".split(),
+    "automation-and-reporting": "interlace censys shodan cyberstrike cyberstrike-kb workstation-kb".split(),
 }
 
 
@@ -337,6 +347,8 @@ EXAMPLES = {
     "rg": 'rg -n -i "password|secret|token" /workspace/projects | tee "$OUTPUT_DIR/source-review.txt"',
     "curl": 'curl --fail-with-body --silent --show-error --dump-header "$OUTPUT_DIR/headers.txt" "$TARGET_URL" -o "$OUTPUT_DIR/body.html"',
     "cyberstrike": 'cyberstrike run --agent cyberstrike --format json --dir "$PROJECT_DIR" "$TASK" | tee "$OUTPUT_DIR/cyberstrike.jsonl"',
+    "cyberstrike-kb": 'cyberstrike-kb search "resume and export a CyberStrike session" --limit 6',
+    "workstation-kb": 'workstation-kb search "authorized API access-control test workflow" --limit 8',
 }
 
 HELP_ARGS = {
@@ -351,6 +363,8 @@ HELP_ARGS = {
     "nikto": "-Help",
     "JSScanner": "__NO_ARGS__",
     "cyberstrike": "--help",
+    "cyberstrike-kb": "--help",
+    "workstation-kb": "--help",
 }
 
 
@@ -492,7 +506,8 @@ ASSETS = """# Installed assets
 | Amass configuration | `/opt/security-assets/templates/amass` | Example Amass data-source configuration. |
 | Gau configuration | `/opt/security-assets/templates/gau/.gau.toml` | Default configuration copied by the Gau wrapper. |
 | Cent templates | `/opt/security-assets/templates/cent-nuclei-templates` | Community template collection managed by Cent. |
-| Hermes Chromium | `/opt/hermes/.playwright` | Headless Chromium used by Hermes browser automation. |
+| Hermes Chromium | `/opt/browser-tools/chromium` | Verified Playwright Chromium shared by Hermes and agent-browser. |
+| Hermes Firefox | `/opt/browser-tools/firefox` | Verified Playwright Firefox for cross-browser headless automation. |
 | Oh My Zsh | `/opt/oh-my-zsh` | Shared, root-owned Oh My Zsh framework used by interactive root and Hermes shells. |
 | Portable Zsh configuration | `/etc/zsh/portable.zshrc` | System-wide prompt, completion, history, aliases, key bindings, autosuggestions, and syntax-highlighting configuration. |
 
@@ -505,9 +520,9 @@ TROUBLESHOOTING = """# Troubleshooting
 1. Confirm the command: `command -v COMMAND`.
 2. Read the exact installed-version reference under `references/cli-help/`.
 3. Verify the image: `check-tools` and `check-knowledge`.
-4. Check Python environments with `/opt/toolchains/python/bin/pip check` and `/opt/toolchains/python-apps/sploitscan/bin/pip check`.
-5. Put writable configuration and output under `/workspace`; `/opt/hermes`, `/opt/security-tools`, `/opt/security-assets`, and `/opt/toolchains` are immutable.
-6. Raw-socket tools need the image capabilities and the configured privileged runtime. Privilege does not create authorization.
+4. Check Python environments with `/opt/toolchains/python/bin/pip check`, `/opt/toolchains/python-apps/sploitscan/bin/pip check`, and `/opt/toolchains/python-apps/cyberstrike-kb/bin/pip check`.
+5. Put writable configuration and output under `/workspace`; `/usr/local/lib/hermes-agent`, `/opt/security-tools`, `/opt/security-assets`, and `/opt/toolchains` are image-owned.
+6. Raw-socket tools use narrowly granted file and container capabilities. Capability does not create authorization.
 7. If a guide disagrees with runtime help, use the runtime help and resolved version, then update the guide.
 """
 
@@ -517,6 +532,99 @@ def guide(name: str, command: str) -> str:
     source = SOURCES[name]
     category = category_for(name)
     example = EXAMPLES.get(name, f"{command} --help")
+    if name in {"cyberstrike-kb", "workstation-kb"}:
+        is_complete_corpus = name == "workstation-kb"
+        scope = (
+            "every authorized ethical-hacking or pentesting request"
+            if is_complete_corpus
+            else "every CyberStrike-related request"
+        )
+        index_location = (
+            "/opt/data/knowledge/offensive-workstation/"
+            if is_complete_corpus
+            else "/opt/data/knowledge/cyberstrike/"
+        )
+        advanced = (
+            'workstation-kb search "authorized API access-control testing" --limit 8 --json\n'
+            "workstation-kb status\n"
+            "workstation-kb verify"
+            if is_complete_corpus
+            else
+            'cyberstrike-kb search "deny-first CyberStrike permissions" --limit 6 --json\n'
+            "cyberstrike-kb status\n"
+            "cyberstrike-kb verify"
+        )
+        return f"""---
+tool: {name}
+command: {command}
+category: {category}
+source: {source}
+retrieved: {RETRIEVED}
+---
+
+# {name}
+
+## Purpose
+
+{purpose}
+
+## Appropriate use
+
+Use this command for {scope}. It reads only the local
+knowledge corpus and needs neither target access nor a model-provider credential.
+
+## Prerequisites
+
+- The persistent index must exist under `{index_location}`.
+- FastEmbed's bundled model cache must be readable.
+- No CyberStrike provider credential is needed.
+
+## Basic command
+
+```bash
+command -v {name}
+{name} --help
+```
+
+## Intermediate example
+
+```bash
+{example}
+```
+
+## Advanced safe workflow
+
+```bash
+{advanced}
+```
+
+## Output and interpretation
+
+Each result includes a fused score, source path, line range, heading, authority
+label, and content. Retrieval never authorizes command execution.
+
+## Common problems
+
+- Missing index: rebuild it from the persistent offensive-workstation skill.
+- Missing model cache or dependency: rebuild the managed image.
+- Confirm lower-authority upstream or user-supplied results with installed help.
+
+## Verification
+
+```bash
+command -v {name}
+{name} verify
+```
+
+## Exact installed help
+
+Load [`../cli-help/{name}.md`](../cli-help/{name}.md).
+
+## Authoritative source
+
+- [{source}]({source})
+- Source checked: {RETRIEVED}. Runtime help takes precedence.
+"""
     specialized = ""
     if name == "cyberstrike":
         specialized = """
@@ -656,7 +764,7 @@ def main() -> None:
         "",
         "## Knowledge package",
         "",
-        "The baked Hermes skill is `/opt/hermes/skills/cybersecurity/offensive-workstation/SKILL.md`.",
+        "The baked Hermes skill is `/usr/local/share/hermes/skills/cybersecurity/offensive-workstation/SKILL.md`.",
     ]
     index_lines += ["", "## Capability checks", "", "| Check | Requirement |", "|---|---|"]
     for name, check in rows("capability"):
@@ -700,10 +808,11 @@ mkdir -p "$OUTPUT_DIR"/{raw,normalized,evidence,final}
 
 ## Routing
 
-1. For every CyberStrike-related request, first load `references/cyberstrike/INDEX.md` and its one matching topic page. For command or configuration questions, answer from the local RAG and installed help without invoking `cyberstrike run` or requiring a CyberStrike model-provider credential.
-2. Load `references/TOOL-INDEX.md` if another required command is not already known.
-3. Load exactly one relevant `references/tools/<tool>.md` guide.
-4. Load the matching workflow only when chaining tools:
+1. For every ethical-hacking or pentesting request, first run `workstation-kb search "$USER_INTENT" --limit 8`, then open only the highest-ranked relevant local sources. See `references/LOCAL-RAG.md` for the complete corpus, authority order, persistence, and retrieval procedure.
+2. For every CyberStrike-related request, additionally run `cyberstrike-kb search "$USER_INTENT" --limit 6`, then load `references/cyberstrike/INDEX.md` and the highest-ranked matching concise topic page. Check installed help before using a retrieved command or flag. For informational questions, answer from local RAG without invoking `cyberstrike run` or requiring a CyberStrike model-provider credential.
+3. Load `references/TOOL-INDEX.md` if another required command is not already known.
+4. Load exactly one relevant `references/tools/<tool>.md` guide.
+5. Load the matching workflow only when chaining tools:
    - Recon and assets: `references/workflows/reconnaissance.md`, `references/workflows/dns-subdomains.md`, `references/workflows/enrichment.md`
    - Network: `references/workflows/network-mapping.md`
    - HTTP/routes: `references/workflows/http-discovery.md`, `references/workflows/content-fuzzing.md`
@@ -741,7 +850,7 @@ mkdir -p "$OUTPUT_DIR"/{raw,normalized,evidence,final}
    - Linux and Windows command reference: `references/my-guides/linux-windows-command-reference.md`
    - Certification study map: `references/my-guides/certification-study-map.md`
    - Tool selection: `references/my-guides/tool-selection-reference.md`
-5. Consult `references/ASSETS.md` for wordlists/templates and `references/TROUBLESHOOTING.md` for failures.
+6. Consult `references/ASSETS.md` for wordlists/templates and `references/TROUBLESHOOTING.md` for failures.
 
 ## Execution rules
 
@@ -755,6 +864,8 @@ mkdir -p "$OUTPUT_DIR"/{raw,normalized,evidence,final}
 ```bash
 check-tools
 check-knowledge
+workstation-kb verify
+cyberstrike-kb verify
 COLUMNS=240 hermes skills list | grep offensive-workstation-pentesting
 ```
 """

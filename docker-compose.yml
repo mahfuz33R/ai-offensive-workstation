@@ -1,80 +1,157 @@
+x-workstation-build: &workstation-build
+  context: .
+  args:
+    KALI_IMAGE: ${KALI_IMAGE:-kalilinux/kali-last-release}
+    KALI_TAG: ${KALI_TAG:-latest}
+    KALI_DIGEST: ${KALI_DIGEST:-}
+    GO_VERSION: ${GO_VERSION:-1.26.5}
+    RUST_TOOLCHAIN: ${RUST_TOOLCHAIN:-stable}
+    NODE_VERSION: ${NODE_VERSION:-latest}
+    NPM_VERSION: ${NPM_VERSION:-latest}
+    NODE_CACHE_BUST: ${NODE_CACHE_BUST:-manual}
+    PLAYWRIGHT_VERSION: ${PLAYWRIGHT_VERSION:-1.62.0}
+    AGENT_BROWSER_VERSION: ${AGENT_BROWSER_VERSION:-latest}
+    HERMES_VERSION: ${HERMES_VERSION:-latest}
+    HERMES_CACHE_BUST: ${HERMES_CACHE_BUST:-manual}
+    CYBERSTRIKE_VERSION: ${CYBERSTRIKE_VERSION:-latest}
+    CYBERSTRIKE_CACHE_BUST: ${CYBERSTRIKE_CACHE_BUST:-manual}
+
+x-workstation-runtime: &workstation-runtime
+  image: ai-offensive-workstation:latest
+  restart: unless-stopped
+  shm_size: 1gb
+  env_file:
+    - path: .env
+      required: true
+  environment:
+    HOME: /home/hermes
+    USER: hermes
+    LOGNAME: hermes
+    HERMES_UID: ${HERMES_UID:-10000}
+    HERMES_GID: ${HERMES_GID:-10000}
+    HERMES_HOME: /opt/data
+    CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
+    CYBERSTRIKE_PERSISTENT_HOME: /opt/data/cyberstrike
+  volumes:
+    - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
+    - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
+    - ./workspace:/workspace
+  networks:
+    - workstation-nat
+  cap_add:
+    - NET_ADMIN
+    - NET_RAW
+    - NET_BIND_SERVICE
+  cap_drop:
+    - SYS_ADMIN
+    - SYS_BOOT
+    - SYS_MODULE
+    - SYS_RAWIO
+    - SYS_TIME
+
 services:
   workstation:
-    build:
-      context: .
-      args:
-        HERMES_IMAGE: ${HERMES_IMAGE:-nousresearch/hermes-agent}
-        HERMES_TAG: ${HERMES_TAG:-latest}
-        HERMES_DIGEST: ${HERMES_DIGEST:-}
-        GO_VERSION: ${GO_VERSION:-1.26.5}
-        RUST_TOOLCHAIN: ${RUST_TOOLCHAIN:-stable}
-        PLAYWRIGHT_VERSION: ${PLAYWRIGHT_VERSION:-1.58.2}
-        CYBERSTRIKE_CACHE_BUST: ${CYBERSTRIKE_CACHE_BUST:-manual}
-      secrets:
-        - github_token
-    image: ai-offensive-workstation:latest
+    <<: *workstation-runtime
+    build: *workstation-build
     container_name: ai-offensive-workstation
-    restart: unless-stopped
-    privileged: true
-    shm_size: 1gb
-    command: ["gateway", "run"]
-    env_file:
-      - path: secrets.env
-        required: false
-    environment:
-      HERMES_UID: ${HERMES_UID:-10000}
-      HERMES_GID: ${HERMES_GID:-10000}
-      CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
+    command: ["hermes", "gateway", "run"]
     ports:
       - "127.0.0.1:8642:8642"
-    volumes:
-      - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
-      - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
-      - ./workspace:/workspace
+      - "127.0.0.1:${HERMES_DASHBOARD_PORT:-9119}:9119"
 
   dashboard:
-    image: ai-offensive-workstation:latest
+    <<: *workstation-runtime
     container_name: ai-offensive-workstation-dashboard
-    restart: unless-stopped
-    privileged: true
-    shm_size: 1gb
-    network_mode: host
-    command: ["dashboard", "--host", "127.0.0.1", "--port", "${HERMES_DASHBOARD_PORT:-9119}", "--no-open", "--insecure"]
-    env_file:
-      - path: secrets.env
-        required: false
-    environment:
-      HERMES_UID: ${HERMES_UID:-10000}
-      HERMES_GID: ${HERMES_GID:-10000}
-      CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
-    volumes:
-      - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
-      - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
-      - ./workspace:/workspace
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        gateway="$(ip route show default | awk '/default/ { print $3; exit }')"
+        test -n "$$gateway"
+        socat "TCP-LISTEN:9119,bind=0.0.0.0,reuseaddr,fork,range=$${gateway}/32" \
+          TCP:127.0.0.1:9120 &
+        exec hermes dashboard --host 127.0.0.1 --port 9120 \
+          --no-open --skip-build
+    network_mode: "service:workstation"
+    networks: []
     depends_on:
       - workstation
 
+  cyberstrike-api:
+    <<: *workstation-runtime
+    container_name: ai-offensive-workstation-cyberstrike-api
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        if [[ -z "$${CYBERSTRIKE_SERVER_PASSWORD:-}" ]]; then
+          export CYBERSTRIKE_SERVER_PASSWORD="$$(openssl rand -hex 32)"
+        fi
+        exec cyberstrike serve --hostname 127.0.0.1 --port 4096
+    network_mode: "service:workstation"
+    networks: []
+    depends_on:
+      - workstation
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          curl -fsS http://127.0.0.1:4096/global/health |
+          jq -e '.healthy == true' >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+
   setup:
-    image: ai-offensive-workstation:latest
+    <<: *workstation-runtime
     profiles:
       - setup
-    privileged: true
-    shm_size: 1gb
-    command: ["setup"]
-    env_file:
-      - path: secrets.env
-        required: false
-    environment:
-      HERMES_UID: ${HERMES_UID:-10000}
-      HERMES_GID: ${HERMES_GID:-10000}
-      HERMES_DASHBOARD: "0"
-      HERMES_DASHBOARD_HOST: "127.0.0.1"
-      CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
-    volumes:
-      - ${HERMES_DATA_DIR:-./workspace/container-opt/data}:/opt/data
-      - ${WORKSTATION_ROOT_DIR:-./workspace/container-root}:/root
-      - ./workspace:/workspace
+    restart: "no"
+    command: ["hermes", "setup"]
 
-secrets:
-  github_token:
-    file: ${BUILD_GITHUB_TOKEN_FILE:-/dev/null}
+  malware-lab:
+    image: ai-offensive-workstation:latest
+    profiles:
+      - malware
+    restart: "no"
+    entrypoint: ["/usr/bin/tini", "--"]
+    command: ["zsh"]
+    working_dir: /analysis
+    user: "10000:10000"
+    stdin_open: true
+    tty: true
+    network_mode: none
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+    environment:
+      HOME: /home/hermes
+      USER: hermes
+      LOGNAME: hermes
+      HERMES_HOME: /opt/data
+      SHELL: /usr/bin/zsh
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=2g
+      - /run:rw,noexec,nosuid,nodev,size=128m
+      - /root:rw,noexec,nosuid,nodev,size=128m
+    volumes:
+      - malware-hermes-data:/opt/data
+      - malware-home:/home/hermes
+      - malware-analysis:/analysis
+
+networks:
+  workstation-nat:
+    driver: bridge
+    internal: false
+
+volumes:
+  malware-hermes-data:
+    name: ai-offensive-workstation-malware-hermes-data
+  malware-home:
+    name: ai-offensive-workstation-malware-home
+  malware-analysis:
+    name: ai-offensive-workstation-malware-analysis

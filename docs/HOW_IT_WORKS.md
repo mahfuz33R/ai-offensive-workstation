@@ -1,0 +1,116 @@
+# How it works
+
+## Build
+
+Docker starts from the official stable Kali snapshot and installs the standard
+headless Kali metapackage. Repository-owned installer stages then add language
+toolchains, security tools, assets, browser automation, CyberStrike, and Hermes.
+
+Each installer records resolved versions and failures. The final image build
+runs the authoritative inventory in
+`scripts/manifests/tool-inventory.tsv`; a missing command, path, asset, or Linux
+capability fails the build.
+
+Node.js is resolved from the official Node distribution index for the current
+architecture. Its archive is checked against the official SHA-256 manifest,
+then npm is upgraded from the npm `latest` dist-tag. Playwright installs both
+Chromium and Firefox. The build runs real headless page launches for both.
+
+Asset installation clones fresh wordlist/template sources and copies the
+tracked payload snapshots. A final integrity stage checks expected repository
+structure, Git revisions, minimum useful file counts, and the nuclei runtime.
+
+## Runtime
+
+Compose defines four normal services from one image:
+
+- `workstation` runs the Hermes gateway.
+- `dashboard` runs the host-local Hermes dashboard.
+- `cyberstrike-api` runs CyberStrike's API on the shared container loopback.
+- `setup` performs interactive Hermes setup when its profile is requested.
+
+They share the same persistent `/opt/data`, `/root`, and `/workspace` bind
+mounts. The entrypoint adjusts the container `hermes` UID/GID to match `.env`,
+prepares writable directories, installs managed Zsh settings, and then drops
+from root to the `hermes` identity.
+
+The gateway and dashboard use a Docker bridge network. Only their explicit
+ports are published, and those bind to `127.0.0.1`.
+
+`dashboard` and `cyberstrike-api` share the workstation network namespace.
+CyberStrike binds to `127.0.0.1:4096` inside that namespace with no Compose
+port publication. When no server password is configured, the service creates
+a random process-only password on startup and never writes or prints it.
+The CyberStrike wrapper maps its XDG data, configuration, cache, and state
+under `/opt/data/cyberstrike`, so its session database and auth state share the
+same persistent host bind as Hermes.
+
+## Skill, RAG, and memory flow
+
+The tracked source skill is baked into an immutable image location. At runtime,
+the entrypoint takes a file lock and copies the managed skill into the standard
+Hermes data tree under `/opt/data/skills`. This avoids races when the gateway
+and dashboard start together.
+
+That synchronized tree contains:
+
+- `SKILL.md` for the offensive-workstation workflow.
+- CyberStrike `AGENTS.md` policy.
+- Concise verified CyberStrike guidance and a source-labeled RAG corpus.
+- Generated tool and asset references.
+
+The build embeds both the complete skill and the focused CyberStrike corpus
+locally with FastEmbed `BAAI/bge-small-en-v1.5`. `workstation-kb` searches all
+curated ethical-hacking guides, workflows, assets, installed help, and supplied
+knowledge. `cyberstrike-kb` searches the smaller CyberStrike corpus for higher
+precision. Both combine `sqlite-vec` cosine search with SQLite FTS5/BM25
+keyword search and reciprocal-rank fusion. Authority weighting prefers
+installed help and curated guidance over snapshots and raw unverified notes.
+The immutable indexes are copied atomically to
+`/opt/data/knowledge/offensive-workstation/` and
+`/opt/data/knowledge/cyberstrike/` under the same startup lock. They need no
+cloud embedding key and no vector service.
+
+The entrypoint adds compact `[offensive-workstation-local-kb]` and
+`[cyberstrike-local-kb]` retrieval pointers to `/opt/data/memories/MEMORY.md`
+when absent and when they fit Hermes's 2,200-byte memory limit. Existing
+content is preserved. Detailed knowledge remains in the skill and vector
+indexes instead of consuming bounded memory.
+
+Because `/opt/data` maps to `workspace/container-opt/data`, Hermes configuration,
+authentication state, learned state, and future memory files are persistent.
+Unmanaged files already present in the data tree are retained.
+
+The same entrypoint registers the synchronized
+`scripts/cyberstrike_mcp.py` as Hermes's `cyberstrike` MCP server. Hermes then
+gets nine live `cyberstrike_*` session tools over MCP stdio; the bridge calls
+only the verified CyberStrike loopback API. RAG retrieval and MCP live-session
+operations are separate paths, so each can be tested independently.
+
+## Configuration boundary
+
+`.env` is the only private operator file. Compose uses it both for interpolation
+and for normal-service environment injection. Git and Docker ignore it.
+
+Provider keys in `.env` are available to Hermes and `cyberstrike-api`.
+They are required only for model-backed replies. The vector indexes use local
+embeddings, while API health, session CRUD, and no-reply transport checks need
+no provider key.
+
+`.zshrc` is a public, tracked image input. It contains paths, aliases, completion,
+history, and prompt behavior, but never credentials.
+
+The malware profile is intentionally separate. It uses named volumes, no
+network, a read-only filesystem, no added capabilities, and no `.env` injection.
+
+## Verification layers
+
+1. `scripts/unit-test.sh` checks shell/Python/Ruby syntax, Compose architecture,
+   path wiring, and knowledge consistency without Docker.
+2. `scripts/preflight.sh` checks private-file safety, repository structure,
+   inventory validity, and optionally Docker availability.
+3. The Docker build gates every required installed command and asset.
+4. `scripts/build-and-verify.sh` performs post-build identity, capability,
+   knowledge, browser, and application smoke tests.
+5. `scripts/verify-runtime.sh` tests mounts, services, persistence, and optional
+   encrypted export/import behavior.

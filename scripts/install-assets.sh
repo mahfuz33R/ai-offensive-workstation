@@ -141,6 +141,46 @@ WRAPPER
   chmod 0755 "$COMMANDS_DIR/webanalyze"
 }
 
+verify_asset_collections() {
+  local seclists_count nuclei_count gf_count payload_count
+
+  test -s "$WORDLISTS/SecLists/README.md"
+  test -d "$WORDLISTS/SecLists/Discovery/Web-Content"
+  test -s "$TEMPLATES/nuclei-templates/README.md"
+  test -d "$TEMPLATES/nuclei-templates/http"
+  test -s "$PAYLOADS/payload-sources.tsv"
+  test -s "$PAYLOADS/payload-repository-files.txt"
+
+  git -C "$WORDLISTS/SecLists" rev-parse --verify HEAD >/dev/null
+  git -C "$TEMPLATES/nuclei-templates" rev-parse --verify HEAD >/dev/null
+
+  seclists_count="$(find "$WORDLISTS/SecLists" -type f | wc -l)"
+  nuclei_count="$(
+    find "$TEMPLATES/nuclei-templates" -type f \
+      \( -name '*.yaml' -o -name '*.yml' \) | wc -l
+  )"
+  gf_count="$(find "$PATTERNS/gf" -type f -name '*.json' | wc -l)"
+  payload_count="$(wc -l < "$PAYLOADS/payload-repository-files.txt")"
+
+  (( seclists_count >= 100 ))
+  (( nuclei_count >= 100 ))
+  (( gf_count >= 5 ))
+  (( payload_count >= 100 ))
+  command -v nuclei >/dev/null
+  nuclei -version >/dev/null 2>&1
+
+  {
+    printf 'asset-validation\tfiles\tSecLists\t%s\t%s\n' \
+      "$seclists_count" "$WORDLISTS/SecLists"
+    printf 'asset-validation\ttemplates\tnuclei\t%s\t%s\n' \
+      "$nuclei_count" "$TEMPLATES/nuclei-templates"
+    printf 'asset-validation\tpatterns\tgf\t%s\t%s\n' \
+      "$gf_count" "$PATTERNS/gf"
+    printf 'asset-validation\tfiles\tpayload-repositories\t%s\t%s\n' \
+      "$payload_count" "$PAYLOADS/payload-repository-files.txt"
+  } >> "$RESOLVED_FILE"
+}
+
 install_step "SecLists" "git asset" clone_asset_repo SecLists https://github.com/danielmiessler/SecLists.git "$WORDLISTS/SecLists"
 install_step "WordList" "git asset" clone_asset_repo WordList https://github.com/orwagodfather/WordList.git "$WORDLISTS/WordList"
 install_step "mrco24-wordlist" "git asset" clone_asset_repo mrco24-wordlist https://github.com/mrco24/mrco24-wordlist.git "$WORDLISTS/mrco24-wordlist"
@@ -158,4 +198,6 @@ install_step "GF runtime wrapper" "runtime config" install_gf_runtime_wrapper
 install_step "webanalyze definitions" "runtime asset" install_webanalyze_data
 install_step "gau default config" "runtime asset" install_gau_config
 install_step "cent community templates" "upstream asset" install_cent_templates
+install_step "wordlist, template, pattern, and payload integrity" \
+  "structure, revision, count, and nuclei runtime checks" verify_asset_collections
 finish_installer

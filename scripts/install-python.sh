@@ -102,7 +102,7 @@ install_gopherus() {
   local destination="$SECURITY_TOOLS_DIR/Gopherus"
   # Upstream tarunkant/Gopherus is Python-2-only. This is the Python 3 port
   # submitted to upstream as pull request 18; its default branch compiles on
-  # the modern Python runtime used by the Hermes base image.
+  # the modern Python runtime installed in the Kali workstation.
   clone_repo Gopherus https://github.com/Antabuse-123/Gopherus.git "$destination"
   [[ ! -f "$destination/requirements.txt" ]] || \
     (cd "$destination" && "$SECURITY_VENV/bin/pip" install -r requirements.txt)

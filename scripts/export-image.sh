@@ -19,8 +19,11 @@ printf 'Created %s (%s).\n' "$OUTPUT" "$(du -h "$OUTPUT" | awk '{print $1}')"
 printf 'Import elsewhere with: gzip -dc %q | docker load\n' "$OUTPUT"
 
 mkdir -p "$EXPORT_DIR"
-cp -f README.md command.md run_exported_image.md docker-compose.yml .env.example secrets.env.example "$EXPORT_DIR/"
+mkdir -p "$EXPORT_DIR/docs" "$EXPORT_DIR/scripts"
+cp -f README.md docker-compose.yml .env.example .zshrc "$EXPORT_DIR/"
+cp -f docs/COMMANDS.md docs/EXPORTED_IMAGE.md docs/HOW_IT_WORKS.md "$EXPORT_DIR/docs/"
+cp -f scripts/configure-host.sh scripts/reuse.sh "$EXPORT_DIR/scripts/"
 ln -f "$OUTPUT" "$EXPORT_DIR/$IMAGE_BASENAME" 2>/dev/null || cp -f "$OUTPUT" "$EXPORT_DIR/$IMAGE_BASENAME"
 tar -C "$EXPORT_DIR" -czf "$BUNDLE" .
 printf 'Created offline bundle %s (%s).\n' "$BUNDLE" "$(du -h "$BUNDLE" | awk '{print $1}')"
-printf 'Bundle contents include: %s, README.md, command.md, run_exported_image.md, docker-compose.yml, .env.example, secrets.env.example\n' "$IMAGE_BASENAME"
+printf 'Bundle contents include: %s, runtime Compose files, operator docs, and setup/reuse scripts.\n' "$IMAGE_BASENAME"

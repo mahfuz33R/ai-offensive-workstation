@@ -5,14 +5,77 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/install-common.sh"
 
 CYBERSTRIKE_DIR="${SECURITY_TOOLS_DIR}/cyberstrike"
 CYBERSTRIKE_PACKAGE="@cyberstrike-io/cyberstrike"
+CYBERSTRIKE_NODE_COMPAT_DIR="/opt/toolchains/node-cyberstrike"
+
+install_cyberstrike_node() {
+  local arch node_arch resolved archive base checksum_file temporary
+
+  arch="$(detect_arch)"
+  case "$arch" in
+    amd64) node_arch=x64 ;;
+    arm64) node_arch=arm64 ;;
+  esac
+  resolved="$(
+    retry curl -fsSL https://nodejs.org/dist/index.json \
+      | jq -er --arg artifact "linux-${node_arch}" '
+          map(select(
+            (.version | startswith("v24."))
+            and (.files | index($artifact))
+          ))[0].version
+        '
+  )"
+  [[ "$resolved" =~ ^v24\.[0-9]+\.[0-9]+$ ]]
+  archive="node-${resolved}-linux-${node_arch}.tar.xz"
+  base="https://nodejs.org/dist/${resolved}"
+  temporary="$(mktemp -d)"
+  checksum_file="$temporary/SHASUMS256.txt"
+
+  retry curl -fsSL -o "$checksum_file" "$base/SHASUMS256.txt"
+  retry curl -fsSL -o "$temporary/$archive" "$base/$archive"
+  (
+    cd "$temporary"
+    grep -E "  ${archive}$" SHASUMS256.txt | sha256sum --check -
+  )
+
+  rm -rf "$CYBERSTRIKE_NODE_COMPAT_DIR"
+  install -d -m 0755 "$CYBERSTRIKE_NODE_COMPAT_DIR"
+  tar -xJf "$temporary/$archive" --strip-components=1 \
+    -C "$CYBERSTRIKE_NODE_COMPAT_DIR"
+  rm -rf "$temporary"
+}
+
+install_cyberstrike_browser() {
+  local attempt compat_node
+
+  compat_node="${CYBERSTRIKE_NODE_COMPAT_DIR}/bin/node"
+  test -x "$compat_node"
+
+  # The Playwright CDN occasionally leaves a completed transfer waiting for
+  # the connection to close under the current Node line. CyberStrike 1.x pins
+  # Playwright 1.x, so provision it with the supported Node 24 LTS runtime.
+  # Bound each attempt so a transient CDN connection cannot hang the complete
+  # image build indefinitely.
+  for attempt in 1 2 3; do
+    log "Installing CyberStrike's pinned Chromium revision (attempt ${attempt}/3)"
+    if PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=120000 \
+      PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/browser-tools/playwright/.playwright}" \
+      timeout 300 "$compat_node" \
+        "$CYBERSTRIKE_DIR/node_modules/playwright/cli.js" install chromium; then
+      return 0
+    fi
+    log "Pinned Chromium installation attempt ${attempt} did not complete"
+  done
+
+  return 1
+}
 
 install_cyberstrike() {
   local arch version_selector platform_package package_root platform_root
   local launcher native_binary worker installed_version platform_version
   local playwright_version browser_path package_integrity platform_integrity
-  local build_home
+  local build_home compat_node compat_node_version
 
-  version_selector=latest
+  version_selector="${CYBERSTRIKE_VERSION:-latest}"
   arch="$(detect_arch)"
   case "$arch" in
     amd64)
@@ -41,6 +104,15 @@ install_cyberstrike() {
       --no-audit --no-fund \
       "${CYBERSTRIKE_PACKAGE}@${version_selector}" \
       "${platform_package}@${version_selector}"
+
+  # Keep Node latest as the workstation default while giving CyberStrike's
+  # pinned Playwright release the LTS Node line it officially supports. This
+  # uses Node's checksummed official archive, not an npm lifecycle installer.
+  install_cyberstrike_node
+  compat_node="${CYBERSTRIKE_NODE_COMPAT_DIR}/bin/node"
+  test -x "$compat_node"
+  compat_node_version="$("$compat_node" --version)"
+  [[ "$compat_node_version" =~ ^v24\. ]]
 
   package_root="${CYBERSTRIKE_DIR}/node_modules/${CYBERSTRIKE_PACKAGE}"
   platform_root="${CYBERSTRIKE_DIR}/node_modules/${platform_package}"
@@ -73,10 +145,9 @@ install_cyberstrike() {
   # Install the Chromium revision coupled to the Playwright dependency of the
   # resolved CyberStrike release. This remains correct when latest changes its
   # Playwright version and can coexist with agent-browser browser revisions.
-  PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/hermes/.playwright}" \
-    npm exec --prefix "$CYBERSTRIKE_DIR" -- playwright install chromium
+  install_cyberstrike_browser
   browser_path="$(
-    cd / && PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/hermes/.playwright}" \
+    cd / && PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/browser-tools/playwright/.playwright}" \
       node -e "process.stdout.write(require('${CYBERSTRIKE_DIR}/node_modules/playwright').chromium.executablePath())"
   )"
   test -x "$browser_path"
@@ -103,6 +174,7 @@ fi
 
 install_root=/opt/security-tools/cyberstrike
 package_root="$install_root/node_modules/@cyberstrike-io/cyberstrike"
+compat_node=/opt/toolchains/node-cyberstrike/bin/node
 case "$(uname -m)" in
   x86_64|amd64)
     native_binary="$install_root/node_modules/@cyberstrike-io/cyberstrike-linux-x64-baseline/bin/cyberstrike"
@@ -118,6 +190,22 @@ esac
 if [ ! -x "$native_binary" ]; then
   echo "cyberstrike: native binary is missing: $native_binary" >&2
   exit 1
+fi
+if [ ! -x "$compat_node" ]; then
+  echo "cyberstrike: compatible Node runtime is missing: $compat_node" >&2
+  exit 1
+fi
+
+if [ -n "${CYBERSTRIKE_PERSISTENT_HOME:-}" ]; then
+  mkdir -p \
+    "$CYBERSTRIKE_PERSISTENT_HOME/data" \
+    "$CYBERSTRIKE_PERSISTENT_HOME/config" \
+    "$CYBERSTRIKE_PERSISTENT_HOME/cache" \
+    "$CYBERSTRIKE_PERSISTENT_HOME/state"
+  export XDG_DATA_HOME="$CYBERSTRIKE_PERSISTENT_HOME/data"
+  export XDG_CONFIG_HOME="$CYBERSTRIKE_PERSISTENT_HOME/config"
+  export XDG_CACHE_HOME="$CYBERSTRIKE_PERSISTENT_HOME/cache"
+  export XDG_STATE_HOME="$CYBERSTRIKE_PERSISTENT_HOME/state"
 fi
 
 data_root="${XDG_DATA_HOME:-${user_home}/.local/share}/cyberstrike"
@@ -143,9 +231,10 @@ for bundled_name in web skill; do
 done
 
 export CYBERSTRIKE_BIN_PATH="$native_binary"
-export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/hermes/.playwright}"
+export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/opt/browser-tools/playwright/.playwright}"
 export CYBERSTRIKE_DISABLE_AUTOUPDATE="${CYBERSTRIKE_DISABLE_AUTOUPDATE:-1}"
-exec "$install_root/node_modules/.bin/cyberstrike" "$@"
+export PATH="/opt/toolchains/node-cyberstrike/bin:$PATH"
+exec "$compat_node" "$install_root/node_modules/.bin/cyberstrike" "$@"
 WRAPPER
   chmod 0755 "${COMMANDS_DIR}/cyberstrike"
 
@@ -191,6 +280,8 @@ WRAPPER
   printf 'cyberstrike-playwright\tnpm\tplaywright\t%s\t%s\n' \
     "$playwright_version" \
     "$CYBERSTRIKE_DIR/node_modules/playwright" >> "$RESOLVED_FILE"
+  printf 'cyberstrike-node\tnpm\tnode@24\t%s\t%s\n' \
+    "$compat_node_version" "$compat_node" >> "$RESOLVED_FILE"
 
   rm -r -- "$build_home"
 }
