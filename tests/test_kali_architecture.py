@@ -175,6 +175,10 @@ class ComposeIsolationTests(unittest.TestCase):
             '"127.0.0.1:${HERMES_DASHBOARD_PORT:-9119}:9119"',
             self.compose,
         )
+        runtime_anchor = self.compose.split("services:", 1)[0]
+        self.assertIn('API_SERVER_ENABLED: "true"', runtime_anchor)
+        self.assertIn("API_SERVER_HOST: 0.0.0.0", runtime_anchor)
+        self.assertIn('API_SERVER_PORT: "8642"', runtime_anchor)
 
     def test_existing_host_volume_contract_is_preserved(self) -> None:
         self.assertIn(
@@ -337,6 +341,11 @@ class BuildContractTests(unittest.TestCase):
         self.assertIn("hermes mcp test cyberstrike", runtime_verifier)
         self.assertIn("len(names) == 9", runtime_verifier)
         self.assertIn("check_and_delete_cyberstrike_session_sentinel", runtime_verifier)
+        self.assertIn("wait_for_gateway_api", runtime_verifier)
+        self.assertIn(
+            "Hermes API rejects unauthenticated access",
+            runtime_verifier,
+        )
 
     def test_host_and_reuse_environment_files_follow_kali(self) -> None:
         combined = (
@@ -356,6 +365,17 @@ class BuildContractTests(unittest.TestCase):
             read("scripts/configure-host.sh"),
         )
         self.assertNotIn("secrets.env", read("docker-compose.yml"))
+        configure_host = read("scripts/configure-host.sh")
+        self.assertIn("API_SERVER_KEY", configure_host)
+        self.assertIn("openssl rand -hex 32", configure_host)
+        self.assertIn(
+            "HERMES_DATA_DIR=./workspace/container-opt/data",
+            configure_host,
+        )
+        self.assertIn(
+            "WORKSTATION_ROOT_DIR=./workspace/container-root",
+            configure_host,
+        )
         for public_path in (
             ".env.example",
             "docker-compose.yml",

@@ -9,6 +9,7 @@ PERSISTENT_OPT_DATA_DIR="$PROJECT_DIR/workspace/container-opt/data"
 HERMES_ENV_FILE="$PERSISTENT_OPT_DATA_DIR/.env"
 HOST_UID="$(id -u)"
 HOST_GID="$(id -g)"
+API_SERVER_KEY=
 
 if [[ "$HOST_UID" == 0 ]]; then
   HOST_UID=10000
@@ -47,6 +48,16 @@ credential() {
   printf '%s\n' "$value"
 }
 
+command -v openssl >/dev/null 2>&1 || {
+  printf 'Required command not found: openssl\n' >&2
+  exit 1
+}
+
+API_SERVER_KEY="$(credential API_SERVER_KEY)"
+if [[ -z "$API_SERVER_KEY" ]]; then
+  API_SERVER_KEY="$(openssl rand -hex 32)"
+fi
+
 mkdir -p \
   "$PERSISTENT_ROOT_DIR" \
   "$PERSISTENT_OPT_DATA_DIR" \
@@ -65,8 +76,8 @@ trap 'rm -f -- "$temporary"' EXIT
 {
   printf '# Private workstation configuration. Keep mode 600; never commit.\n'
   printf 'COMPOSE_PROJECT_NAME=ai-offensive-workstation\n'
-  printf 'HERMES_DATA_DIR=%s\n' "$PERSISTENT_OPT_DATA_DIR"
-  printf 'WORKSTATION_ROOT_DIR=%s\n' "$PERSISTENT_ROOT_DIR"
+  printf 'HERMES_DATA_DIR=./workspace/container-opt/data\n'
+  printf 'WORKSTATION_ROOT_DIR=./workspace/container-root\n'
   printf 'HERMES_UID=%s\n' "$HOST_UID"
   printf 'HERMES_GID=%s\n' "$HOST_GID"
   printf 'KALI_IMAGE=%s\n' "$(setting KALI_IMAGE kalilinux/kali-last-release)"
@@ -81,6 +92,11 @@ trap 'rm -f -- "$temporary"' EXIT
   printf 'PLAYWRIGHT_VERSION=%s\n' "$(setting PLAYWRIGHT_VERSION 1.62.0)"
   printf 'AGENT_BROWSER_VERSION=%s\n' "$(setting AGENT_BROWSER_VERSION latest)"
   printf 'HERMES_DASHBOARD_PORT=%s\n' "$(setting HERMES_DASHBOARD_PORT 9119)"
+  printf 'API_SERVER_KEY=%s\n' "$API_SERVER_KEY"
+  printf 'CYBERSTRIKE_SERVER_USERNAME=%s\n' \
+    "$(setting CYBERSTRIKE_SERVER_USERNAME cyberstrike)"
+  printf 'CYBERSTRIKE_SERVER_PASSWORD=%s\n' \
+    "$(credential CYBERSTRIKE_SERVER_PASSWORD)"
 
   for key in \
     SHODAN_API_KEY CENSYS_API_ID CENSYS_API_SECRET VIRUSTOTAL_API_KEY \

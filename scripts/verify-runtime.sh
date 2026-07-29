@@ -160,6 +160,35 @@ wait_for_dashboard() {
   fail "dashboard did not respond on 127.0.0.1:${port}"
 }
 
+read_private_setting() {
+  local key="$1"
+  awk -v key="$key" '
+    index($0, key "=") == 1 {
+      print substr($0, length(key) + 2)
+      exit
+    }
+  ' "$PROJECT_DIR/.env"
+}
+
+wait_for_gateway_api() {
+  local api_key attempt
+  api_key="$(read_private_setting API_SERVER_KEY)"
+  (( ${#api_key} >= 8 )) \
+    || fail 'API_SERVER_KEY is absent or too short in the private .env'
+  for attempt in {1..72}; do
+    if curl -fsS --max-time 3 \
+        -H "Authorization: Bearer $api_key" \
+        http://127.0.0.1:8642/health \
+        | jq -e '.status == "ok" or .healthy == true' >/dev/null; then
+      pass 'authenticated Hermes API responds on 127.0.0.1:8642'
+      return 0
+    fi
+    sleep 5
+  done
+  compose logs --tail=200 workstation >&2 || true
+  fail 'Hermes API did not respond within six minutes'
+}
+
 wait_for_cyberstrike_api() {
   local id status attempt
   id="$(container_id cyberstrike-api)"
@@ -210,6 +239,7 @@ run_core_runtime_checks() {
   local workstation_id dashboard_id cyberstrike_id network_mode
   local dashboard_network_mode cyberstrike_network_mode privileged_status
   local network_name network_driver network_internal gateway_host_ip dashboard_host_ip
+  local api_key unauthenticated_status
   local -a attached_networks
   workstation_id="$(container_id workstation)"
   dashboard_id="$(container_id dashboard)"
@@ -256,6 +286,26 @@ run_core_runtime_checks() {
     "$workstation_id" | grep -Fv '"4096/tcp"' >/dev/null \
     || fail 'CyberStrike API port 4096 is unexpectedly published'
   pass 'workstation uses outbound bridge/NAT, loopback ports, an internal CyberStrike API, no privileged mode, and no Docker socket'
+
+  api_key="$(read_private_setting API_SERVER_KEY)"
+  unauthenticated_status="$(
+    curl -sS -o /dev/null -w '%{http_code}' \
+      http://127.0.0.1:8642/v1/models
+  )"
+  [[ "$unauthenticated_status" == 401 ]] \
+    || fail "Hermes API accepted an unauthenticated request: HTTP $unauthenticated_status"
+  curl -fsS -H "Authorization: Bearer $api_key" \
+    http://127.0.0.1:8642/v1/models \
+    | jq -e '.data | type == "array" and length > 0' >/dev/null \
+    || fail 'Hermes API did not return its authenticated model catalog'
+  curl -fsS -H "Authorization: Bearer $api_key" \
+    http://127.0.0.1:8642/v1/skills \
+    | jq -e '
+        (.data | type == "array")
+        and any(.data[]; .name == "offensive-workstation-pentesting")
+      ' >/dev/null \
+    || fail 'Hermes API did not return the offensive-workstation skill'
+  pass 'Hermes API rejects unauthenticated access and serves authenticated models and skills'
 
   "${DOCKER[@]}" exec --user root \
     --env HOME=/root --env USER=root --env LOGNAME=root \
@@ -545,6 +595,7 @@ run_reuse_roundtrip() {
 printf 'Starting the existing image without rebuilding...\n'
 compose up -d --no-build
 wait_for_workstation
+wait_for_gateway_api
 wait_for_dashboard
 wait_for_cyberstrike_api
 
@@ -569,6 +620,7 @@ if (( RECREATE == 1 )); then
   check_sentinels_in_container
   compose up -d --no-build --force-recreate
   wait_for_workstation
+  wait_for_gateway_api
   wait_for_dashboard
   wait_for_cyberstrike_api
   assert_mount workstation /root "$PROJECT_DIR/workspace/container-root"

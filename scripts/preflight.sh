@@ -46,6 +46,21 @@ if [[ -f .env ]]; then
   else
     fail ".env permissions are $mode; run: chmod 600 .env"
   fi
+  api_server_key="$(
+    awk -F= '$1 == "API_SERVER_KEY" {print substr($0, index($0, "=") + 1); exit}' \
+      .env
+  )"
+  if (( ${#api_server_key} >= 32 )); then
+    pass 'Private Hermes API bearer key is configured'
+  else
+    fail 'API_SERVER_KEY must contain at least 32 characters; rerun scripts/configure-host.sh'
+  fi
+  if grep -Fxq 'HERMES_DATA_DIR=./workspace/container-opt/data' .env \
+    && grep -Fxq 'WORKSTATION_ROOT_DIR=./workspace/container-root' .env; then
+    pass 'Private mount paths are portable project-relative defaults'
+  else
+    fail 'Private mount paths are not portable; rerun scripts/configure-host.sh'
+  fi
 else
   fail 'Run: bash scripts/configure-host.sh'
 fi

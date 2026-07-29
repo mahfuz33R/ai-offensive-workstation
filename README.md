@@ -50,8 +50,10 @@ sudo docker compose up -d --no-build
 sudo docker compose exec workstation zsh
 ```
 
-The dashboard is host-local at `http://127.0.0.1:9119` by default. The Hermes
-gateway is published only on `127.0.0.1:8642`.
+The dashboard is host-local at `http://127.0.0.1:9119` by default. Hermes's
+authenticated OpenAI-compatible API is published only on
+`http://127.0.0.1:8642`; use the private `API_SERVER_KEY` from `.env` as its
+bearer token.
 
 ## Configuration and secrets
 

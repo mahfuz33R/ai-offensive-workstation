@@ -50,6 +50,12 @@ ports = services.fetch("workstation").fetch("ports")
 unless ports.all? { |binding| binding.start_with?("127.0.0.1:") }
   raise "published ports must remain host-local"
 end
+workstation_environment = services.fetch("workstation").fetch("environment")
+unless workstation_environment["API_SERVER_ENABLED"] == "true" &&
+       workstation_environment["API_SERVER_HOST"] == "0.0.0.0" &&
+       workstation_environment["API_SERVER_PORT"] == "8642"
+  raise "workstation: authenticated Hermes API must listen on container port 8642"
+end
 
 malware = services.fetch("malware-lab")
 raise "malware-lab: network must be disabled" unless malware["network_mode"] == "none"

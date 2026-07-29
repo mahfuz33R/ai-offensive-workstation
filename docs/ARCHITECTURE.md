@@ -22,6 +22,7 @@ flowchart TD
     IMAGE --> SETUP
 
     WORKSTATION --> DATA["workspace/container-opt/data<br/>Hermes config, auth, skills, memory"]
+    WORKSTATION --> HERMESAPI["Hermes API :8642<br/>host-loopback + bearer auth"]
     DASHBOARD --> DATA
     CYBERAPI --> CYBERSTATE["/opt/data/cyberstrike<br/>sessions, auth, config, state"]
     CYBERSTATE --> DATA
