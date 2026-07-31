@@ -61,6 +61,48 @@ install_playwright_browsers() {
       playwright install chromium firefox
 }
 
+verify_agent_browser() {
+  local agent_browser="$1" session="image-build-$$"
+  local attempt rc title output
+  output="$(mktemp)"
+
+  # agent-browser starts a client/daemon pair on the first real command. On a
+  # busy BuildKit worker that cold start can exceed the old 45-second wrapper,
+  # and a later unguarded `get title` timeout escaped as exit 124. Retry the
+  # complete transaction, bound every daemon call, and retain useful output if
+  # all attempts fail.
+  for attempt in 1 2 3; do
+    : > "$output"
+    log "Launching agent-browser smoke test (attempt ${attempt}/3)"
+    if timeout --kill-after=10 90 "$agent_browser" --session "$session" \
+        open 'data:text/html,<title>AgentBrowserOK</title>' \
+        >"$output" 2>&1; then
+      if title="$(
+        timeout --kill-after=5 30 "$agent_browser" --session "$session" \
+          get title 2>>"$output"
+      )" && [[ "$title" == *AgentBrowserOK* ]]; then
+        timeout --kill-after=5 15 "$agent_browser" --session "$session" \
+          close >/dev/null 2>&1 || true
+        rm -f "$output"
+        return 0
+      fi
+      rc=$?
+      log "agent-browser title check failed on attempt ${attempt} (exit ${rc})"
+    else
+      rc=$?
+      log "agent-browser launch failed on attempt ${attempt} (exit ${rc})"
+    fi
+
+    timeout --kill-after=5 15 "$agent_browser" --session "$session" \
+      close >/dev/null 2>&1 || true
+  done
+
+  log "agent-browser could not launch and query its configured Chromium"
+  tail -n 80 "$output" >&2 || true
+  rm -f "$output"
+  return 1
+}
+
 ensure_hermes_browser() {
   local playwright="$BROWSER_PACKAGE_DIR/node_modules/.bin/playwright"
   local agent_browser="$BROWSER_PACKAGE_DIR/node_modules/.bin/agent-browser"
@@ -88,7 +130,7 @@ ensure_hermes_browser() {
 verify_hermes_browser() {
   local playwright="$BROWSER_PACKAGE_DIR/node_modules/.bin/playwright"
   local agent_browser="$BROWSER_PACKAGE_DIR/node_modules/.bin/agent-browser"
-  local chromium firefox agent_browser_version playwright_version session title
+  local chromium firefox agent_browser_version playwright_version
 
   ensure_hermes_browser
 
@@ -106,7 +148,11 @@ verify_hermes_browser() {
   fi
 
   "$playwright" --version
-  "$agent_browser" --help </dev/null >/dev/null
+  if ! timeout --kill-after=5 30 "$agent_browser" --help \
+      </dev/null >/dev/null; then
+    log "agent-browser help command did not complete"
+    return 1
+  fi
 
   chromium="$(find_chromium)"
   if [[ ! -x "$chromium" ]]; then
@@ -134,19 +180,12 @@ verify_hermes_browser() {
   export AGENT_BROWSER_ARGS="${AGENT_BROWSER_ARGS:---no-sandbox,--disable-dev-shm-usage}"
 
   link_command "$agent_browser" agent-browser
-  session="image-build-$$"
-  if ! timeout 45 "$agent_browser" --session "$session" \
-      open 'data:text/html,<title>AgentBrowserOK</title>' >/dev/null; then
-    "$agent_browser" --session "$session" close >/dev/null 2>&1 || true
-    log "agent-browser could not launch its configured Chromium"
+  if ! verify_agent_browser "$agent_browser"; then
     return 1
   fi
-  title="$(timeout 30 "$agent_browser" --session "$session" get title)"
-  "$agent_browser" --session "$session" close >/dev/null
-  [[ "$title" == *AgentBrowserOK* ]]
 
-  PLAYWRIGHT_BROWSERS_PATH="$PLAYWRIGHT_BROWSERS_PATH" \
-    timeout 60 node - "$BROWSER_PACKAGE_DIR" <<'NODE'
+  if ! PLAYWRIGHT_BROWSERS_PATH="$PLAYWRIGHT_BROWSERS_PATH" \
+    timeout --kill-after=10 120 node - "$BROWSER_PACKAGE_DIR" <<'NODE'
 const packageDir = process.argv[2];
 const { chromium, firefox } = require(`${packageDir}/node_modules/playwright`);
 (async () => {
@@ -166,6 +205,10 @@ const { chromium, firefox } = require(`${packageDir}/node_modules/playwright`);
   process.exit(1);
 });
 NODE
+  then
+    log "Playwright Chromium/Firefox smoke test timed out or failed"
+    return 1
+  fi
 
   link_command "$playwright" playwright
 

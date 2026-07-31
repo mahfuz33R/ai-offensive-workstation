@@ -144,6 +144,10 @@ class IdentityAndShellTests(unittest.TestCase):
         hermes_installer = read("scripts/install-hermes.sh")
         self.assertIn("AGENT_BROWSER_VERSION:-latest", browser_installer)
         self.assertIn("AgentBrowserOK", browser_installer)
+        self.assertIn("verify_agent_browser", browser_installer)
+        self.assertIn("attempt ${attempt}/3", browser_installer)
+        self.assertIn("timeout --kill-after=10 90", browser_installer)
+        self.assertIn("timeout --kill-after=10 120 node", browser_installer)
         self.assertIn(
             "playwright install chromium firefox",
             browser_installer,
