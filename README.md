@@ -58,7 +58,24 @@ docker --version
 docker compose version
 ```
 
-### 2. Prepare private configuration
+### 2. Download the project
+
+Clone the `main` branch from GitHub, then enter the new project directory:
+
+```bash
+git clone --branch main https://github.com/mahfuz33R/ai-offensive-workstation.git
+cd ai-offensive-workstation
+```
+
+Every command in the rest of this quick start is run from that directory. If you
+already cloned the project, update it instead:
+
+```bash
+cd ai-offensive-workstation
+git pull --ff-only origin main
+```
+
+### 3. Prepare private configuration
 
 From the repository directory:
 
@@ -73,15 +90,31 @@ This creates:
 - `workspace/`, the persistent working area;
 - a random `API_SERVER_KEY` protecting the Hermes HTTP API.
 
-Edit `.env` only if you need a model provider such as OpenAI, Anthropic, Google, OpenRouter or Groq:
+Edit `.env` and add the key for the model provider you intend to use, such as
+OpenAI, Anthropic, Google, OpenRouter or Groq:
 
 ```bash
 nano .env
 ```
 
-RAG search, API health, session storage and `no_reply=true` CyberStrike messages work without a provider key. AI-generated replies need at least one configured model provider.
+For example, an OpenAI user would change only this line:
 
-### 3. Check the source
+```dotenv
+OPENAI_API_KEY=your-real-provider-key
+```
+
+Keep unused provider lines empty. Do not put spaces around `=` and do not put
+quotes around the key. Save the file, then protect it again:
+
+```bash
+chmod 600 .env
+```
+
+RAG search, API health, session storage and `no_reply=true` CyberStrike messages
+work without a provider key. AI-generated replies need at least one configured
+model provider.
+
+### 4. Check the source
 
 ```bash
 bash scripts/preflight.sh
@@ -89,7 +122,7 @@ bash scripts/preflight.sh
 
 This does not build or start Docker. It checks configuration safety, shell/Python syntax, Compose architecture, inventory structure and knowledge links.
 
-### 4. Build and verify the image
+### 5. Build and verify the image
 
 ```bash
 bash scripts/build-and-verify.sh
@@ -103,11 +136,58 @@ If a previous build stopped after many successful layers, reuse its cache:
 bash scripts/build-and-verify.sh --cached
 ```
 
-### 5. Start the workstation
+### 6. Configure Hermes
+
+After the image has been built, run Hermes's interactive setup container:
+
+```bash
+sudo docker compose --profile setup run --rm setup
+```
+
+Follow the on-screen questions to select your model provider and model. The exact
+choices can change between Hermes releases. Use the same provider whose key you
+put in `.env`. Setup data is saved under
+`workspace/container-opt/data/`, so it survives container replacement and
+computer restarts.
+
+These three secrets have different jobs:
+
+| Secret | What it allows | Where it is used |
+|---|---|---|
+| Provider key, such as `OPENAI_API_KEY` | Hermes calls an AI model | `.env` and Hermes setup |
+| `API_SERVER_KEY` | An API client calls the Hermes gateway | `Authorization: Bearer ...` on port `8642` |
+| `CYBERSTRIKE_SERVER_PASSWORD` | Protects the internal CyberStrike service when explicitly set | Internal port `4096` |
+
+They are not interchangeable. `scripts/configure-host.sh` creates
+`API_SERVER_KEY` automatically; do not paste that value into a provider-key
+field.
+
+If setup is interrupted, run the same setup command again. To change provider or
+model later, rerun it. If you edit `.env` after services are already running,
+apply the new values with:
+
+```bash
+sudo docker compose up -d --no-build --force-recreate
+```
+
+For screenshots-in-words explanations of providers, persistence, the gateway,
+RAG and authentication, read the [Hermes, RAG and API guide](docs/HERMES_RAG_API.md).
+
+### 7. Start and verify the workstation
 
 ```bash
 sudo docker compose up -d --no-build
 sudo docker compose ps
+```
+
+Confirm Hermes, its pentesting skill, CyberStrike and both knowledge databases:
+
+```bash
+sudo docker compose exec workstation hermes version
+sudo docker compose exec workstation env COLUMNS=240 hermes skills list
+sudo docker compose exec workstation hermes mcp test cyberstrike
+sudo docker compose exec workstation workstation-kb verify
+sudo docker compose exec workstation cyberstrike-kb verify
 ```
 
 Open the dashboard on the same computer:

@@ -10,6 +10,10 @@ Commands are grouped by intention. Run host commands from the repository directo
 ## Host setup
 
 ```bash
+# First download: clone main and enter the repository
+git clone --branch main https://github.com/mahfuz33R/ai-offensive-workstation.git
+cd ai-offensive-workstation
+
 # Create/update private .env and persistent directories
 bash scripts/configure-host.sh
 
@@ -34,6 +38,38 @@ bash scripts/build-and-verify.sh --verify-only
 ```
 
 The build is authoritative because it downloads upstream software, launches browsers, checks dependencies and validates all inventory entries.
+
+## Configure Hermes
+
+After building the image, add one model-provider key to `.env`, then run the
+interactive setup:
+
+```bash
+nano .env
+chmod 600 .env
+sudo docker compose --profile setup run --rm setup
+```
+
+Choose the same provider whose key is present in `.env`. Preferences persist in
+`workspace/container-opt/data/`. If services were already running when `.env`
+changed, recreate them:
+
+```bash
+sudo docker compose up -d --no-build --force-recreate
+```
+
+Verify the integration after startup:
+
+```bash
+sudo docker compose exec workstation hermes version
+sudo docker compose exec workstation env COLUMNS=240 hermes skills list
+sudo docker compose exec workstation hermes mcp test cyberstrike
+sudo docker compose exec workstation workstation-kb verify
+sudo docker compose exec workstation cyberstrike-kb verify
+```
+
+See [Hermes, RAG and API](HERMES_RAG_API.md) for provider keys, gateway
+authentication and persistence details.
 
 ## Start and stop
 
