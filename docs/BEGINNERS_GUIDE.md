@@ -181,12 +181,85 @@ Leave the SSH process running, then open `http://127.0.0.1:9119` locally.
 
 ## 8. Give Hermes an AI model
 
-Hermes can perform local knowledge searches and health checks without a model provider. To generate AI responses, add one supported provider key to `.env`, recreate the containers, and complete Hermes configuration if prompted:
+Hermes can perform local knowledge searches and health checks without a model
+provider. To generate AI responses, it needs permission to call a model provider.
+
+### Step 1: choose one provider
+
+You need an account and API key from at least one provider supported by your
+Hermes version. Open `.env`:
+
+```bash
+nano .env
+```
+
+Put the key after the matching name. This example uses OpenAI:
+
+```dotenv
+OPENAI_API_KEY=your-real-provider-key
+```
+
+Leave providers you do not use empty. A valid line has no spaces around `=` and
+no quotation marks. Save the file, then restrict its permissions:
+
+```bash
+chmod 600 .env
+```
+
+### Step 2: run the interactive Hermes setup
+
+The workstation image must already exist. If you have not built it, complete
+[the build step](#5-understand-the-build) first. Then run:
+
+```bash
+sudo docker compose --profile setup run --rm setup
+```
+
+This creates a temporary setup container, asks Hermes's current setup questions,
+and removes that temporary container when finished. Choose the provider that
+matches the key in `.env`, then choose an available model. Setup preferences are
+stored in the persistent `workspace/container-opt/data/` directory, not in the
+temporary container.
+
+The prompts and provider list can change when `HERMES_VERSION=latest` downloads a
+new Hermes release. Follow the displayed provider names instead of expecting the
+screen to look exactly like an older tutorial.
+
+### Step 3: start or recreate the services
+
+If the workstation is not running yet:
+
+```bash
+sudo docker compose up -d --no-build
+```
+
+If it was already running when you changed `.env`, recreate it so Docker injects
+the new values:
 
 ```bash
 sudo docker compose up -d --no-build --force-recreate
-sudo docker compose --profile setup run --rm setup
 ```
+
+### Step 4: verify the configuration
+
+```bash
+sudo docker compose ps
+sudo docker compose exec workstation hermes version
+sudo docker compose exec workstation env COLUMNS=240 hermes skills list
+sudo docker compose exec workstation hermes mcp test cyberstrike
+sudo docker compose exec workstation workstation-kb verify
+sudo docker compose exec workstation cyberstrike-kb verify
+```
+
+If Hermes lists the bundled skill, the CyberStrike MCP test succeeds and both
+knowledge databases verify, the project integration is ready. Open
+`http://127.0.0.1:9119` and send a small, harmless prompt such as “Explain what
+RAG means without running any tools.” A provider authentication error at that
+point normally means the provider key is missing, mistyped, expired or not
+enabled for the selected model.
+
+To change the model or provider later, edit `.env` if the provider key changes,
+rerun the setup command, and recreate the services.
 
 Do not confuse these secrets:
 
