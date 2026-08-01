@@ -118,6 +118,10 @@ docker run --rm \
   --entrypoint /opt/toolchains/python-apps/sploitscan/bin/pip "$IMAGE" check
 docker run --rm \
   --entrypoint /opt/toolchains/python-apps/cyberstrike-kb/bin/pip "$IMAGE" check
+docker run --rm --entrypoint /usr/local/lib/hermes-agent/venv/bin/python \
+  "$IMAGE" -c \
+  'import telegram; assert telegram.__version__ == "22.6", telegram.__version__'
+printf '[PASS] Hermes Telegram adapter dependency is image-baked.\n'
 
 printf '\nChecking Kali, Hermes administration, CyberStrike, and global paths...\n'
 docker run "${runtime_options[@]}" "$IMAGE" bash -euc '

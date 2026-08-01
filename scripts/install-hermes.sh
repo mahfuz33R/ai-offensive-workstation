@@ -56,6 +56,20 @@ install_hermes_standard() {
       --skip-browser \
       --branch "$resolved_ref"
 
+  # Hermes deliberately excludes messaging adapters from its curated `all`
+  # install. This workstation runs the gateway as an immutable, unprivileged
+  # container process, so Telegram's lazy installer cannot safely modify the
+  # agent venv at runtime. Install the exact upstream Telegram dependency while
+  # the image is built instead.
+  /opt/data/bin/uv pip install \
+    --python /usr/local/lib/hermes-agent/venv/bin/python \
+    'python-telegram-bot[webhooks]==22.6'
+  /usr/local/lib/hermes-agent/venv/bin/python - <<'PY'
+import telegram
+
+assert telegram.__version__ == "22.6", telegram.__version__
+PY
+
   # The runtime checkout is intentionally read-only to Hermes. Build the
   # dashboard while this installation step still runs as root so `hermes
   # dashboard` never attempts npm writes during container startup.

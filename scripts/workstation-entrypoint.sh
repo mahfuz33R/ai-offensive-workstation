@@ -80,6 +80,25 @@ prepare_writable_state() {
   fi
 }
 
+repair_persistent_config_permissions() {
+  local persistent_file mode
+
+  # Users sometimes run `hermes setup` from a root shell inside the
+  # container. It then creates these bind-mounted files as root, while the
+  # gateway intentionally runs as the mapped Hermes UID. Repair only the
+  # known regular config files; never follow symlinks or traverse /opt/data.
+  while IFS=' ' read -r mode persistent_file; do
+    if [[ -f "$persistent_file" && ! -L "$persistent_file" ]]; then
+      chown "$HERMES_UID:$HERMES_GID" "$persistent_file"
+      chmod "$mode" "$persistent_file"
+    fi
+  done <<EOF
+0600 $HERMES_HOME/.env
+0600 $HERMES_HOME/auth.json
+0640 $HERMES_HOME/config.yaml
+EOF
+}
+
 clear_stale_foreground_gateway_state() {
   local marker
 
@@ -221,6 +240,7 @@ PY
 
 configure_runtime_identity
 prepare_writable_state
+repair_persistent_config_permissions
 clear_stale_foreground_gateway_state "$@"
 sync_bundled_skill
 configure_cyberstrike_mcp

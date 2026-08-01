@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import shlex
 import subprocess
@@ -54,6 +55,10 @@ class KaliBaseTests(unittest.TestCase):
         self.assertIn("/usr/local/bin/hermes", installer)
         self.assertIn("--skip-setup", installer)
         self.assertIn("--skip-browser", installer)
+        self.assertIn("python-telegram-bot[webhooks]==22.6", installer)
+        self.assertIn("/opt/data/bin/uv pip install", installer)
+        self.assertIn("--python /usr/local/lib/hermes-agent/venv/bin/python", installer)
+        self.assertIn('telegram.__version__ == "22.6"', installer)
 
     def test_cyberstrike_uses_the_official_stable_dist_tag(self) -> None:
         installer = read("scripts/install-cyberstrike.sh")
@@ -220,6 +225,54 @@ class IdentityAndShellTests(unittest.TestCase):
             invoke(home, ["hermes", "gateway", "run"])
             self.assertEqual("keep\n", nested.read_text(encoding="utf-8"))
 
+    def test_persistent_config_permission_repair_is_narrow_and_symlink_safe(self) -> None:
+        entrypoint = read("scripts/workstation-entrypoint.sh")
+        match = re.search(
+            r"repair_persistent_config_permissions\(\) \{.*?\n\}",
+            entrypoint,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(match)
+        repair = match.group(0) if match else ""
+        self.assertNotIn("-R", repair)
+        self.assertNotIn("find ", repair)
+        self.assertIn('! -L "$persistent_file"', repair)
+        self.assertIn("repair_persistent_config_permissions", entrypoint)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            private_env = home / ".env"
+            auth = home / "auth.json"
+            config = home / "config.yaml"
+            target = home / "outside-target"
+            private_env.write_text("SECRET=preserve\n", encoding="utf-8")
+            auth.write_text("{}\n", encoding="utf-8")
+            target.write_text("do-not-touch\n", encoding="utf-8")
+            config.symlink_to(target)
+            private_env.chmod(0o644)
+            auth.chmod(0o644)
+            target.chmod(0o644)
+
+            script = "\n".join(
+                (
+                    "set -euo pipefail",
+                    f"HERMES_HOME={shlex.quote(str(home))}",
+                    f"HERMES_UID={os.getuid()}",
+                    f"HERMES_GID={os.getgid()}",
+                    repair,
+                    "repair_persistent_config_permissions",
+                )
+            )
+            subprocess.run(["bash", "-c", script], check=True, capture_output=True)
+
+            self.assertEqual(0o600, private_env.stat().st_mode & 0o777)
+            self.assertEqual(0o600, auth.stat().st_mode & 0o777)
+            self.assertTrue(config.is_symlink())
+            self.assertEqual(0o644, target.stat().st_mode & 0o777)
+            self.assertEqual("SECRET=preserve\n", private_env.read_text(encoding="utf-8"))
+            self.assertEqual("{}\n", auth.read_text(encoding="utf-8"))
+            self.assertEqual("do-not-touch\n", target.read_text(encoding="utf-8"))
+
 
 class ComposeIsolationTests(unittest.TestCase):
     @classmethod
@@ -330,6 +383,11 @@ class BuildContractTests(unittest.TestCase):
         self.assertIn("/tmp/install/verify-knowledge-base.py --require-help", dockerfile)
         self.assertIn("network inspect --format '{{.Driver}}'", runtime_verifier)
         self.assertIn('gateway_host_ip" == 127.0.0.1', runtime_verifier)
+        self.assertIn(
+            "/usr/local/lib/hermes-agent/venv/bin/python",
+            read("scripts/build-and-verify.sh"),
+        )
+        self.assertIn("telegram.__version__", read("scripts/build-and-verify.sh"))
 
     def test_bundled_skill_has_image_and_runtime_locations(self) -> None:
         dockerfile = read("Dockerfile")
