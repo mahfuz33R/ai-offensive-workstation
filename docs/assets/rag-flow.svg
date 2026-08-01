@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+  <title id="title">Local RAG flow</title>
+  <desc id="desc">Markdown knowledge is split into chunks, embedded, stored in SQLite, retrieved by vector and keyword search, ranked, and supplied to Hermes as context.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1"><stop stop-color="#111827"/><stop offset="1" stop-color="#172554"/></linearGradient>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0l10 5-10 5z" fill="#a5f3fc"/></marker>
+    <style>.title{font:700 32px system-ui,sans-serif;fill:#fff}.sub{font:15px system-ui,sans-serif;fill:#cbd5e1}.h{font:700 17px system-ui,sans-serif;fill:#fff}.t{font:13px system-ui,sans-serif;fill:#e2e8f0}.n{font:700 15px system-ui,sans-serif;fill:#0f172a}.box{stroke-width:2;rx:16}.line{stroke:#a5f3fc;stroke-width:3;fill:none;marker-end:url(#a)}</style>
+  </defs>
+  <rect width="1200" height="470" rx="24" fill="url(#bg)"/>
+  <text x="45" y="58" class="title">How local RAG turns documents into useful context</text>
+  <text x="45" y="87" class="sub">RAG does not retrain the model. It finds relevant passages and places them beside the question.</text>
+
+  <g transform="translate(42 155)"><rect class="box" width="165" height="145" fill="#1d4ed8" stroke="#93c5fd"/><circle cx="28" cy="28" r="17" fill="#dbeafe"/><text x="23" y="34" class="n">1</text><text x="22" y="72" class="h">Markdown files</text><text x="22" y="101" class="t">Guides, help,</text><text x="22" y="123" class="t">workflows, notes</text></g>
+  <g transform="translate(248 155)"><rect class="box" width="165" height="145" fill="#0f766e" stroke="#5eead4"/><circle cx="28" cy="28" r="17" fill="#ccfbf1"/><text x="23" y="34" class="n">2</text><text x="22" y="72" class="h">Chunking</text><text x="22" y="101" class="t">Small overlapping</text><text x="22" y="123" class="t">passages + source</text></g>
+  <g transform="translate(454 155)"><rect class="box" width="165" height="145" fill="#7e22ce" stroke="#d8b4fe"/><circle cx="28" cy="28" r="17" fill="#f3e8ff"/><text x="23" y="34" class="n">3</text><text x="22" y="72" class="h">Embedding</text><text x="22" y="101" class="t">Meaning becomes</text><text x="22" y="123" class="t">384 numbers</text></g>
+  <g transform="translate(660 155)"><rect class="box" width="165" height="145" fill="#a16207" stroke="#fde68a"/><circle cx="28" cy="28" r="17" fill="#fef3c7"/><text x="23" y="34" class="n">4</text><text x="22" y="72" class="h">SQLite index</text><text x="22" y="101" class="t">Vectors + FTS5</text><text x="22" y="123" class="t">text + metadata</text></g>
+  <g transform="translate(866 155)"><rect class="box" width="165" height="145" fill="#be123c" stroke="#fda4af"/><circle cx="28" cy="28" r="17" fill="#ffe4e6"/><text x="23" y="34" class="n">5</text><text x="22" y="72" class="h">Hybrid search</text><text x="22" y="101" class="t">Meaning + words</text><text x="22" y="123" class="t">+ authority rank</text></g>
+  <g transform="translate(1044 155)"><rect class="box" width="120" height="145" fill="#047857" stroke="#6ee7b7"/><circle cx="28" cy="28" r="17" fill="#d1fae5"/><text x="23" y="34" class="n">6</text><text x="22" y="72" class="h">Hermes</text><text x="22" y="101" class="t">Question +</text><text x="22" y="123" class="t">best passages</text></g>
+  <path class="line" d="M207 228h41M413 228h41M619 228h41M825 228h41M1031 228h13"/>
+  <rect x="335" y="355" width="530" height="70" rx="14" fill="#0f172a" stroke="#64748b"/>
+  <text x="365" y="385" class="h">Answer generation is optional and separate</text>
+  <text x="365" y="409" class="t">Search works locally; a configured model provider is needed only when Hermes must generate an AI answer.</text>
+</svg>

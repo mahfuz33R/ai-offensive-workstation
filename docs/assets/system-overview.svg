@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">AI Offensive Workstation system overview</title>
+  <desc id="desc">A local computer connects through SSH to loopback-only Hermes dashboard and API services on a remote Docker host. Hermes uses local knowledge, CyberStrike, tools, and optional model providers.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#071426"/><stop offset="1" stop-color="#102a43"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="7" flood-opacity=".28"/></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0l10 5-10 5z" fill="#7dd3fc"/></marker>
+    <style>
+      .title{font:700 34px system-ui,sans-serif;fill:#f8fafc}.sub{font:16px system-ui,sans-serif;fill:#b8c7d9}.h{font:700 20px system-ui,sans-serif;fill:#fff}.t{font:15px system-ui,sans-serif;fill:#e6eef8}.small{font:13px system-ui,sans-serif;fill:#b8c7d9}.box{stroke-width:2;rx:18;filter:url(#shadow)}.line{fill:none;stroke:#7dd3fc;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="700" rx="24" fill="url(#bg)"/>
+  <text x="50" y="58" class="title">AI Offensive Workstation — the whole system</text>
+  <text x="50" y="88" class="sub">The browser is only the window. Docker, Hermes, tools, knowledge and saved state live on the workstation host.</text>
+
+  <rect class="box" x="50" y="150" width="245" height="210" fill="#153e75" stroke="#60a5fa"/>
+  <text x="78" y="190" class="h">Your local computer</text>
+  <text x="78" y="225" class="t">Browser → port 9119</text>
+  <text x="78" y="257" class="t">API client → port 8642</text>
+  <text x="78" y="289" class="t">SSH creates the tunnel</text>
+  <text x="78" y="326" class="small">Nothing needs public exposure.</text>
+
+  <rect class="box" x="390" y="125" width="755" height="480" fill="#0b2239" stroke="#38bdf8"/>
+  <text x="420" y="163" class="h">Remote/server computer running Docker</text>
+
+  <rect class="box" x="430" y="200" width="210" height="130" fill="#075985" stroke="#67e8f9"/>
+  <text x="460" y="238" class="h">Hermes</text>
+  <text x="460" y="269" class="t">AI agent + gateway</text>
+  <text x="460" y="297" class="small">Dashboard and API</text>
+
+  <rect class="box" x="700" y="200" width="200" height="130" fill="#4c1d95" stroke="#c4b5fd"/>
+  <text x="728" y="238" class="h">CyberStrike</text>
+  <text x="728" y="269" class="t">Security sessions</text>
+  <text x="728" y="297" class="small">Internal port 4096</text>
+
+  <rect class="box" x="950" y="200" width="155" height="130" fill="#064e3b" stroke="#6ee7b7"/>
+  <text x="973" y="238" class="h">Tools</text>
+  <text x="973" y="269" class="t">Kali CLIs</text>
+  <text x="973" y="297" class="small">Browsers</text>
+
+  <rect class="box" x="430" y="405" width="300" height="145" fill="#78350f" stroke="#fbbf24"/>
+  <text x="460" y="443" class="h">Local knowledge + RAG</text>
+  <text x="460" y="475" class="t">Markdown → chunks → vectors</text>
+  <text x="460" y="506" class="small">SQLite FTS5 + sqlite-vec</text>
+  <text x="460" y="530" class="small">Works without a cloud API key</text>
+
+  <rect class="box" x="790" y="405" width="315" height="145" fill="#7f1d1d" stroke="#fca5a5"/>
+  <text x="820" y="443" class="h">Persistent workspace</text>
+  <text x="820" y="475" class="t">Config, sessions, reports</text>
+  <text x="820" y="506" class="small">Host folder: workspace/</text>
+  <text x="820" y="530" class="small">Survives container recreation</text>
+
+  <path class="line" d="M295 220C340 220 345 245 430 245"/>
+  <path class="line" d="M295 290C350 290 350 280 430 280"/>
+  <path class="line" d="M640 260h60"/>
+  <path class="line" d="M900 260h50"/>
+  <path class="line" d="M535 330v75"/>
+  <path class="line" d="M800 330c0 48 90 40 90 75"/>
+  <path class="line" d="M730 478h60"/>
+
+  <text x="54" y="650" class="small">Blue = access • Purple = agent orchestration • Green = security tools • Gold = local knowledge • Red = persistent private state</text>
+</svg>

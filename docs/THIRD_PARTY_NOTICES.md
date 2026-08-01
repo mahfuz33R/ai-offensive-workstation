@@ -1,29 +1,52 @@
-# Third-party notices
+# ⚖️ Third-Party Software and Licenses
 
-This repository builds and redistributes many independent open-source projects.
-Each installed project retains its upstream license and copyright terms.
+[← Project home](../README.md) · [Architecture](ARCHITECTURE.md) · [Public export](EXPORTED_IMAGE.md)
 
-Major bundled source snapshots:
+This repository builds and may redistribute many independent open-source projects. The project license does not replace the license, copyright, trademark or usage terms of any dependency.
 
-## PayloadsAllTheThings
+## Bundled source snapshots
+
+### PayloadsAllTheThings
 
 - Upstream: <https://github.com/swisskyrepo/PayloadsAllTheThings>
 - Repository path: `knowledge/payloads/PayloadsAllTheThings/`
-- License: `knowledge/payloads/PayloadsAllTheThings/LICENSE`
+- Bundled license: `knowledge/payloads/PayloadsAllTheThings/LICENSE`
 
-## payload-box collections
+### payload-box collections
 
 - Upstream organization: <https://github.com/payload-box>
 - Repository path: `knowledge/payloads/payload-box/`
-- Individual collection licenses remain inside their directories.
+- Individual collection license and notice files remain in their directories.
 
-Major downloaded-at-build assets include SecLists, WordList, nuclei templates,
-ProjectDiscovery fuzzing templates, Jaeles signatures, GF patterns, Kiterunner
-wordlists, and community nuclei templates. Their exact source URLs and resolved
-revisions are recorded in `/opt/security-manifest/resolved-versions.txt` inside
-the built image.
+## Downloaded during the build
 
-Kali packages, Hermes, CyberStrike, language toolchains, Playwright browsers,
-and every security utility remain subject to their respective upstream terms.
-Consult the installed package metadata and upstream repositories before
-redistributing an image.
+Major downloads include:
+
+- Kali packages;
+- Hermes Agent and CyberStrike;
+- Go, Rust, Node.js/npm and Python packages;
+- Playwright browser engines;
+- SecLists and other wordlists;
+- official/community Nuclei templates;
+- ProjectDiscovery fuzzing templates;
+- Jaeles signatures, GF patterns and Kiterunner routes;
+- many independent security utilities.
+
+Exact source URLs and resolved revisions/versions are recorded inside a built image at:
+
+```text
+/opt/security-manifest/resolved-versions.txt
+```
+
+Kali package metadata remains available through `dpkg`/APT, Python through package metadata, npm through lock/package files, and source checkouts through their retained Git metadata where applicable.
+
+## Before redistributing an image
+
+1. Review `/opt/security-manifest/resolved-versions.txt`.
+2. Inspect upstream licenses for every included project relevant to your distribution.
+3. Preserve required notices and source offers.
+4. Check whether trademarks or service terms restrict presentation or use.
+5. Do not distribute private `.env`, workspaces, sessions or target data.
+6. Remember that some security tools can have legal restrictions independent of software licensing in your jurisdiction.
+
+The [public image export](EXPORTED_IMAGE.md) omits private state but does not automatically solve third-party license compliance.
