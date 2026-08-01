@@ -32,7 +32,7 @@ x-workstation-runtime: &workstation-runtime
     HERMES_HOME: /opt/data
     API_SERVER_ENABLED: "true"
     API_SERVER_HOST: 0.0.0.0
-    API_SERVER_PORT: "8642"
+    API_SERVER_PORT: "8656"
     CYBERSTRIKE_DISABLE_AUTOUPDATE: "1"
     CYBERSTRIKE_PERSISTENT_HOME: /opt/data/cyberstrike
   volumes:
@@ -59,7 +59,7 @@ services:
     container_name: ai-offensive-workstation
     command: ["hermes", "gateway", "run"]
     ports:
-      - "127.0.0.1:8642:8642"
+      - "127.0.0.1:8656:8656"
       - "127.0.0.1:${HERMES_DASHBOARD_PORT:-9119}:9119"
 
   dashboard:

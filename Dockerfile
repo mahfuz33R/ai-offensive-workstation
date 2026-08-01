@@ -180,7 +180,7 @@ HEALTHCHECK --interval=5m --timeout=30s --start-period=30s --retries=1 \
   CMD ["check-tools", "/opt/security-manifest/tool-inventory.tsv", "/tmp/security-health-manifest.tsv"]
 
 WORKDIR /workspace
-EXPOSE 8642 9119
+EXPOSE 8656 9119
 
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/sbin/workstation-entrypoint"]
 CMD ["hermes", "gateway", "run"]

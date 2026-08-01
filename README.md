@@ -155,7 +155,7 @@ These three secrets have different jobs:
 | Secret | What it allows | Where it is used |
 |---|---|---|
 | Provider key, such as `OPENAI_API_KEY` | Hermes calls an AI model | `.env` and Hermes setup |
-| `API_SERVER_KEY` | An API client calls the Hermes gateway | `Authorization: Bearer ...` on port `8642` |
+| `API_SERVER_KEY` | An API client calls the Hermes gateway | `Authorization: Bearer ...` on port `8656` |
 | `CYBERSTRIKE_SERVER_PASSWORD` | Protects the internal CyberStrike service when explicitly set | Internal port `4096` |
 
 They are not interchangeable. `scripts/configure-host.sh` creates
@@ -208,6 +208,52 @@ Stop it without deleting persistent data:
 sudo docker compose down
 ```
 
+## Restarting Hermes correctly
+
+> [!WARNING]
+> Do not run `hermes gateway start`, `hermes gateway stop` or
+> `hermes gateway restart` inside this workstation container. Docker Compose
+> owns the foreground gateway process. Stopping it from inside exits the
+> container and can leave persistent runtime markers that cause a restart loop.
+> The dashboard's **Restart Gateway** button invokes the same unsupported
+> in-container command. Do not use that button in this project. It can start a
+> second gateway that fails with `Port 8656 already in use` even while the
+> original gateway is healthy.
+
+Restart the complete three-service stack from the **host repository directory**:
+
+```bash
+sudo docker compose restart workstation dashboard cyberstrike-api
+sudo docker compose ps
+```
+
+If `docker compose ps` shows `Restarting`, perform the safe recovery below. It
+preserves configuration, keys, sessions, reports and RAG databases; only the
+gateway's disposable PID and lock markers are removed:
+
+```bash
+sudo docker compose logs --no-color --tail=200 workstation dashboard \
+  > /tmp/ai-offensive-workstation-restart.log
+sudo docker compose down
+
+sudo rm -f -- \
+  workspace/container-opt/data/gateway.pid \
+  workspace/container-opt/data/gateway.lock
+
+hermes_uid="$(sed -n 's/^HERMES_UID=//p' .env | tail -n1)"
+hermes_gid="$(sed -n 's/^HERMES_GID=//p' .env | tail -n1)"
+sudo chown -R "${hermes_uid}:${hermes_gid}" workspace/container-opt/data
+sudo chmod 750 workspace/container-opt/data
+sudo chmod 600 workspace/container-opt/data/.env
+
+sudo docker compose up -d --no-build --force-recreate
+sudo docker compose ps
+sudo docker compose logs --tail=80 workstation dashboard
+```
+
+The hardened entrypoint also clears those two stale markers automatically on
+the next foreground gateway start. See the [full troubleshooting cookbook](docs/COMMANDS.md#recover-a-hermes-gateway-restart-loop).
+
 ## Using a remote server
 
 The dashboard and API deliberately listen only on the server's loopback interface. From your local computer, create an SSH tunnel:
@@ -215,14 +261,14 @@ The dashboard and API deliberately listen only on the server's loopback interfac
 ```bash
 ssh -N \
   -L 9119:127.0.0.1:9119 \
-  -L 8642:127.0.0.1:8642 \
+  -L 8656:127.0.0.1:8656 \
   USER@SERVER_IP
 ```
 
 Keep that terminal open. On your local computer:
 
 - browse to `http://127.0.0.1:9119` for the dashboard;
-- send authenticated API requests to `http://127.0.0.1:8642/v1`.
+- send authenticated API requests to `http://127.0.0.1:8656/v1`.
 
 Opening `/v1/models` directly in a browser normally returns `Invalid gateway API key`. That is correct: a browser address bar does not send an `Authorization: Bearer ...` header. See [Ports and authentication](docs/HERMES_RAG_API.md#part-7-ports-tunnels-and-authentication).
 
@@ -303,4 +349,4 @@ Read the full operating policy in [`SAFETY.md`](knowledge/skills/offensive-works
 
 ## One rule to remember
 
-> **Dashboard on 9119, authenticated API on 8642, CyberStrike internal on 4096, and all valuable work under `workspace/`.**
+> **Dashboard on 9119, authenticated API on 8656, CyberStrike internal on 4096, and all valuable work under `workspace/`.**

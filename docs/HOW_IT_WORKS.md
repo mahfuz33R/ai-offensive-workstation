@@ -171,7 +171,7 @@ An API client sends:
 
 ```http
 GET /v1/models HTTP/1.1
-Host: 127.0.0.1:8642
+Host: 127.0.0.1:8656
 Authorization: Bearer <API_SERVER_KEY>
 ```
 
@@ -180,7 +180,7 @@ The gateway compares the bearer token with its injected `API_SERVER_KEY`. A brow
 The API is OpenAI-compatible, meaning many clients can use:
 
 ```text
-Base URL: http://127.0.0.1:8642/v1
+Base URL: http://127.0.0.1:8656/v1
 API key:  the API_SERVER_KEY value
 Model:    hermes-agent
 ```

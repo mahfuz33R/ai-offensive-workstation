@@ -23,7 +23,7 @@ A **port** is a numbered door used by network programs. This project uses:
 | Port | Door for | How to use it |
 |---:|---|---|
 | `9119` | Hermes dashboard | Web browser |
-| `8642` | Hermes OpenAI-compatible API | `curl`, Postman or an SDK with a bearer key |
+| `8656` | Hermes OpenAI-compatible API | `curl`, Postman or an SDK with a bearer key |
 | `4096` | CyberStrike API | Internal only; Hermes reaches it through MCP |
 
 ### AI agent
@@ -45,7 +45,7 @@ RAG is an open-book exam, not brain surgery: it gives the model useful pages at 
 1. Docker starts the `workstation` container.
 2. A startup script checks the user ID and prepares writable folders.
 3. The bundled Hermes skill and RAG databases are synchronized into persistent `/opt/data`.
-4. Hermes starts its gateway on port `8642`.
+4. Hermes starts its gateway on port `8656`.
 5. A dashboard service becomes available on port `9119`.
 6. CyberStrike starts internally on port `4096`.
 7. You use the dashboard, an API client or a shell to work with Hermes.
@@ -170,14 +170,14 @@ For a remote server, run this on your local computer:
 ```bash
 ssh -N \
   -L 9119:127.0.0.1:9119 \
-  -L 8642:127.0.0.1:8642 \
+  -L 8656:127.0.0.1:8656 \
   USER@SERVER_IP
 ```
 
 Leave the SSH process running, then open `http://127.0.0.1:9119` locally.
 
 > [!NOTE]
-> SSH moves bytes between the two computers. It does not add an API key. Browsing to port `8642` directly will therefore show an authentication error.
+> SSH moves bytes between the two computers. It does not add an API key. Browsing to port `8656` directly will therefore show an authentication error.
 
 ## 8. Give Hermes an AI model
 
@@ -362,6 +362,34 @@ The API is reachable but the bearer header is absent or wrong. Browser address b
 ```bash
 sudo docker compose up -d --no-build --force-recreate
 ```
+
+### Workstation keeps restarting after a Hermes gateway restart
+
+The gateway is already the container's main process. Do not run
+`hermes gateway restart` inside the container. Restart all related services from
+the host instead. Do not click the dashboard's **Restart Gateway** button in
+this project; it runs the same wrong command inside another container. The
+usual symptom is `Port 8656 already in use` because the real gateway is already
+using its correct port. Do not change the port.
+
+```bash
+sudo docker compose restart workstation dashboard cyberstrike-api
+```
+
+If they are already looping, follow the
+[safe gateway recovery procedure](COMMANDS.md#recover-a-hermes-gateway-restart-loop).
+That procedure includes the standard ownership repair:
+
+```bash
+sudo docker compose down
+sudo chown -R 10000:10000 workspace/container-opt/data
+sudo chmod 750 workspace/container-opt/data
+sudo chmod 600 workspace/container-opt/data/.env
+sudo docker compose up -d --no-build --force-recreate
+```
+
+Use the `HERMES_UID` and `HERMES_GID` values from the repository `.env` instead
+of `10000:10000` if you configured different IDs.
 
 ### A build stopped during a download or browser test
 

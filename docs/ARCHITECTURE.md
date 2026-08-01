@@ -63,7 +63,7 @@ All normal services use the same image, environment contract and persistent moun
 
 | Service | Process | Purpose | Network behavior |
 |---|---|---|---|
-| `workstation` | `hermes gateway run` | Main agent gateway and authenticated API | Project bridge; publishes `127.0.0.1:8642` and `127.0.0.1:9119` |
+| `workstation` | `hermes gateway run` | Main agent gateway and authenticated API | Project bridge; publishes `127.0.0.1:8656` and `127.0.0.1:9119` |
 | `dashboard` | `hermes dashboard` plus `socat` | Browser user interface | Shares the workstation's network namespace |
 | `cyberstrike-api` | `cyberstrike serve` | CyberStrike sessions and agents | Shares workstation namespace; binds only `127.0.0.1:4096` |
 | `setup` | `hermes setup` | Interactive initial/provider setup | Starts only with the `setup` profile |
@@ -90,8 +90,8 @@ sequenceDiagram
     B->>S: http://127.0.0.1:9119
     S->>W: remote 127.0.0.1:9119
     W->>H: dashboard request
-    B->>S: API request + Bearer key on 8642
-    S->>H: remote 127.0.0.1:8642
+    B->>S: API request + Bearer key on 8656
+    S->>H: remote 127.0.0.1:8656
     H->>C: MCP stdio → HTTP 127.0.0.1:4096
     C-->>H: session result
 ```

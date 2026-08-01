@@ -16,7 +16,7 @@
   <rect class="box" x="50" y="150" width="245" height="210" fill="#153e75" stroke="#60a5fa"/>
   <text x="78" y="190" class="h">Your local computer</text>
   <text x="78" y="225" class="t">Browser → port 9119</text>
-  <text x="78" y="257" class="t">API client → port 8642</text>
+  <text x="78" y="257" class="t">API client → port 8656</text>
   <text x="78" y="289" class="t">SSH creates the tunnel</text>
   <text x="78" y="326" class="small">Nothing needs public exposure.</text>
 

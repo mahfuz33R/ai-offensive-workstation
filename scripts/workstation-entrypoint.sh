@@ -80,6 +80,27 @@ prepare_writable_state() {
   fi
 }
 
+clear_stale_foreground_gateway_state() {
+  local marker
+
+  # Compose, not Hermes's service manager, owns this foreground gateway. If an
+  # in-container `hermes gateway restart` terminates it, Docker starts a fresh
+  # PID namespace but Hermes can leave these runtime-only markers in persistent
+  # /opt/data. Remove them only for the exact foreground gateway command. Other
+  # services and interactive shells must never alter gateway lifecycle state.
+  if [[ "${1:-}" != hermes || "${2:-}" != gateway || "${3:-}" != run ]]; then
+    return 0
+  fi
+
+  for marker in "$HERMES_HOME/gateway.pid" "$HERMES_HOME/gateway.lock"; do
+    if [[ -f "$marker" || -L "$marker" ]]; then
+      rm -f -- "$marker"
+      printf 'workstation-entrypoint: removed stale foreground gateway marker: %s\n' \
+        "$marker" >&2
+    fi
+  done
+}
+
 sync_bundled_skill() {
   local destination="$HERMES_HOME/skills/cybersecurity/offensive-workstation"
   local kb_destination="$HERMES_HOME/knowledge/cyberstrike/cyberstrike-kb.sqlite3"
@@ -200,6 +221,7 @@ PY
 
 configure_runtime_identity
 prepare_writable_state
+clear_stale_foreground_gateway_state "$@"
 sync_bundled_skill
 configure_cyberstrike_mcp
 

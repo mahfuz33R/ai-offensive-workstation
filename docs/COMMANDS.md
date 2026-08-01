@@ -87,6 +87,70 @@ sudo docker compose down
 sudo docker compose up -d --no-build --force-recreate
 ```
 
+### Restart the Compose-managed gateway
+
+Run this on the host, from the repository directory:
+
+```bash
+sudo docker compose restart workstation dashboard cyberstrike-api
+sudo docker compose ps
+```
+
+Do not run `hermes gateway start`, `hermes gateway stop` or
+`hermes gateway restart` inside the container. Those commands manage a Hermes
+background service, but this project runs the gateway as the foreground process
+owned by Docker Compose. Do not click **Restart Gateway** in the Hermes
+dashboard either: that button runs `hermes gateway restart` inside the
+dashboard container. A second gateway then collides with the healthy foreground
+gateway and reports `Port 8656 already in use`. Keep port `8656` unchanged and
+restart the Compose services from the host instead.
+
+### Recover a Hermes gateway restart loop
+
+First save the failure evidence, then stop the complete stack:
+
+```bash
+sudo docker compose logs --no-color --tail=200 workstation dashboard \
+  > /tmp/ai-offensive-workstation-restart.log
+sudo docker compose down
+```
+
+Remove only the disposable gateway process markers and restore the configured
+Hermes ownership. These commands do not remove provider keys, configuration,
+sessions, reports or RAG databases:
+
+```bash
+sudo rm -f -- \
+  workspace/container-opt/data/gateway.pid \
+  workspace/container-opt/data/gateway.lock
+
+hermes_uid="$(sed -n 's/^HERMES_UID=//p' .env | tail -n1)"
+hermes_gid="$(sed -n 's/^HERMES_GID=//p' .env | tail -n1)"
+test -n "$hermes_uid" && test -n "$hermes_gid"
+sudo chown -R "${hermes_uid}:${hermes_gid}" workspace/container-opt/data
+sudo chmod 750 workspace/container-opt/data
+sudo chmod 600 workspace/container-opt/data/.env
+```
+
+Recreate and verify all three services:
+
+```bash
+sudo docker compose up -d --no-build --force-recreate
+sudo docker compose ps
+sudo docker compose logs --tail=80 workstation dashboard
+curl -fsS http://127.0.0.1:9119/ >/dev/null
+```
+
+If the log still reports `PermissionError: /opt/data/.env`, recheck ownership:
+
+```bash
+stat -c '%u:%g %a %n' workspace/container-opt/data/.env
+```
+
+If `gateway-restart.log` reports `Port 8656 already in use` immediately after
+you clicked the dashboard restart button, the existing gateway owns the port;
+do not configure a second port. Run the host-side recovery procedure above.
+
 ## Logs
 
 ```bash
@@ -129,7 +193,7 @@ From your local computer to a remote Docker server:
 ```bash
 ssh -N \
   -L 9119:127.0.0.1:9119 \
-  -L 8642:127.0.0.1:8642 \
+  -L 8656:127.0.0.1:8656 \
   USER@SERVER_IP
 ```
 
@@ -138,7 +202,7 @@ With a non-default SSH port:
 ```bash
 ssh -p 2222 -N \
   -L 9119:127.0.0.1:9119 \
-  -L 8642:127.0.0.1:8642 \
+  -L 8656:127.0.0.1:8656 \
   USER@SERVER_IP
 ```
 
@@ -150,7 +214,7 @@ ssh -fNT \
   -o ServerAliveInterval=30 \
   -o ServerAliveCountMax=3 \
   -L 9119:127.0.0.1:9119 \
-  -L 8642:127.0.0.1:8642 \
+  -L 8656:127.0.0.1:8656 \
   USER@SERVER_IP
 ```
 
@@ -167,7 +231,7 @@ Test model discovery:
 ```bash
 curl -sS \
   -H "Authorization: Bearer ${API_SERVER_KEY}" \
-  http://127.0.0.1:8642/v1/models | jq
+  http://127.0.0.1:8656/v1/models | jq
 ```
 
 Test skill discovery:
@@ -175,7 +239,7 @@ Test skill discovery:
 ```bash
 curl -sS \
   -H "Authorization: Bearer ${API_SERVER_KEY}" \
-  http://127.0.0.1:8642/v1/skills | jq
+  http://127.0.0.1:8656/v1/skills | jq
 ```
 
 Clear the shell variable:
@@ -354,3 +418,4 @@ Read upstream changes before rebuilding because several dependencies intentional
 | RAG result missing | `workstation-kb status && workstation-kb verify` |
 | CyberStrike unavailable | `sudo docker compose logs --tail=150 cyberstrike-api` |
 | Changed environment ignored | `sudo docker compose up -d --no-build --force-recreate` |
+| Workstation/dashboard restart loop | [Recover stale gateway state](#recover-a-hermes-gateway-restart-loop) |

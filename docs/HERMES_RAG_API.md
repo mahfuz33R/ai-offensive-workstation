@@ -262,7 +262,7 @@ Compose publishes:
 
 ```text
 127.0.0.1:9119 → dashboard
-127.0.0.1:8642 → Hermes API
+127.0.0.1:8656 → Hermes API
 ```
 
 The `127.0.0.1` bind means only the Docker host itself can connect directly. This is safer than publishing on `0.0.0.0`.
@@ -274,11 +274,11 @@ Run on the local computer:
 ```bash
 ssh -N \
   -L 9119:127.0.0.1:9119 \
-  -L 8642:127.0.0.1:8642 \
+  -L 8656:127.0.0.1:8656 \
   USER@SERVER_IP
 ```
 
-This produces two new local listeners. Traffic entering local port `9119` or `8642` travels encrypted through SSH to the corresponding remote loopback port.
+This produces two new local listeners. Traffic entering local port `9119` or `8656` travels encrypted through SSH to the corresponding remote loopback port.
 
 SSH proves access to the server. It does not provide HTTP API authentication.
 
@@ -286,7 +286,7 @@ SSH proves access to the server. It does not provide HTTP API authentication.
 
 | Secret | Protects/enables | Sent to | Needed for local RAG? |
 |---|---|---|---:|
-| `API_SERVER_KEY` | Hermes HTTP API on `8642` | Hermes gateway | No |
+| `API_SERVER_KEY` | Hermes HTTP API on `8656` | Hermes gateway | No |
 | Provider API key | Model-generated reasoning/replies | Selected model provider | No |
 | `CYBERSTRIKE_SERVER_PASSWORD` | Optional CyberStrike server authentication | Internal CyberStrike service | No |
 | Tool-specific key | Shodan, Censys, VirusTotal, Interactsh, etc. | That specific service | No |
@@ -330,7 +330,7 @@ Then:
 ```bash
 curl -sS \
   -H "Authorization: Bearer ${API_SERVER_KEY}" \
-  http://127.0.0.1:8642/v1/models | jq
+  http://127.0.0.1:8656/v1/models | jq
 ```
 
 From a local computer, first create the SSH tunnel and then set the same key locally.
@@ -358,7 +358,7 @@ Do not put the actual key inside the prompt string. After `read` displays `API k
 Opening this:
 
 ```text
-http://127.0.0.1:8642/v1/models
+http://127.0.0.1:8656/v1/models
 ```
 
 does not add an `Authorization` header. The expected response is therefore:
@@ -372,12 +372,12 @@ does not add an `Authorization` header. The expected response is therefore:
 }
 ```
 
-That error proves the tunnel and API are reachable. Use port `9119` in a browser and port `8642` with `curl`, Postman, Bruno or an SDK.
+That error proves the tunnel and API are reachable. Use port `9119` in a browser and port `8656` with `curl`, Postman, Bruno or an SDK.
 
 ### OpenAI-compatible client settings
 
 ```text
-Base URL: http://127.0.0.1:8642/v1
+Base URL: http://127.0.0.1:8656/v1
 API key:  <API_SERVER_KEY>
 Model:    hermes-agent
 ```

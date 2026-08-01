@@ -257,7 +257,7 @@ else
 fi
 
 if grep -Fq 'driver: bridge' docker-compose.yml \
-  && grep -Fq '127.0.0.1:8642:8642' docker-compose.yml \
+  && grep -Fq '127.0.0.1:8656:8656' docker-compose.yml \
   && grep -Fq '127.0.0.1:${HERMES_DASHBOARD_PORT:-9119}:9119' \
     docker-compose.yml; then
   pass 'Workstation traffic uses bridge/NAT with host-local published ports'

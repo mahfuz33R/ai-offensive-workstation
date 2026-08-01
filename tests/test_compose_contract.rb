@@ -53,8 +53,8 @@ end
 workstation_environment = services.fetch("workstation").fetch("environment")
 unless workstation_environment["API_SERVER_ENABLED"] == "true" &&
        workstation_environment["API_SERVER_HOST"] == "0.0.0.0" &&
-       workstation_environment["API_SERVER_PORT"] == "8642"
-  raise "workstation: authenticated Hermes API must listen on container port 8642"
+       workstation_environment["API_SERVER_PORT"] == "8656"
+  raise "workstation: authenticated Hermes API must listen on container port 8656"
 end
 
 malware = services.fetch("malware-lab")

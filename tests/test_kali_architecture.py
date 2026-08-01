@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import re
 import shlex
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -156,6 +158,68 @@ class IdentityAndShellTests(unittest.TestCase):
         self.assertIn('"firefox", firefox', browser_installer)
         self.assertIn("command -v chromium firefox-esr", browser_installer)
 
+    def test_stale_gateway_cleanup_is_scoped_to_compose_foreground_run(self) -> None:
+        entrypoint = read("scripts/workstation-entrypoint.sh")
+        match = re.search(
+            r"clear_stale_foreground_gateway_state\(\) \{.*?\n\}",
+            entrypoint,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(match)
+        cleanup = match.group(0) if match else ""
+        self.assertNotIn("rm -rf", cleanup)
+        self.assertIn('clear_stale_foreground_gateway_state "$@"', entrypoint)
+
+        def invoke(home: Path, arguments: list[str]) -> None:
+            script = "\n".join(
+                (
+                    "set -euo pipefail",
+                    f"HERMES_HOME={shlex.quote(str(home))}",
+                    cleanup,
+                    "clear_stale_foreground_gateway_state " + shlex.join(arguments),
+                )
+            )
+            subprocess.run(["bash", "-c", script], check=True, capture_output=True)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            markers = [home / "gateway.pid", home / "gateway.lock"]
+
+            for marker in markers:
+                marker.write_text("stale\n", encoding="utf-8")
+            invoke(home, ["hermes", "gateway", "run"])
+            self.assertTrue(all(not marker.exists() for marker in markers))
+
+            targets = [home / "pid-target", home / "lock-target"]
+            for marker, target in zip(markers, targets, strict=True):
+                target.write_text("keep\n", encoding="utf-8")
+                marker.symlink_to(target)
+            invoke(home, ["hermes", "gateway", "run"])
+            self.assertTrue(all(not marker.is_symlink() for marker in markers))
+            self.assertTrue(all(target.read_text(encoding="utf-8") == "keep\n" for target in targets))
+
+            unrelated_commands = (
+                ["hermes", "gateway", "restart"],
+                ["hermes", "dashboard"],
+                ["hermes", "setup"],
+                ["zsh"],
+                [],
+            )
+            for arguments in unrelated_commands:
+                with self.subTest(arguments=arguments):
+                    for marker in markers:
+                        marker.write_text("preserve\n", encoding="utf-8")
+                    invoke(home, arguments)
+                    self.assertTrue(all(marker.exists() for marker in markers))
+
+            marker_directory = home / "gateway.lock"
+            marker_directory.unlink()
+            marker_directory.mkdir()
+            nested = marker_directory / "nested"
+            nested.write_text("keep\n", encoding="utf-8")
+            invoke(home, ["hermes", "gateway", "run"])
+            self.assertEqual("keep\n", nested.read_text(encoding="utf-8"))
+
 
 class ComposeIsolationTests(unittest.TestCase):
     @classmethod
@@ -174,7 +238,7 @@ class ComposeIsolationTests(unittest.TestCase):
     def test_workstation_uses_bridge_nat_and_local_ports(self) -> None:
         self.assertIn("driver: bridge", self.compose)
         self.assertIn("internal: false", self.compose)
-        self.assertIn('"127.0.0.1:8642:8642"', self.compose)
+        self.assertIn('"127.0.0.1:8656:8656"', self.compose)
         self.assertIn(
             '"127.0.0.1:${HERMES_DASHBOARD_PORT:-9119}:9119"',
             self.compose,
@@ -182,7 +246,7 @@ class ComposeIsolationTests(unittest.TestCase):
         runtime_anchor = self.compose.split("services:", 1)[0]
         self.assertIn('API_SERVER_ENABLED: "true"', runtime_anchor)
         self.assertIn("API_SERVER_HOST: 0.0.0.0", runtime_anchor)
-        self.assertIn('API_SERVER_PORT: "8642"', runtime_anchor)
+        self.assertIn('API_SERVER_PORT: "8656"', runtime_anchor)
 
     def test_existing_host_volume_contract_is_preserved(self) -> None:
         self.assertIn(

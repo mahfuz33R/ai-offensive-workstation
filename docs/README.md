@@ -28,7 +28,7 @@ Welcome. You can read these chapters in order or jump directly to your current t
 | Question | Answer |
 |---|---|
 | Which browser URL do I open? | `http://127.0.0.1:9119` — see [dashboard access](BEGINNERS_GUIDE.md#7-open-the-dashboard) |
-| Why does port 8642 reject my browser? | It is an authenticated API — see [browser 401 explanation](HERMES_RAG_API.md#why-the-browser-address-bar-returns-401) |
+| Why does port 8656 reject my browser? | It is an authenticated API — see [browser 401 explanation](HERMES_RAG_API.md#why-the-browser-address-bar-returns-401) |
 | How do I reach a remote server? | Use an SSH tunnel — see [remote access](HERMES_RAG_API.md#remote-access-through-ssh) |
 | Which key does what? | See [four kinds of secrets](HERMES_RAG_API.md#part-8-four-kinds-of-secrets) |
 | How do I add my documents? | See [custom knowledge](HERMES_RAG_API.md#part-6-adding-your-own-knowledge-correctly) |

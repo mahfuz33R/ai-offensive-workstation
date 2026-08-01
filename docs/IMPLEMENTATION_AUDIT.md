@@ -103,7 +103,7 @@ This inspects actual Compose containers and proves:
 - expected host bind sources;
 - one outbound project bridge;
 - no privileged mode or Docker socket;
-- host-loopback-only `8642` and `9119`;
+- host-loopback-only `8656` and `9119`;
 - unpublished CyberStrike `4096`;
 - Hermes API rejects unauthenticated requests and accepts the configured key;
 - dashboard and CyberStrike health;
@@ -128,7 +128,7 @@ Additionally verifies dependency rejection, mount protection, encrypted export, 
 | Hermes on Kali | Stable release installed under `/usr/local/lib/hermes-agent` |
 | Persistent skills/RAG/memory | Locked entrypoint sync into bind-mounted `/opt/data` |
 | One private configuration | Ignored, mode-`600` root `.env` |
-| Authenticated Hermes API | Bearer-protected `8642`, host-loopback publication |
+| Authenticated Hermes API | Bearer-protected `8656`, host-loopback publication |
 | Internal CyberStrike | Shared loopback namespace, no publication of `4096` |
 | Browser automation | agent-browser plus Playwright Chromium and Firefox |
 | Tool completeness | Authoritative 3-column inventory and strict verifier |

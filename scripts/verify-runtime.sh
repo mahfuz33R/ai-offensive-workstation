@@ -3,6 +3,7 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IMAGE="${RUNTIME_AUDIT_IMAGE:-ai-offensive-workstation:latest}"
+API_PORT=8656
 RECREATE=0
 REUSE_ROUNDTRIP=0
 AUDIT_ID="runtime-audit-$(date -u +%Y%m%dT%H%M%SZ)-$$"
@@ -178,9 +179,9 @@ wait_for_gateway_api() {
   for attempt in {1..72}; do
     if curl -fsS --max-time 3 \
         -H "Authorization: Bearer $api_key" \
-        http://127.0.0.1:8642/health \
+        "http://127.0.0.1:${API_PORT}/health" \
         | jq -e '.status == "ok" or .healthy == true' >/dev/null; then
-      pass 'authenticated Hermes API responds on 127.0.0.1:8642'
+      pass "authenticated Hermes API responds on 127.0.0.1:${API_PORT}"
       return 0
     fi
     sleep 5
@@ -275,7 +276,7 @@ run_core_runtime_checks() {
   [[ "$network_driver" == bridge && "$network_internal" == false ]] \
     || fail "workstation network is not an outbound bridge: $network_driver/$network_internal"
   gateway_host_ip="$("${DOCKER[@]}" inspect --format \
-    '{{(index (index .HostConfig.PortBindings "8642/tcp") 0).HostIp}}' \
+    "{{(index (index .HostConfig.PortBindings \"${API_PORT}/tcp\") 0).HostIp}}" \
     "$workstation_id")"
   dashboard_host_ip="$("${DOCKER[@]}" inspect --format \
     '{{(index (index .HostConfig.PortBindings "9119/tcp") 0).HostIp}}' \
@@ -290,16 +291,16 @@ run_core_runtime_checks() {
   api_key="$(read_private_setting API_SERVER_KEY)"
   unauthenticated_status="$(
     curl -sS -o /dev/null -w '%{http_code}' \
-      http://127.0.0.1:8642/v1/models
+      "http://127.0.0.1:${API_PORT}/v1/models"
   )"
   [[ "$unauthenticated_status" == 401 ]] \
     || fail "Hermes API accepted an unauthenticated request: HTTP $unauthenticated_status"
   curl -fsS -H "Authorization: Bearer $api_key" \
-    http://127.0.0.1:8642/v1/models \
+    "http://127.0.0.1:${API_PORT}/v1/models" \
     | jq -e '.data | type == "array" and length > 0' >/dev/null \
     || fail 'Hermes API did not return its authenticated model catalog'
   curl -fsS -H "Authorization: Bearer $api_key" \
-    http://127.0.0.1:8642/v1/skills \
+    "http://127.0.0.1:${API_PORT}/v1/skills" \
     | jq -e '
         (.data | type == "array")
         and any(.data[]; .name == "offensive-workstation-pentesting")
