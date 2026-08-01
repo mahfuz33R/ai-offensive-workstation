@@ -1,99 +1,320 @@
-# Command reference
+# ⌨️ Command Cookbook
 
-Run commands from the project root.
+[← Project home](../README.md) · [Beginner guide](BEGINNERS_GUIDE.md) · [Architecture](ARCHITECTURE.md) · [Hermes/RAG/API](HERMES_RAG_API.md)
 
-## Configure and validate
+Commands are grouped by intention. Run host commands from the repository directory unless a section says “inside the workstation.”
+
+> [!TIP]
+> Copy one command block at a time. Read it before pressing Enter. Replace uppercase placeholders such as `USER` and `SERVER_IP`.
+
+## Host setup
 
 ```bash
+# Create/update private .env and persistent directories
 bash scripts/configure-host.sh
-$EDITOR .env
+
+# Protect private configuration
 chmod 600 .env
+
+# Source-only checks; no image build or container startup
 bash scripts/preflight.sh
 ```
 
-`configure-host.sh` preserves existing values in `.env`, updates host UID/GID
-and absolute persistence paths, and can migrate values from a legacy
-`secrets.env` or the older persistent Hermes `.env` if either is encountered.
-
-## Build
+## Build and image verification
 
 ```bash
-# Clean build with current upstream releases
+# Clean managed build: pulls base and ignores old layer cache
 bash scripts/build-and-verify.sh
 
-# Reuse Docker build cache
+# Reuse valid layers after interruption
 bash scripts/build-and-verify.sh --cached
 
-# Verify an existing image without rebuilding it
+# Verify the existing image only
 bash scripts/build-and-verify.sh --verify-only
 ```
 
-The build script runs preflight checks first. It then verifies Kali, the full
-tool inventory, Hermes knowledge, Python environments, permissions, Zsh,
-CyberStrike, agent-browser, Chromium, and Firefox.
+The build is authoritative because it downloads upstream software, launches browsers, checks dependencies and validates all inventory entries.
 
-## Start and use
+## Start and stop
 
 ```bash
+# Start normal services without rebuilding
 sudo docker compose up -d --no-build
+
+# Show containers, health and ports
 sudo docker compose ps
-sudo docker compose logs -f workstation
-sudo docker compose exec workstation zsh
-sudo docker compose exec workstation hermes version
+
+# Stop and remove normal containers/network; keep persistent host data
 sudo docker compose down
+
+# Recreate services after changing .env
+sudo docker compose up -d --no-build --force-recreate
 ```
 
-Use root only for administration:
+## Logs
 
 ```bash
+# Follow all service logs
+sudo docker compose logs -f
+
+# Last 150 lines from one service
+sudo docker compose logs --tail=150 workstation
+sudo docker compose logs --tail=150 dashboard
+sudo docker compose logs --tail=150 cyberstrike-api
+```
+
+Press `Ctrl+C` to stop following logs; it does not stop the containers.
+
+## Shell access
+
+```bash
+# Normal Hermes user
+sudo docker compose exec workstation zsh
+
+# Explicit container root shell
 sudo docker compose exec workstation root zsh
+
+# One non-interactive command
+sudo docker compose exec -T workstation check-tools
 ```
 
-Run one-time Hermes setup:
+Inside the workstation, `sudo` is passwordless and container-local.
+
+## Dashboard and remote SSH tunnel
+
+Local dashboard:
+
+```text
+http://127.0.0.1:9119
+```
+
+From your local computer to a remote Docker server:
 
 ```bash
-sudo docker compose --profile setup run --rm setup
+ssh -N \
+  -L 9119:127.0.0.1:9119 \
+  -L 8642:127.0.0.1:8642 \
+  USER@SERVER_IP
 ```
 
-Run the isolated malware-analysis shell:
+With a non-default SSH port:
+
+```bash
+ssh -p 2222 -N \
+  -L 9119:127.0.0.1:9119 \
+  -L 8642:127.0.0.1:8642 \
+  USER@SERVER_IP
+```
+
+Robust background tunnel:
+
+```bash
+ssh -fNT \
+  -o ExitOnForwardFailure=yes \
+  -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=3 \
+  -L 9119:127.0.0.1:9119 \
+  -L 8642:127.0.0.1:8642 \
+  USER@SERVER_IP
+```
+
+## Hermes API
+
+Load the key from the server `.env` when working directly on the server:
+
+```bash
+export API_SERVER_KEY="$(sed -n 's/^API_SERVER_KEY=//p' .env | tr -d '\r\n')"
+```
+
+Test model discovery:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer ${API_SERVER_KEY}" \
+  http://127.0.0.1:8642/v1/models | jq
+```
+
+Test skill discovery:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer ${API_SERVER_KEY}" \
+  http://127.0.0.1:8642/v1/skills | jq
+```
+
+Clear the shell variable:
+
+```bash
+unset API_SERVER_KEY
+```
+
+Browser address bars cannot supply the bearer header. Use `http://127.0.0.1:9119` for the UI.
+
+## Local RAG
+
+Run inside the workstation:
+
+```bash
+# Complete ethical-hacking corpus
+workstation-kb search "authorized API access-control workflow" --limit 8
+
+# Focused CyberStrike corpus
+cyberstrike-kb search "resume and inspect a session" --limit 6
+
+# Machine-readable results
+workstation-kb search "safe HTTP discovery" --limit 5 --json | jq
+
+# Metadata and integrity
+workstation-kb status
+workstation-kb verify
+cyberstrike-kb status
+cyberstrike-kb verify
+```
+
+## Hermes skills and MCP
+
+```bash
+# Confirm skill discovery
+COLUMNS=240 hermes skills list | grep offensive-workstation-pentesting
+
+# Inspect MCP servers
+hermes mcp list
+
+# Test the local CyberStrike bridge
+hermes mcp test cyberstrike
+```
+
+## CyberStrike basics
+
+```bash
+cyberstrike --version
+cyberstrike --help
+cyberstrike models
+cyberstrike agent list
+cyberstrike debug paths
+```
+
+Prefer Hermes's `cyberstrike_*` MCP tools for live session automation because the bridge validates paths and known API routes.
+
+## Configure optional tool credentials
+
+After adding relevant values to `.env` and recreating services:
+
+```bash
+sudo docker compose exec workstation configure-security-secrets
+```
+
+This configures supported tools without placing credentials in committed files.
+
+## Workspace and engagement setup
+
+Inside the workstation:
+
+```bash
+export ENGAGEMENT=owned-application-review
+export OUTPUT_DIR="/workspace/reports/$ENGAGEMENT"
+mkdir -p "$OUTPUT_DIR"/{raw,normalized,evidence,final}
+```
+
+Useful paths:
+
+```bash
+cd /workspace/projects
+cd /workspace/targets
+cd /workspace/reports
+cd /workspace/notes
+```
+
+## Verify tools and knowledge
+
+```bash
+check-tools
+check-knowledge
+check-knowledge --require-help
+```
+
+Reports normally land in `/workspace/reports/`. If that location is not writable, the tool verifier uses `/tmp`.
+
+## Full runtime audit
+
+Run from the host after an image exists:
+
+```bash
+# Services, mounts, ports, identity, tools, browsers, RAG, API and MCP
+bash scripts/verify-runtime.sh
+
+# Also prove state survives forced recreation
+bash scripts/verify-runtime.sh --recreate
+
+# Also exercise encrypted export/verify/import in an isolated temporary area
+bash scripts/verify-runtime.sh --recreate --reuse-roundtrip
+```
+
+## Malware-analysis profile
 
 ```bash
 sudo docker compose --profile malware run --rm malware-lab
 ```
 
-## Verify
+It has no network and does not receive normal `.env` or workspace binds.
+
+## Save a reviewed payload note
+
+Inside the workstation:
 
 ```bash
-# Offline source, syntax, architecture, and knowledge checks
-bash scripts/unit-test.sh
-
-# Source checks plus Docker availability
-bash scripts/preflight.sh --require-docker
-
-# Existing-image runtime and mount audit
-bash scripts/verify-runtime.sh
-
-# Force service recreation and prove persistence
-bash scripts/verify-runtime.sh --recreate
-
-# Include encrypted reuse export/import round-trip
-bash scripts/verify-runtime.sh --recreate --reuse-roundtrip
+save-payload-note \
+  --category xss \
+  --name harmless-training-marker \
+  --source manual-lab-validation \
+  --notes "For the owned training application only" \
+  --payload '<script>console.log("training-marker")</script>'
 ```
 
-## Export and migrate
+Saved notes are marked `candidate-needs-revalidation` and belong under the persistent workspace.
+
+## Encrypted migration
 
 ```bash
-# Public/offline image package
-bash scripts/export-image.sh
-
-# Encrypted image plus private workspace and .env
 bash scripts/reuse.sh export
-
-# Verify without restoring
-bash scripts/reuse.sh verify BUNDLE.tar.gpg
-
-# Restore into an empty project directory
-bash scripts/reuse.sh import BUNDLE.tar.gpg
+bash scripts/reuse.sh verify PATH/TO/BUNDLE.tar.gpg
+bash scripts/reuse.sh import PATH/TO/BUNDLE.tar.gpg
 ```
 
-See [REUSE.md](REUSE.md) before moving private state.
+Read [REUSE.md](REUSE.md) before using `--force`.
+
+## Public/offline image export
+
+```bash
+bash scripts/export-image.sh \
+  ai-offensive-workstation:latest \
+  ai-offensive-workstation.tar.gz
+```
+
+This does not include `.env` or private workspace state.
+
+## Update workflow
+
+```bash
+git status
+git pull origin main
+bash scripts/preflight.sh
+bash scripts/build-and-verify.sh --cached
+sudo docker compose up -d --no-build --force-recreate
+bash scripts/verify-runtime.sh
+```
+
+Read upstream changes before rebuilding because several dependencies intentionally track current releases.
+
+## Fast diagnosis table
+
+| Symptom | First command |
+|---|---|
+| Dashboard unavailable | `sudo docker compose logs --tail=150 dashboard workstation` |
+| Hermes API returns 401 | Verify bearer header and recreate after `.env` changes |
+| Browser URL `/v1/models` returns invalid key | Normal; use dashboard `9119` or an API client |
+| Build stopped | Find the first installer error, then use `--cached` |
+| Tool missing | `check-tools` |
+| RAG result missing | `workstation-kb status && workstation-kb verify` |
+| CyberStrike unavailable | `sudo docker compose logs --tail=150 cyberstrike-api` |
+| Changed environment ignored | `sudo docker compose up -d --no-build --force-recreate` |
