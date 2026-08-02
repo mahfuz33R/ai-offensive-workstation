@@ -23,7 +23,7 @@ You do **not** need to understand Docker, AI agents, RAG, or Kali before beginni
 | Move it to another computer | [Backup and migration](docs/REUSE.md) |
 | Check whether everything is healthy | [Implementation and verification](docs/IMPLEMENTATION_AUDIT.md) |
 
-## What is this, in plain English?
+## What is this gini?
 
 A normal Kali installation gives you hundreds of security programs. The hard part is knowing which one to use, which options are safe, where to store results, and how to turn raw scanner output into verified findings.
 
