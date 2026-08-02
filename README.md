@@ -128,7 +128,16 @@ This does not build or start Docker. It checks configuration safety, shell/Pytho
 bash scripts/build-and-verify.sh
 ```
 
-The first build is large and can take a long time. It downloads Kali packages, browsers, security tools, templates, wordlists and local embedding models. The build intentionally fails if a required item cannot be installed or launched.
+> [!IMPORTANT]
+> A complete first-time Docker build and verification, followed by Compose
+> startup, can take approximately **6–9 hours**. The exact time depends on CPU,
+> disk performance and download speed. The build downloads Kali packages,
+> browsers, security tools, templates, wordlists and local embedding models. Do
+> not interrupt it while it is still producing output or using CPU/disk.
+
+The build intentionally fails if a required item cannot be installed or
+launched. Later builds are normally faster when Docker can reuse completed
+layers.
 
 If a previous build stopped after many successful layers, reuse its cache:
 
